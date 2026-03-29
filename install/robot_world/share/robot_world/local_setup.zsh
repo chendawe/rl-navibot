@@ -1,0 +1,1 @@
+/root/workspace/rl-navibot/build/robot_world/ament_cmake_environment_hooks/local_setup.zsh

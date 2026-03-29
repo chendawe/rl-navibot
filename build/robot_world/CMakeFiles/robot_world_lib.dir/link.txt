@@ -1,0 +1,2 @@
+/usr/bin/ar qc librobot_world_lib.a CMakeFiles/robot_world_lib.dir/src/robot_driver.cpp.o CMakeFiles/robot_world_lib.dir/src/world_manager.cpp.o
+/usr/bin/ranlib librobot_world_lib.a

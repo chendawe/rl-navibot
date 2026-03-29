@@ -1,0 +1,506 @@
+[0.000000] (-) TimerEvent: {}
+[0.000294] (robot_world) JobQueued: {'identifier': 'robot_world', 'dependencies': OrderedDict()}
+[0.000345] (robot_world) JobStarted: {'identifier': 'robot_world'}
+[0.032718] (robot_world) JobProgress: {'identifier': 'robot_world', 'progress': 'cmake'}
+[0.033617] (robot_world) Command: {'cmd': ['/usr/bin/cmake', '/root/workspace/rl-navibot/src/execution/robot_world', '-DAMENT_CMAKE_SYMLINK_INSTALL=1', '-DCMAKE_INSTALL_PREFIX=/root/workspace/rl-navibot/install/robot_world'], 'cwd': '/root/workspace/rl-navibot/build/robot_world', 'env': OrderedDict([('HOSTNAME', 'e24245bc67b4'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/root'), ('OLDPWD', '/root/workspace/rl-navibot/src'), ('ROS_PYTHON_VERSION', '3'), ('ROS_DISTRO', 'humble'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('NVIDIA_DRIVER_CAPABILITIES', 'all'), ('TERM', 'xterm'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('DISPLAY', ':0'), ('LANG', 'C.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/opt/ros/humble'), ('PWD', '/root/workspace/rl-navibot/build/robot_world'), ('TURTLEBOT3_MODEL', 'burger'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/opt/ros/humble')]), 'shell': False}
+[0.124090] (-) TimerEvent: {}
+[0.196892] (robot_world) StdoutLine: {'line': b'-- The C compiler identification is GNU 11.4.0\n'}
+[0.224183] (-) TimerEvent: {}
+[0.258340] (robot_world) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 11.4.0\n'}
+[0.267478] (robot_world) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.324313] (-) TimerEvent: {}
+[0.341978] (robot_world) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.348994] (robot_world) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc - skipped\n'}
+[0.349720] (robot_world) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.350535] (robot_world) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.353786] (robot_world) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[0.424471] (-) TimerEvent: {}
+[0.431463] (robot_world) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[0.436519] (robot_world) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ - skipped\n'}
+[0.437124] (robot_world) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[0.437225] (robot_world) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[0.446256] (robot_world) StdoutLine: {'line': b'-- Found ament_cmake: 1.3.11 (/opt/ros/humble/share/ament_cmake/cmake)\n'}
+[0.524590] (-) TimerEvent: {}
+[0.584163] (robot_world) StdoutLine: {'line': b'-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter \n'}
+[0.624770] (-) TimerEvent: {}
+[0.669524] (robot_world) StdoutLine: {'line': b'-- Override CMake install command with custom implementation using symlinks instead of copying resources\n'}
+[0.724860] (-) TimerEvent: {}
+[0.746839] (robot_world) StdoutLine: {'line': b'-- Found rclcpp: 16.0.12 (/opt/ros/humble/share/rclcpp/cmake)\n'}
+[0.810235] (robot_world) StdoutLine: {'line': b'-- Found rosidl_generator_c: 3.1.6 (/opt/ros/humble/share/rosidl_generator_c/cmake)\n'}
+[0.821007] (robot_world) StdoutLine: {'line': b'-- Found rosidl_adapter: 3.1.6 (/opt/ros/humble/share/rosidl_adapter/cmake)\n'}
+[0.825014] (-) TimerEvent: {}
+[0.833303] (robot_world) StdoutLine: {'line': b'-- Found rosidl_generator_cpp: 3.1.6 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)\n'}
+[0.855236] (robot_world) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.890678] (robot_world) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.925167] (-) TimerEvent: {}
+[0.978159] (robot_world) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)\n'}
+[0.985272] (robot_world) StdoutLine: {'line': b'-- Found rmw_fastrtps_cpp: 6.2.7 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)\n'}
+[1.025293] (-) TimerEvent: {}
+[1.125587] (-) TimerEvent: {}
+[1.128346] (robot_world) StdoutLine: {'line': b'-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  \n'}
+[1.160304] (robot_world) StdoutLine: {'line': b'-- Found FastRTPS: /opt/ros/humble/include  \n'}
+[1.212485] (robot_world) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_fastrtps_cpp' as default\n"}
+[1.225745] (-) TimerEvent: {}
+[1.231948] (robot_world) StdoutLine: {'line': b'-- Looking for pthread.h\n'}
+[1.294474] (robot_world) StdoutLine: {'line': b'-- Looking for pthread.h - found\n'}
+[1.294746] (robot_world) StdoutLine: {'line': b'-- Performing Test CMAKE_HAVE_LIBC_PTHREAD\n'}
+[1.325879] (-) TimerEvent: {}
+[1.362447] (robot_world) StdoutLine: {'line': b'-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success\n'}
+[1.363549] (robot_world) StdoutLine: {'line': b'-- Found Threads: TRUE  \n'}
+[1.426077] (-) TimerEvent: {}
+[1.462539] (robot_world) StdoutLine: {'line': b'-- Found geometry_msgs: 4.9.0 (/opt/ros/humble/share/geometry_msgs/cmake)\n'}
+[1.487005] (robot_world) StdoutLine: {'line': b'-- Found sensor_msgs: 4.9.0 (/opt/ros/humble/share/sensor_msgs/cmake)\n'}
+[1.516891] (robot_world) StdoutLine: {'line': b'-- Found nav_msgs: 4.9.0 (/opt/ros/humble/share/nav_msgs/cmake)\n'}
+[1.526225] (-) TimerEvent: {}
+[1.544848] (robot_world) StdoutLine: {'line': b'-- Found tf2: 0.25.13 (/opt/ros/humble/share/tf2/cmake)\n'}
+[1.567505] (robot_world) StdoutLine: {'line': b'-- Found tf2_geometry_msgs: 0.25.13 (/opt/ros/humble/share/tf2_geometry_msgs/cmake)\n'}
+[1.599436] (robot_world) StdoutLine: {'line': b'-- Found eigen3_cmake_module: 0.1.1 (/opt/ros/humble/share/eigen3_cmake_module/cmake)\n'}
+[1.601764] (robot_world) StdoutLine: {'line': b'-- Found Eigen3: TRUE (found version "3.4.0") \n'}
+[1.601979] (robot_world) StdoutLine: {'line': b'-- Ensuring Eigen3 include directory is part of orocos-kdl CMake target\n'}
+[1.626441] (-) TimerEvent: {}
+[1.726817] (-) TimerEvent: {}
+[1.774391] (robot_world) StdoutLine: {'line': b'-- Found gazebo_msgs: 3.9.0 (/opt/ros/humble/share/gazebo_msgs/cmake)\n'}
+[1.826997] (-) TimerEvent: {}
+[1.846973] (robot_world) StdoutLine: {'line': b'-- Found std_srvs: 4.9.0 (/opt/ros/humble/share/std_srvs/cmake)\n'}
+[1.883830] (robot_world) StdoutLine: {'line': b'-- Found ament_cmake_gtest: 1.3.11 (/opt/ros/humble/share/ament_cmake_gtest/cmake)\n'}
+[1.892536] (robot_world) StdoutLine: {'line': b'-- Found ament_lint_auto: 0.12.12 (/opt/ros/humble/share/ament_lint_auto/cmake)\n'}
+[1.927113] (-) TimerEvent: {}
+[2.027539] (-) TimerEvent: {}
+[2.039512] (robot_world) StdoutLine: {'line': b"-- Found gtest sources under '/opt/ros/humble/src/gtest_vendor': C++ tests using 'Google Test' will be built\n"}
+[2.063888] (robot_world) StdoutLine: {'line': b"-- Added test 'cppcheck' to perform static code analysis on C / C++ code\n"}
+[2.064387] (robot_world) StdoutLine: {'line': b'-- Configured cppcheck include dirs: $<BUILD_INTERFACE:/root/workspace/rl-navibot/src/execution/robot_world/include>\n'}
+[2.065274] (robot_world) StdoutLine: {'line': b'-- Configured cppcheck exclude dirs and/or files: \n'}
+[2.067532] (robot_world) StdoutLine: {'line': b"-- Added test 'flake8' to check Python code syntax and style conventions\n"}
+[2.069799] (robot_world) StdoutLine: {'line': b"-- Added test 'lint_cmake' to check CMake code style\n"}
+[2.071389] (robot_world) StdoutLine: {'line': b"-- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257\n"}
+[2.074838] (robot_world) StdoutLine: {'line': b"-- Added test 'uncrustify' to check C / C++ code style\n"}
+[2.075090] (robot_world) StdoutLine: {'line': b'-- Configured uncrustify additional arguments: \n'}
+[2.077664] (robot_world) StdoutLine: {'line': b"-- Added test 'xmllint' to check XML markup files\n"}
+[2.081043] (robot_world) StdoutLine: {'line': b'-- Configuring done\n'}
+[2.127676] (-) TimerEvent: {}
+[2.143430] (robot_world) StdoutLine: {'line': b'-- Generating done\n'}
+[2.166492] (robot_world) StdoutLine: {'line': b'-- Build files have been written to: /root/workspace/rl-navibot/build/robot_world\n'}
+[2.178862] (robot_world) CommandEnded: {'returncode': 0}
+[2.181970] (robot_world) JobProgress: {'identifier': 'robot_world', 'progress': 'build'}
+[2.182032] (robot_world) Command: {'cmd': ['/usr/bin/cmake', '--build', '/root/workspace/rl-navibot/build/robot_world', '--', '-j16', '-l16'], 'cwd': '/root/workspace/rl-navibot/build/robot_world', 'env': OrderedDict([('HOSTNAME', 'e24245bc67b4'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/root'), ('OLDPWD', '/root/workspace/rl-navibot/src'), ('ROS_PYTHON_VERSION', '3'), ('ROS_DISTRO', 'humble'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('NVIDIA_DRIVER_CAPABILITIES', 'all'), ('TERM', 'xterm'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('DISPLAY', ':0'), ('LANG', 'C.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/opt/ros/humble'), ('PWD', '/root/workspace/rl-navibot/build/robot_world'), ('TURTLEBOT3_MODEL', 'burger'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/opt/ros/humble')]), 'shell': False}
+[2.227839] (-) TimerEvent: {}
+[2.239459] (robot_world) StdoutLine: {'line': b'[  6%] \x1b[32mBuilding CXX object gtest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o\x1b[0m\n'}
+[2.240750] (robot_world) StdoutLine: {'line': b'[ 13%] \x1b[32mBuilding CXX object gtest/CMakeFiles/gtest.dir/src/gtest-all.cc.o\x1b[0m\n'}
+[2.248133] (robot_world) StdoutLine: {'line': b'[ 26%] \x1b[32mBuilding CXX object CMakeFiles/robot_world_lib.dir/src/robot_driver.cpp.o\x1b[0m\n'}
+[2.249174] (robot_world) StdoutLine: {'line': b'[ 26%] \x1b[32mBuilding CXX object CMakeFiles/robot_world_lib.dir/src/world_manager.cpp.o\x1b[0m\n'}
+[2.327981] (-) TimerEvent: {}
+[2.428434] (-) TimerEvent: {}
+[2.528819] (-) TimerEvent: {}
+[2.629227] (-) TimerEvent: {}
+[2.729718] (-) TimerEvent: {}
+[2.830243] (-) TimerEvent: {}
+[2.930701] (-) TimerEvent: {}
+[3.031163] (-) TimerEvent: {}
+[3.131702] (-) TimerEvent: {}
+[3.232111] (-) TimerEvent: {}
+[3.332505] (-) TimerEvent: {}
+[3.432925] (-) TimerEvent: {}
+[3.533329] (-) TimerEvent: {}
+[3.558387] (robot_world) StdoutLine: {'line': b'[ 33%] \x1b[32m\x1b[1mLinking CXX static library libgtest_main.a\x1b[0m\n'}
+[3.592821] (robot_world) StdoutLine: {'line': b'[ 33%] Built target gtest_main\n'}
+[3.633486] (-) TimerEvent: {}
+[3.733921] (-) TimerEvent: {}
+[3.834436] (-) TimerEvent: {}
+[3.934973] (-) TimerEvent: {}
+[4.035481] (-) TimerEvent: {}
+[4.135971] (-) TimerEvent: {}
+[4.236536] (-) TimerEvent: {}
+[4.337126] (-) TimerEvent: {}
+[4.437639] (-) TimerEvent: {}
+[4.538184] (-) TimerEvent: {}
+[4.638744] (-) TimerEvent: {}
+[4.739225] (-) TimerEvent: {}
+[4.839657] (-) TimerEvent: {}
+[4.940125] (-) TimerEvent: {}
+[5.040655] (-) TimerEvent: {}
+[5.141132] (-) TimerEvent: {}
+[5.241540] (-) TimerEvent: {}
+[5.342162] (-) TimerEvent: {}
+[5.442588] (-) TimerEvent: {}
+[5.542943] (-) TimerEvent: {}
+[5.643337] (-) TimerEvent: {}
+[5.743838] (-) TimerEvent: {}
+[5.844345] (-) TimerEvent: {}
+[5.944807] (-) TimerEvent: {}
+[6.045260] (-) TimerEvent: {}
+[6.145697] (-) TimerEvent: {}
+[6.246199] (-) TimerEvent: {}
+[6.346620] (-) TimerEvent: {}
+[6.447048] (-) TimerEvent: {}
+[6.547405] (-) TimerEvent: {}
+[6.647933] (-) TimerEvent: {}
+[6.748311] (-) TimerEvent: {}
+[6.848786] (-) TimerEvent: {}
+[6.903021] (robot_world) StdoutLine: {'line': b'[ 40%] \x1b[32m\x1b[1mLinking CXX static library libgtest.a\x1b[0m\n'}
+[6.949054] (-) TimerEvent: {}
+[6.958581] (robot_world) StdoutLine: {'line': b'[ 40%] Built target gtest\n'}
+[7.049198] (-) TimerEvent: {}
+[7.149537] (-) TimerEvent: {}
+[7.249960] (-) TimerEvent: {}
+[7.350585] (-) TimerEvent: {}
+[7.451052] (-) TimerEvent: {}
+[7.551618] (-) TimerEvent: {}
+[7.652049] (-) TimerEvent: {}
+[7.752468] (-) TimerEvent: {}
+[7.852918] (-) TimerEvent: {}
+[7.953312] (-) TimerEvent: {}
+[8.053772] (-) TimerEvent: {}
+[8.154372] (-) TimerEvent: {}
+[8.254795] (-) TimerEvent: {}
+[8.355288] (-) TimerEvent: {}
+[8.455716] (-) TimerEvent: {}
+[8.556179] (-) TimerEvent: {}
+[8.656611] (-) TimerEvent: {}
+[8.757059] (-) TimerEvent: {}
+[8.857438] (-) TimerEvent: {}
+[8.957877] (-) TimerEvent: {}
+[9.058324] (-) TimerEvent: {}
+[9.158711] (-) TimerEvent: {}
+[9.259117] (-) TimerEvent: {}
+[9.359466] (-) TimerEvent: {}
+[9.459917] (-) TimerEvent: {}
+[9.560288] (-) TimerEvent: {}
+[9.660710] (-) TimerEvent: {}
+[9.761095] (-) TimerEvent: {}
+[9.861525] (-) TimerEvent: {}
+[9.962042] (-) TimerEvent: {}
+[10.062434] (-) TimerEvent: {}
+[10.162898] (-) TimerEvent: {}
+[10.263272] (-) TimerEvent: {}
+[10.363710] (-) TimerEvent: {}
+[10.464366] (-) TimerEvent: {}
+[10.564758] (-) TimerEvent: {}
+[10.665149] (-) TimerEvent: {}
+[10.765534] (-) TimerEvent: {}
+[10.865957] (-) TimerEvent: {}
+[10.966516] (-) TimerEvent: {}
+[11.066909] (-) TimerEvent: {}
+[11.167362] (-) TimerEvent: {}
+[11.267953] (-) TimerEvent: {}
+[11.368447] (-) TimerEvent: {}
+[11.468862] (-) TimerEvent: {}
+[11.569300] (-) TimerEvent: {}
+[11.669685] (-) TimerEvent: {}
+[11.770199] (-) TimerEvent: {}
+[11.873279] (-) TimerEvent: {}
+[11.973675] (-) TimerEvent: {}
+[12.074175] (-) TimerEvent: {}
+[12.174635] (-) TimerEvent: {}
+[12.275054] (-) TimerEvent: {}
+[12.375574] (-) TimerEvent: {}
+[12.475955] (-) TimerEvent: {}
+[12.576343] (-) TimerEvent: {}
+[12.676734] (-) TimerEvent: {}
+[12.777110] (-) TimerEvent: {}
+[12.877489] (-) TimerEvent: {}
+[12.978003] (-) TimerEvent: {}
+[13.078436] (-) TimerEvent: {}
+[13.178871] (-) TimerEvent: {}
+[13.279240] (-) TimerEvent: {}
+[13.379674] (-) TimerEvent: {}
+[13.480037] (-) TimerEvent: {}
+[13.580392] (-) TimerEvent: {}
+[13.680774] (-) TimerEvent: {}
+[13.781191] (-) TimerEvent: {}
+[13.881563] (-) TimerEvent: {}
+[13.981948] (-) TimerEvent: {}
+[14.082397] (-) TimerEvent: {}
+[14.182770] (-) TimerEvent: {}
+[14.283199] (-) TimerEvent: {}
+[14.383614] (-) TimerEvent: {}
+[14.483993] (-) TimerEvent: {}
+[14.584319] (-) TimerEvent: {}
+[14.684709] (-) TimerEvent: {}
+[14.785073] (-) TimerEvent: {}
+[14.885419] (-) TimerEvent: {}
+[14.985836] (-) TimerEvent: {}
+[15.086369] (-) TimerEvent: {}
+[15.186798] (-) TimerEvent: {}
+[15.287269] (-) TimerEvent: {}
+[15.387725] (-) TimerEvent: {}
+[15.488155] (-) TimerEvent: {}
+[15.588534] (-) TimerEvent: {}
+[15.688950] (-) TimerEvent: {}
+[15.789408] (-) TimerEvent: {}
+[15.889808] (-) TimerEvent: {}
+[15.990231] (-) TimerEvent: {}
+[16.090653] (-) TimerEvent: {}
+[16.191009] (-) TimerEvent: {}
+[16.291435] (-) TimerEvent: {}
+[16.391842] (-) TimerEvent: {}
+[16.492283] (-) TimerEvent: {}
+[16.592677] (-) TimerEvent: {}
+[16.693021] (-) TimerEvent: {}
+[16.793393] (-) TimerEvent: {}
+[16.893821] (-) TimerEvent: {}
+[16.994374] (-) TimerEvent: {}
+[17.094844] (-) TimerEvent: {}
+[17.195212] (-) TimerEvent: {}
+[17.295634] (-) TimerEvent: {}
+[17.396043] (-) TimerEvent: {}
+[17.496485] (-) TimerEvent: {}
+[17.596861] (-) TimerEvent: {}
+[17.697336] (-) TimerEvent: {}
+[17.797798] (-) TimerEvent: {}
+[17.898234] (-) TimerEvent: {}
+[17.998729] (-) TimerEvent: {}
+[18.099082] (-) TimerEvent: {}
+[18.199393] (-) TimerEvent: {}
+[18.299716] (-) TimerEvent: {}
+[18.400031] (-) TimerEvent: {}
+[18.500388] (-) TimerEvent: {}
+[18.600759] (-) TimerEvent: {}
+[18.701104] (-) TimerEvent: {}
+[18.801468] (-) TimerEvent: {}
+[18.901797] (-) TimerEvent: {}
+[19.002218] (-) TimerEvent: {}
+[19.102677] (-) TimerEvent: {}
+[19.203222] (-) TimerEvent: {}
+[19.303565] (-) TimerEvent: {}
+[19.403835] (-) TimerEvent: {}
+[19.504192] (-) TimerEvent: {}
+[19.604606] (-) TimerEvent: {}
+[19.704932] (-) TimerEvent: {}
+[19.805327] (-) TimerEvent: {}
+[19.905892] (-) TimerEvent: {}
+[20.006278] (-) TimerEvent: {}
+[20.106619] (-) TimerEvent: {}
+[20.206993] (-) TimerEvent: {}
+[20.307279] (-) TimerEvent: {}
+[20.407641] (-) TimerEvent: {}
+[20.508089] (-) TimerEvent: {}
+[20.608500] (-) TimerEvent: {}
+[20.708787] (-) TimerEvent: {}
+[20.809142] (-) TimerEvent: {}
+[20.909563] (-) TimerEvent: {}
+[21.009971] (-) TimerEvent: {}
+[21.110434] (-) TimerEvent: {}
+[21.210742] (-) TimerEvent: {}
+[21.311054] (-) TimerEvent: {}
+[21.411406] (-) TimerEvent: {}
+[21.511820] (-) TimerEvent: {}
+[21.612279] (-) TimerEvent: {}
+[21.712670] (-) TimerEvent: {}
+[21.813061] (-) TimerEvent: {}
+[21.913563] (-) TimerEvent: {}
+[22.014045] (-) TimerEvent: {}
+[22.114541] (-) TimerEvent: {}
+[22.215096] (-) TimerEvent: {}
+[22.315542] (-) TimerEvent: {}
+[22.415929] (-) TimerEvent: {}
+[22.516303] (-) TimerEvent: {}
+[22.616716] (-) TimerEvent: {}
+[22.717081] (-) TimerEvent: {}
+[22.817450] (-) TimerEvent: {}
+[22.917841] (-) TimerEvent: {}
+[22.966880] (robot_world) StdoutLine: {'line': b'[ 46%] \x1b[32m\x1b[1mLinking CXX static library librobot_world_lib.a\x1b[0m\n'}
+[23.018075] (-) TimerEvent: {}
+[23.118638] (-) TimerEvent: {}
+[23.219171] (-) TimerEvent: {}
+[23.319726] (-) TimerEvent: {}
+[23.345408] (robot_world) StdoutLine: {'line': b'[ 46%] Built target robot_world_lib\n'}
+[23.363090] (robot_world) StdoutLine: {'line': b'[ 53%] \x1b[32mBuilding CXX object CMakeFiles/world_manager.dir/src/world_manager_main.cpp.o\x1b[0m\n'}
+[23.363278] (robot_world) StdoutLine: {'line': b'[ 60%] \x1b[32mBuilding CXX object CMakeFiles/robot_driver.dir/src/robot_driver_main.cpp.o\x1b[0m\n'}
+[23.367817] (robot_world) StdoutLine: {'line': b'[ 66%] \x1b[32mBuilding CXX object CMakeFiles/test_world_manager.dir/test/test_world_manager.cpp.o\x1b[0m\n'}
+[23.368513] (robot_world) StdoutLine: {'line': b'[ 73%] \x1b[32mBuilding CXX object CMakeFiles/test_robot_driver.dir/test/test_robot_driver.cpp.o\x1b[0m\n'}
+[23.419876] (-) TimerEvent: {}
+[23.520443] (-) TimerEvent: {}
+[23.620854] (-) TimerEvent: {}
+[23.721357] (-) TimerEvent: {}
+[23.821851] (-) TimerEvent: {}
+[23.922335] (-) TimerEvent: {}
+[24.022750] (-) TimerEvent: {}
+[24.123149] (-) TimerEvent: {}
+[24.223669] (-) TimerEvent: {}
+[24.324149] (-) TimerEvent: {}
+[24.424733] (-) TimerEvent: {}
+[24.525273] (-) TimerEvent: {}
+[24.625758] (-) TimerEvent: {}
+[24.726272] (-) TimerEvent: {}
+[24.826733] (-) TimerEvent: {}
+[24.927288] (-) TimerEvent: {}
+[25.027832] (-) TimerEvent: {}
+[25.128344] (-) TimerEvent: {}
+[25.228869] (-) TimerEvent: {}
+[25.329373] (-) TimerEvent: {}
+[25.429889] (-) TimerEvent: {}
+[25.530381] (-) TimerEvent: {}
+[25.630763] (-) TimerEvent: {}
+[25.731291] (-) TimerEvent: {}
+[25.831788] (-) TimerEvent: {}
+[25.932180] (-) TimerEvent: {}
+[26.032539] (-) TimerEvent: {}
+[26.132941] (-) TimerEvent: {}
+[26.233343] (-) TimerEvent: {}
+[26.333816] (-) TimerEvent: {}
+[26.434267] (-) TimerEvent: {}
+[26.534730] (-) TimerEvent: {}
+[26.635190] (-) TimerEvent: {}
+[26.735570] (-) TimerEvent: {}
+[26.835909] (-) TimerEvent: {}
+[26.936279] (-) TimerEvent: {}
+[27.036662] (-) TimerEvent: {}
+[27.137095] (-) TimerEvent: {}
+[27.237680] (-) TimerEvent: {}
+[27.299253] (robot_world) StdoutLine: {'line': b'[ 80%] \x1b[32m\x1b[1mLinking CXX executable world_manager\x1b[0m\n'}
+[27.337845] (-) TimerEvent: {}
+[27.438351] (-) TimerEvent: {}
+[27.538715] (-) TimerEvent: {}
+[27.606320] (robot_world) StdoutLine: {'line': b'[ 80%] Built target world_manager\n'}
+[27.638877] (-) TimerEvent: {}
+[27.739382] (-) TimerEvent: {}
+[27.839852] (-) TimerEvent: {}
+[27.858182] (robot_world) StdoutLine: {'line': b'[ 86%] \x1b[32m\x1b[1mLinking CXX executable robot_driver\x1b[0m\n'}
+[27.939951] (-) TimerEvent: {}
+[28.040332] (-) TimerEvent: {}
+[28.140677] (-) TimerEvent: {}
+[28.241099] (-) TimerEvent: {}
+[28.341522] (-) TimerEvent: {}
+[28.441887] (-) TimerEvent: {}
+[28.542331] (-) TimerEvent: {}
+[28.642903] (-) TimerEvent: {}
+[28.743361] (-) TimerEvent: {}
+[28.843697] (-) TimerEvent: {}
+[28.944060] (-) TimerEvent: {}
+[29.044602] (-) TimerEvent: {}
+[29.111167] (robot_world) StdoutLine: {'line': b'[ 86%] Built target robot_driver\n'}
+[29.144717] (-) TimerEvent: {}
+[29.245265] (-) TimerEvent: {}
+[29.345712] (-) TimerEvent: {}
+[29.382283] (robot_world) StdoutLine: {'line': b'[ 93%] \x1b[32m\x1b[1mLinking CXX executable test_world_manager\x1b[0m\n'}
+[29.445837] (-) TimerEvent: {}
+[29.546249] (-) TimerEvent: {}
+[29.646603] (-) TimerEvent: {}
+[29.703551] (robot_world) StdoutLine: {'line': b'[ 93%] Built target test_world_manager\n'}
+[29.746747] (-) TimerEvent: {}
+[29.847273] (-) TimerEvent: {}
+[29.947763] (-) TimerEvent: {}
+[30.048184] (-) TimerEvent: {}
+[30.148596] (-) TimerEvent: {}
+[30.249164] (-) TimerEvent: {}
+[30.349549] (-) TimerEvent: {}
+[30.450024] (-) TimerEvent: {}
+[30.550627] (-) TimerEvent: {}
+[30.650988] (-) TimerEvent: {}
+[30.751397] (-) TimerEvent: {}
+[30.851900] (-) TimerEvent: {}
+[30.952329] (-) TimerEvent: {}
+[31.052915] (-) TimerEvent: {}
+[31.153373] (-) TimerEvent: {}
+[31.253718] (-) TimerEvent: {}
+[31.354264] (-) TimerEvent: {}
+[31.454664] (-) TimerEvent: {}
+[31.555203] (-) TimerEvent: {}
+[31.655614] (-) TimerEvent: {}
+[31.755993] (-) TimerEvent: {}
+[31.856327] (-) TimerEvent: {}
+[31.956751] (-) TimerEvent: {}
+[32.057137] (-) TimerEvent: {}
+[32.157553] (-) TimerEvent: {}
+[32.257904] (-) TimerEvent: {}
+[32.358275] (-) TimerEvent: {}
+[32.458605] (-) TimerEvent: {}
+[32.558946] (-) TimerEvent: {}
+[32.659315] (-) TimerEvent: {}
+[32.759618] (-) TimerEvent: {}
+[32.859988] (-) TimerEvent: {}
+[32.960393] (-) TimerEvent: {}
+[33.060734] (-) TimerEvent: {}
+[33.161072] (-) TimerEvent: {}
+[33.261418] (-) TimerEvent: {}
+[33.361799] (-) TimerEvent: {}
+[33.462160] (-) TimerEvent: {}
+[33.562477] (-) TimerEvent: {}
+[33.662810] (-) TimerEvent: {}
+[33.763188] (-) TimerEvent: {}
+[33.863549] (-) TimerEvent: {}
+[33.963888] (-) TimerEvent: {}
+[34.064194] (-) TimerEvent: {}
+[34.164541] (-) TimerEvent: {}
+[34.264954] (-) TimerEvent: {}
+[34.365337] (-) TimerEvent: {}
+[34.465690] (-) TimerEvent: {}
+[34.566183] (-) TimerEvent: {}
+[34.666594] (-) TimerEvent: {}
+[34.766984] (-) TimerEvent: {}
+[34.867416] (-) TimerEvent: {}
+[34.967763] (-) TimerEvent: {}
+[35.068106] (-) TimerEvent: {}
+[35.168395] (-) TimerEvent: {}
+[35.268907] (-) TimerEvent: {}
+[35.369265] (-) TimerEvent: {}
+[35.469787] (-) TimerEvent: {}
+[35.570392] (-) TimerEvent: {}
+[35.670785] (-) TimerEvent: {}
+[35.771209] (-) TimerEvent: {}
+[35.871611] (-) TimerEvent: {}
+[35.972059] (-) TimerEvent: {}
+[36.072544] (-) TimerEvent: {}
+[36.173004] (-) TimerEvent: {}
+[36.273459] (-) TimerEvent: {}
+[36.373844] (-) TimerEvent: {}
+[36.474218] (-) TimerEvent: {}
+[36.574675] (-) TimerEvent: {}
+[36.675290] (-) TimerEvent: {}
+[36.775669] (-) TimerEvent: {}
+[36.876074] (-) TimerEvent: {}
+[36.976657] (-) TimerEvent: {}
+[37.077011] (-) TimerEvent: {}
+[37.177437] (-) TimerEvent: {}
+[37.277836] (-) TimerEvent: {}
+[37.378222] (-) TimerEvent: {}
+[37.478577] (-) TimerEvent: {}
+[37.579017] (-) TimerEvent: {}
+[37.679478] (-) TimerEvent: {}
+[37.780041] (-) TimerEvent: {}
+[37.793704] (robot_world) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking CXX executable test_robot_driver\x1b[0m\n'}
+[37.880180] (-) TimerEvent: {}
+[37.980597] (-) TimerEvent: {}
+[38.081182] (-) TimerEvent: {}
+[38.181578] (-) TimerEvent: {}
+[38.281990] (-) TimerEvent: {}
+[38.382446] (-) TimerEvent: {}
+[38.483039] (-) TimerEvent: {}
+[38.583403] (-) TimerEvent: {}
+[38.683767] (-) TimerEvent: {}
+[38.784186] (-) TimerEvent: {}
+[38.884563] (-) TimerEvent: {}
+[38.984914] (-) TimerEvent: {}
+[39.085413] (-) TimerEvent: {}
+[39.185938] (-) TimerEvent: {}
+[39.286426] (-) TimerEvent: {}
+[39.386936] (-) TimerEvent: {}
+[39.487494] (-) TimerEvent: {}
+[39.538026] (robot_world) StdoutLine: {'line': b'[100%] Built target test_robot_driver\n'}
+[39.549720] (robot_world) CommandEnded: {'returncode': 0}
+[39.550789] (robot_world) JobProgress: {'identifier': 'robot_world', 'progress': 'install'}
+[39.559684] (robot_world) Command: {'cmd': ['/usr/bin/cmake', '--install', '/root/workspace/rl-navibot/build/robot_world'], 'cwd': '/root/workspace/rl-navibot/build/robot_world', 'env': OrderedDict([('HOSTNAME', 'e24245bc67b4'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/root'), ('OLDPWD', '/root/workspace/rl-navibot/src'), ('ROS_PYTHON_VERSION', '3'), ('ROS_DISTRO', 'humble'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('NVIDIA_DRIVER_CAPABILITIES', 'all'), ('TERM', 'xterm'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('DISPLAY', ':0'), ('LANG', 'C.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/opt/ros/humble'), ('PWD', '/root/workspace/rl-navibot/build/robot_world'), ('TURTLEBOT3_MODEL', 'burger'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/opt/ros/humble')]), 'shell': False}
+[39.568351] (robot_world) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[39.568618] (robot_world) StdoutLine: {'line': b'-- Execute custom install script\n'}
+[39.569454] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/lib/robot_world/robot_driver\n'}
+[39.577792] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/lib/robot_world/world_manager\n'}
+[39.586488] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/share/ament_index/resource_index/package_run_dependencies/robot_world\n'}
+[39.587567] (-) TimerEvent: {}
+[39.595499] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/share/ament_index/resource_index/parent_prefix_path/robot_world\n'}
+[39.603576] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/share/robot_world/environment/ament_prefix_path.sh\n'}
+[39.612813] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/share/robot_world/environment/ament_prefix_path.dsv\n'}
+[39.621505] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/share/robot_world/environment/path.sh\n'}
+[39.631020] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/share/robot_world/environment/path.dsv\n'}
+[39.639968] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/share/robot_world/local_setup.bash\n'}
+[39.650125] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/share/robot_world/local_setup.sh\n'}
+[39.660649] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/share/robot_world/local_setup.zsh\n'}
+[39.668944] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/share/robot_world/local_setup.dsv\n'}
+[39.677536] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/share/robot_world/package.dsv\n'}
+[39.685998] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/share/ament_index/resource_index/packages/robot_world\n'}
+[39.687685] (-) TimerEvent: {}
+[39.695002] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/share/robot_world/cmake/robot_worldConfig.cmake\n'}
+[39.704227] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/share/robot_world/cmake/robot_worldConfig-version.cmake\n'}
+[39.714253] (robot_world) StdoutLine: {'line': b'-- Symlinking: /root/workspace/rl-navibot/install/robot_world/share/robot_world/package.xml\n'}
+[39.726378] (robot_world) CommandEnded: {'returncode': 0}
+[39.748388] (robot_world) JobEnded: {'identifier': 'robot_world', 'rc': 0}
+[39.749835] (-) EventReactorShutdown: {}

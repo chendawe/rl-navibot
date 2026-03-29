@@ -1,0 +1,10 @@
+-- run_test.py: invoking following command in '/root/workspace/rl-navibot/src/execution/robot_world':
+ - /opt/ros/humble/bin/ament_pep257 --xunit-file /root/workspace/rl-navibot/build/robot_world/test_results/robot_world/pep257.xunit.xml
+
+checking ./launch/bot_world_sim.launch.py
+checking ./launch/multi_robot.launch.py
+No problems found
+
+
+-- run_test.py: return code 0
+-- run_test.py: verify result file '/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/pep257.xunit.xml'

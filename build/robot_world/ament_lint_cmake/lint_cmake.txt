@@ -1,0 +1,9 @@
+-- run_test.py: invoking following command in '/root/workspace/rl-navibot/src/execution/robot_world':
+ - /opt/ros/humble/bin/ament_lint_cmake --xunit-file /root/workspace/rl-navibot/build/robot_world/test_results/robot_world/lint_cmake.xunit.xml
+
+
+No problems found
+
+
+-- run_test.py: return code 0
+-- run_test.py: verify result file '/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/lint_cmake.xunit.xml'

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite
+  name="robot_world.pep257"
+  tests="2"
+  errors="0"
+  failures="0"
+  time="0.010"
+>
+  <testcase
+    name="./launch/bot_world_sim.launch.py"
+    classname="robot_world.pep257"/>
+  <testcase
+    name="./launch/multi_robot.launch.py"
+    classname="robot_world.pep257"/>
+  <system-out>Checked files:
+* ./launch/bot_world_sim.launch.py
+* ./launch/multi_robot.launch.py</system-out>
+</testsuite>

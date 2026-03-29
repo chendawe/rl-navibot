@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="2" failures="0" disabled="0" errors="0" time="0.128" timestamp="2026-03-29T17:52:07" name="AllTests">
+  <testsuite name="WorldManagerTest" tests="2" failures="0" disabled="0" errors="0" time="0.128" timestamp="2026-03-29T17:52:07">
+    <testcase name="TestResetServiceCall" status="run" result="completed" time="0.07" timestamp="2026-03-29T17:52:07" classname="robot_world.WorldManagerTest" />
+    <testcase name="TestParameterPassing" status="run" result="completed" time="0.058" timestamp="2026-03-29T17:52:07" classname="robot_world.WorldManagerTest" />
+  </testsuite>
+</testsuites>

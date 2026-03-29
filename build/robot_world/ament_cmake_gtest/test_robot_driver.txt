@@ -1,0 +1,27 @@
+-- run_test.py: invoking following command in '/root/workspace/rl-navibot/build/robot_world':
+ - /root/workspace/rl-navibot/build/robot_world/test_robot_driver --gtest_output=xml:/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/test_robot_driver.gtest.xml
+
+Running main() from /opt/ros/humble/src/gtest_vendor/src/gtest_main.cc
+[==========] Running 3 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 3 tests from RobotDriverTest
+[ RUN      ] RobotDriverTest.TestNormalPassThrough
+[INFO] [1774806724.745212200] [robot_driver]: Robot Driver Initialized.
+[       OK ] RobotDriverTest.TestNormalPassThrough (1024 ms)
+[ RUN      ] RobotDriverTest.TestCollisionStop
+[INFO] [1774806725.760233330] [robot_driver]: Robot Driver Initialized.
+[       OK ] RobotDriverTest.TestCollisionStop (915 ms)
+[ RUN      ] RobotDriverTest.TestStatePublishing
+[INFO] [1774806726.673805388] [robot_driver]: Robot Driver Initialized.
+[INFO] [1774806727.376940222] [robot_driver]: New Goal Received: (5.00, 5.00)
+[       OK ] RobotDriverTest.TestStatePublishing (912 ms)
+[----------] 3 tests from RobotDriverTest (2852 ms total)
+
+[----------] Global test environment tear-down
+[==========] 3 tests from 1 test suite ran. (2853 ms total)
+[  PASSED  ] 3 tests.
+
+
+-- run_test.py: return code 0
+-- run_test.py: inject classname prefix into gtest result file '/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/test_robot_driver.gtest.xml'
+-- run_test.py: verify result file '/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/test_robot_driver.gtest.xml'

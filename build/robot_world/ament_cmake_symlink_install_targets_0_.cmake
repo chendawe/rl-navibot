@@ -1,0 +1,1 @@
+ament_cmake_symlink_install_targets("TARGET_FILES" "/root/workspace/rl-navibot/build/robot_world/robot_driver" "/root/workspace/rl-navibot/build/robot_world/world_manager" "TARGETS" "robot_driver" "world_manager" "DESTINATION" "lib/robot_world")

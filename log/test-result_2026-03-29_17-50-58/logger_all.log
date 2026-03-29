@@ -1,0 +1,8 @@
+[0.085s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'test-result', '--verbose']
+[0.085s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='test-result', test_result_base='build', all=False, result_files_only=False, verbose=True, delete=False, delete_yes=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0x7a2b1d87d990>, verb_extension=<colcon_test_result.verb.test_result.TestResultVerb object at 0x7a2b1d9f6590>, main=<bound method TestResultVerb.main of <colcon_test_result.verb.test_result.TestResultVerb object at 0x7a2b1d9f6590>>, mixin_verb=('test-result',))
+[0.088s] Level 1:colcon.colcon_test_result.test_result:get_test_results(ctest)
+[0.090s] Level 1:colcon.colcon_test_result.test_result:get_test_results(xunit)
+[0.091s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/robot_world/Testing/20260329-1737/Test.xml': the root tag is neither 'testsuite' nor 'testsuites'
+[0.091s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/robot_world/Testing/20260329-1739/Test.xml': the root tag is neither 'testsuite' nor 'testsuites'
+[0.092s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/robot_world/Testing/20260329-1746/Test.xml': the root tag is neither 'testsuite' nor 'testsuites'
+[0.092s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/robot_world/Testing/20260329-1750/Test.xml': the root tag is neither 'testsuite' nor 'testsuites'

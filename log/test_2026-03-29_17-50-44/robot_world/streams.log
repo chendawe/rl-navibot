@@ -1,0 +1,277 @@
+[0.022s] Invoking command in '/root/workspace/rl-navibot/build/robot_world': AMENT_PREFIX_PATH=/root/workspace/rl-navibot/install/robot_world:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/root/workspace/rl-navibot/install/robot_world /usr/bin/ctest -C Release -D ExperimentalTest --no-compress-output -V --force-new-ctest-process
+[0.026s] UpdateCTestConfiguration  from :/root/workspace/rl-navibot/build/robot_world/CTestConfiguration.ini
+[0.026s] Parse Config file:/root/workspace/rl-navibot/build/robot_world/CTestConfiguration.ini
+[0.027s]    Site: e24245bc67b4
+[0.027s]    Build name: (empty)
+[0.027s]  Add coverage exclude regular expressions.
+[0.027s] Create new tag: 20260329-1750 - Experimental
+[0.027s] UpdateCTestConfiguration  from :/root/workspace/rl-navibot/build/robot_world/CTestConfiguration.ini
+[0.027s] Parse Config file:/root/workspace/rl-navibot/build/robot_world/CTestConfiguration.ini
+[0.027s] Test project /root/workspace/rl-navibot/build/robot_world
+[0.027s] Constructing a list of tests
+[0.028s] Done constructing a list of tests
+[0.028s] Updating test list for fixtures
+[0.028s] Added 0 tests to meet fixture requirements
+[0.028s] Checking test dependency graph...
+[0.028s] Checking test dependency graph end
+[0.028s] test 1
+[0.028s]     Start 1: test_robot_driver
+[0.028s] 
+[0.028s] 1: Test command: /usr/bin/python3 "-u" "/opt/ros/humble/share/ament_cmake_test/cmake/run_test.py" "/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/test_robot_driver.gtest.xml" "--package-name" "robot_world" "--output-file" "/root/workspace/rl-navibot/build/robot_world/ament_cmake_gtest/test_robot_driver.txt" "--command" "/root/workspace/rl-navibot/build/robot_world/test_robot_driver" "--gtest_output=xml:/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/test_robot_driver.gtest.xml"
+[0.028s] 1: Test timeout computed to be: 60
+[0.085s] 1: -- run_test.py: invoking following command in '/root/workspace/rl-navibot/build/robot_world':
+[0.085s] 1:  - /root/workspace/rl-navibot/build/robot_world/test_robot_driver --gtest_output=xml:/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/test_robot_driver.gtest.xml
+[0.090s] 1: Running main() from /opt/ros/humble/src/gtest_vendor/src/gtest_main.cc
+[0.090s] 1: [==========] Running 3 tests from 1 test suite.
+[0.090s] 1: [----------] Global test environment set-up.
+[0.090s] 1: [----------] 3 tests from RobotDriverTest
+[0.090s] 1: [ RUN      ] RobotDriverTest.TestNormalPassThrough
+[0.115s] 1: [INFO] [1774806644.627301346] [robot_driver]: Robot Driver Initialized.
+[1.127s] 1: [       OK ] RobotDriverTest.TestNormalPassThrough (2144 ms)
+[1.128s] 1: [ RUN      ] RobotDriverTest.TestCollisionStop
+[1.134s] 1: [INFO] [1774806646.752418985] [robot_driver]: Robot Driver Initialized.
+[2.046s] 1: [       OK ] RobotDriverTest.TestCollisionStop (918 ms)
+[2.046s] 1: [ RUN      ] RobotDriverTest.TestStatePublishing
+[2.052s] 1: [INFO] [1774806647.670510380] [robot_driver]: Robot Driver Initialized.
+[2.756s] 1: [INFO] [1774806648.374516140] [robot_driver]: New Goal Received: (5.00, 5.00)
+[2.960s] 1: [       OK ] RobotDriverTest.TestStatePublishing (914 ms)
+[2.961s] 1: [----------] 3 tests from RobotDriverTest (3977 ms total)
+[2.961s] 1: 
+[2.961s] 1: [----------] Global test environment tear-down
+[2.961s] 1: [==========] 3 tests from 1 test suite ran. (3977 ms total)
+[2.961s] 1: [  PASSED  ] 3 tests.
+[3.063s] 1: -- run_test.py: return code 0
+[3.064s] 1: -- run_test.py: inject classname prefix into gtest result file '/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/test_robot_driver.gtest.xml'
+[3.064s] 1: -- run_test.py: verify result file '/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/test_robot_driver.gtest.xml'
+[3.071s] 1/8 Test #1: test_robot_driver ................   Passed    3.04 sec
+[3.071s] test 2
+[3.071s]     Start 2: test_world_manager
+[3.071s] 
+[3.071s] 2: Test command: /usr/bin/python3 "-u" "/opt/ros/humble/share/ament_cmake_test/cmake/run_test.py" "/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/test_world_manager.gtest.xml" "--package-name" "robot_world" "--output-file" "/root/workspace/rl-navibot/build/robot_world/ament_cmake_gtest/test_world_manager.txt" "--command" "/root/workspace/rl-navibot/build/robot_world/test_world_manager" "--gtest_output=xml:/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/test_world_manager.gtest.xml"
+[3.071s] 2: Test timeout computed to be: 60
+[3.117s] 2: -- run_test.py: invoking following command in '/root/workspace/rl-navibot/build/robot_world':
+[3.117s] 2:  - /root/workspace/rl-navibot/build/robot_world/test_world_manager --gtest_output=xml:/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/test_world_manager.gtest.xml
+[3.121s] 2: Running main() from /opt/ros/humble/src/gtest_vendor/src/gtest_main.cc
+[3.121s] 2: [==========] Running 2 tests from 1 test suite.
+[3.121s] 2: [----------] Global test environment set-up.
+[3.121s] 2: [----------] 2 tests from WorldManagerTest
+[3.121s] 2: [ RUN      ] WorldManagerTest.TestResetServiceCall
+[3.137s] 2: [INFO] [1774806648.755433977] [world_manager]: World Manager Initialized.
+[3.195s] 2: [       OK ] WorldManagerTest.TestResetServiceCall (74 ms)
+[3.195s] 2: [ RUN      ] WorldManagerTest.TestParameterPassing
+[3.199s] 2: [INFO] [1774806648.818305369] [world_manager]: World Manager Initialized.
+[3.256s] 2: [       OK ] WorldManagerTest.TestParameterPassing (62 ms)
+[3.257s] 2: [----------] 2 tests from WorldManagerTest (136 ms total)
+[3.257s] 2: 
+[3.257s] 2: [----------] Global test environment tear-down
+[3.257s] 2: [==========] 2 tests from 1 test suite ran. (136 ms total)
+[3.257s] 2: [  PASSED  ] 2 tests.
+[3.358s] 2: -- run_test.py: return code 0
+[3.359s] 2: -- run_test.py: inject classname prefix into gtest result file '/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/test_world_manager.gtest.xml'
+[3.359s] 2: -- run_test.py: verify result file '/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/test_world_manager.gtest.xml'
+[3.366s] 2/8 Test #2: test_world_manager ...............   Passed    0.30 sec
+[3.367s] test 3
+[3.367s]     Start 3: cppcheck
+[3.367s] 
+[3.367s] 3: Test command: /usr/bin/python3 "-u" "/opt/ros/humble/share/ament_cmake_test/cmake/run_test.py" "/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/cppcheck.xunit.xml" "--package-name" "robot_world" "--output-file" "/root/workspace/rl-navibot/build/robot_world/ament_cppcheck/cppcheck.txt" "--command" "/opt/ros/humble/bin/ament_cppcheck" "--xunit-file" "/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/cppcheck.xunit.xml" "--include_dirs" "/root/workspace/rl-navibot/src/execution/robot_world/include"
+[3.367s] 3: Test timeout computed to be: 300
+[3.424s] 3: -- run_test.py: invoking following command in '/root/workspace/rl-navibot/src/execution/robot_world':
+[3.425s] 3:  - /opt/ros/humble/bin/ament_cppcheck --xunit-file /root/workspace/rl-navibot/build/robot_world/test_results/robot_world/cppcheck.xunit.xml --include_dirs /root/workspace/rl-navibot/src/execution/robot_world/include
+[3.494s] 3: cppcheck 2.7 has known performance issues and therefore will not be used, set the AMENT_CPPCHECK_ALLOW_SLOW_VERSIONS environment variable to override this.
+[3.508s] 3: -- run_test.py: return code 0
+[3.508s] 3: -- run_test.py: verify result file '/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/cppcheck.xunit.xml'
+[3.515s] 3/8 Test #3: cppcheck .........................   Passed    0.15 sec
+[3.515s] test 4
+[3.515s]     Start 4: flake8
+[3.516s] 
+[3.516s] 4: Test command: /usr/bin/python3 "-u" "/opt/ros/humble/share/ament_cmake_test/cmake/run_test.py" "/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/flake8.xunit.xml" "--package-name" "robot_world" "--output-file" "/root/workspace/rl-navibot/build/robot_world/ament_flake8/flake8.txt" "--command" "/opt/ros/humble/bin/ament_flake8" "--xunit-file" "/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/flake8.xunit.xml"
+[3.516s] 4: Test timeout computed to be: 60
+[3.565s] 4: -- run_test.py: invoking following command in '/root/workspace/rl-navibot/src/execution/robot_world':
+[3.566s] 4:  - /opt/ros/humble/bin/ament_flake8 --xunit-file /root/workspace/rl-navibot/build/robot_world/test_results/robot_world/flake8.xunit.xml
+[3.739s] 4: 
+[3.739s] 4: 2 files checked
+[3.739s] 4: No problems found
+[3.739s] 4: 
+[3.739s] 4: Checked files:
+[3.739s] 4: 
+[3.739s] 4: * ./launch/multi_robot.launch.py
+[3.739s] 4: * ./launch/bot_world_sim.launch.py
+[3.764s] 4: -- run_test.py: return code 0
+[3.764s] 4: -- run_test.py: verify result file '/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/flake8.xunit.xml'
+[3.778s] 4/8 Test #4: flake8 ...........................   Passed    0.26 sec
+[3.778s] test 5
+[3.778s]     Start 5: lint_cmake
+[3.778s] 
+[3.778s] 5: Test command: /usr/bin/python3 "-u" "/opt/ros/humble/share/ament_cmake_test/cmake/run_test.py" "/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/lint_cmake.xunit.xml" "--package-name" "robot_world" "--output-file" "/root/workspace/rl-navibot/build/robot_world/ament_lint_cmake/lint_cmake.txt" "--command" "/opt/ros/humble/bin/ament_lint_cmake" "--xunit-file" "/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/lint_cmake.xunit.xml"
+[3.778s] 5: Test timeout computed to be: 60
+[3.862s] 5: -- run_test.py: invoking following command in '/root/workspace/rl-navibot/src/execution/robot_world':
+[3.862s] 5:  - /opt/ros/humble/bin/ament_lint_cmake --xunit-file /root/workspace/rl-navibot/build/robot_world/test_results/robot_world/lint_cmake.xunit.xml
+[3.929s] 5: 
+[3.929s] 5: No problems found
+[3.942s] 5: -- run_test.py: return code 0
+[3.942s] 5: -- run_test.py: verify result file '/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/lint_cmake.xunit.xml'
+[3.952s] 5/8 Test #5: lint_cmake .......................   Passed    0.17 sec
+[3.953s] test 6
+[3.953s]     Start 6: pep257
+[3.953s] 
+[3.953s] 6: Test command: /usr/bin/python3 "-u" "/opt/ros/humble/share/ament_cmake_test/cmake/run_test.py" "/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/pep257.xunit.xml" "--package-name" "robot_world" "--output-file" "/root/workspace/rl-navibot/build/robot_world/ament_pep257/pep257.txt" "--command" "/opt/ros/humble/bin/ament_pep257" "--xunit-file" "/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/pep257.xunit.xml"
+[3.953s] 6: Test timeout computed to be: 60
+[4.006s] 6: -- run_test.py: invoking following command in '/root/workspace/rl-navibot/src/execution/robot_world':
+[4.007s] 6:  - /opt/ros/humble/bin/ament_pep257 --xunit-file /root/workspace/rl-navibot/build/robot_world/test_results/robot_world/pep257.xunit.xml
+[4.115s] 6: checking ./launch/bot_world_sim.launch.py
+[4.115s] 6: checking ./launch/multi_robot.launch.py
+[4.115s] 6: No problems found
+[4.132s] 6: -- run_test.py: return code 0
+[4.132s] 6: -- run_test.py: verify result file '/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/pep257.xunit.xml'
+[4.141s] 6/8 Test #6: pep257 ...........................   Passed    0.19 sec
+[4.142s] test 7
+[4.142s]     Start 7: uncrustify
+[4.142s] 
+[4.142s] 7: Test command: /usr/bin/python3 "-u" "/opt/ros/humble/share/ament_cmake_test/cmake/run_test.py" "/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/uncrustify.xunit.xml" "--package-name" "robot_world" "--output-file" "/root/workspace/rl-navibot/build/robot_world/ament_uncrustify/uncrustify.txt" "--command" "/opt/ros/humble/bin/ament_uncrustify" "--xunit-file" "/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/uncrustify.xunit.xml"
+[4.142s] 7: Test timeout computed to be: 60
+[4.200s] 7: -- run_test.py: invoking following command in '/root/workspace/rl-navibot/src/execution/robot_world':
+[4.200s] 7:  - /opt/ros/humble/bin/ament_uncrustify --xunit-file /root/workspace/rl-navibot/build/robot_world/test_results/robot_world/uncrustify.xunit.xml
+[4.297s] 7: Code style divergence in file 'test/test_robot_driver.cpp':
+[4.297s] 7: 
+[4.297s] 7: --- test/test_robot_driver.cpp
+[4.297s] 7: +++ test/test_robot_driver.cpp.uncrustify
+[4.297s] 7: @@ -21 +21 @@
+[4.297s] 7: -    
+[4.297s] 7: +
+[4.297s] 7: @@ -41 +41 @@
+[4.297s] 7: -      
+[4.297s] 7: +
+[4.297s] 7: @@ -64 +64 @@
+[4.297s] 7: -    std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
+[4.297s] 7: +    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+[4.298s] 7: @@ -70 +70 @@
+[4.298s] 7: -  
+[4.298s] 7: +
+[4.298s] 7: @@ -75 +75 @@
+[4.298s] 7: -  
+[4.298s] 7: +
+[4.298s] 7: @@ -93 +93 @@
+[4.298s] 7: -  
+[4.298s] 7: +
+[4.298s] 7: @@ -95 +95 @@
+[4.298s] 7: -  spin_some(); 
+[4.298s] 7: +  spin_some();
+[4.298s] 7: @@ -106 +106 @@
+[4.298s] 7: -  
+[4.298s] 7: +
+[4.298s] 7: @@ -109 +109 @@
+[4.298s] 7: -    
+[4.298s] 7: +
+[4.298s] 7: @@ -113,2 +113,3 @@
+[4.298s] 7: -      if (std::abs(last_cmd_vel_.linear.x - 0.5) < 0.01 && 
+[4.298s] 7: -          std::abs(last_cmd_vel_.angular.z - 0.1) < 0.01) {
+[4.298s] 7: +      if (std::abs(last_cmd_vel_.linear.x - 0.5) < 0.01 &&
+[4.298s] 7: +        std::abs(last_cmd_vel_.angular.z - 0.1) < 0.01)
+[4.298s] 7: +      {
+[4.298s] 7: @@ -123 +124,2 @@
+[4.298s] 7: -  ASSERT_TRUE(success) << "Did not receive cmd_vel with x=0.5. Last received x: " << last_cmd_vel_.linear.x;
+[4.298s] 7: +  ASSERT_TRUE(success) << "Did not receive cmd_vel with x=0.5. Last received x: " <<
+[4.298s] 7: +    last_cmd_vel_.linear.x;
+[4.298s] 7: @@ -125,2 +126,0 @@
+[4.298s] 7: -
+[4.298s] 7: -
+[4.299s] 7: @@ -143 +143 @@
+[4.299s] 7: -  cmd.linear.x = 0.5; 
+[4.299s] 7: +  cmd.linear.x = 0.5;
+[4.299s] 7: @@ -165 +165 @@
+[4.299s] 7: -  odom.pose.pose.orientation.w = 1.0; 
+[4.299s] 7: +  odom.pose.pose.orientation.w = 1.0;
+[4.299s] 7: @@ -167 +167 @@
+[4.299s] 7: -  
+[4.299s] 7: +
+[4.299s] 7: @@ -171 +171 @@
+[4.299s] 7: -  goal.pose.position.y = 5.0; 
+[4.299s] 7: +  goal.pose.position.y = 5.0;
+[4.299s] 7: @@ -173 +173 @@
+[4.299s] 7: -  
+[4.299s] 7: +
+[4.299s] 7: @@ -184 +184 @@
+[4.299s] 7: -  
+[4.299s] 7: +
+[4.299s] 7: @@ -190 +189,0 @@
+[4.299s] 7: -
+[4.299s] 7: @@ -202 +201 @@
+[4.299s] 7: -// // #include "robot_driver_pkg/robot_driver.hpp" 
+[4.299s] 7: +// // #include "robot_driver_pkg/robot_driver.hpp"
+[4.299s] 7: @@ -213 +212 @@
+[4.299s] 7: -    
+[4.299s] 7: +
+[4.299s] 7: @@ -233 +232 @@
+[4.299s] 7: -      
+[4.299s] 7: +
+[4.299s] 7: @@ -258 +257 @@
+[4.299s] 7: -  
+[4.299s] 7: +
+[4.299s] 7: @@ -264 +263 @@
+[4.299s] 7: -  
+[4.300s] 7: +
+[4.300s] 7: @@ -343 +342 @@
+[4.300s] 7: -  
+[4.300s] 7: +
+[4.300s] 7: @@ -349 +348 @@
+[4.300s] 7: -  
+[4.300s] 7: +
+[4.300s] 7: @@ -363 +362 @@
+[4.300s] 7: -  
+[4.300s] 7: +
+[4.300s] 7: @@ -365 +364 @@
+[4.300s] 7: -//   EXPECT_NEAR(last_state_.data[5], 2.0, 0.01); 
+[4.300s] 7: +//   EXPECT_NEAR(last_state_.data[5], 2.0, 0.01);
+[4.300s] 7: 
+[4.300s] 7: 1 files with code style divergence
+[4.300s] 7: No code style divergence in file 'include/robot_world/robot_driver.hpp'
+[4.300s] 7: 
+[4.300s] 7: No code style divergence in file 'include/robot_world/world_manager.hpp'
+[4.300s] 7: 
+[4.300s] 7: No code style divergence in file 'src/robot_driver.cpp'
+[4.300s] 7: 
+[4.300s] 7: No code style divergence in file 'src/robot_driver_main.cpp'
+[4.300s] 7: 
+[4.300s] 7: No code style divergence in file 'src/world_manager.cpp'
+[4.300s] 7: 
+[4.300s] 7: No code style divergence in file 'src/world_manager_main.cpp'
+[4.300s] 7: 
+[4.300s] 7: No code style divergence in file 'test/test_world_manager.cpp'
+[4.300s] 7: 
+[4.306s] 7: -- run_test.py: return code 1
+[4.306s] 7: -- run_test.py: verify result file '/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/uncrustify.xunit.xml'
+[4.316s] 7/8 Test #7: uncrustify .......................***Failed    0.17 sec
+[4.316s] test 8
+[4.316s]     Start 8: xmllint
+[4.316s] 
+[4.316s] 8: Test command: /usr/bin/python3 "-u" "/opt/ros/humble/share/ament_cmake_test/cmake/run_test.py" "/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/xmllint.xunit.xml" "--package-name" "robot_world" "--output-file" "/root/workspace/rl-navibot/build/robot_world/ament_xmllint/xmllint.txt" "--command" "/opt/ros/humble/bin/ament_xmllint" "--xunit-file" "/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/xmllint.xunit.xml"
+[4.316s] 8: Test timeout computed to be: 60
+[4.371s] 8: -- run_test.py: invoking following command in '/root/workspace/rl-navibot/src/execution/robot_world':
+[4.371s] 8:  - /opt/ros/humble/bin/ament_xmllint --xunit-file /root/workspace/rl-navibot/build/robot_world/test_results/robot_world/xmllint.xunit.xml
+[7.227s] 8: File 'package.xml' is valid
+[7.227s] 8: 
+[7.227s] 8: No problems found
+[7.236s] 8: -- run_test.py: return code 0
+[7.236s] 8: -- run_test.py: verify result file '/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/xmllint.xunit.xml'
+[7.246s] 8/8 Test #8: xmllint ..........................   Passed    2.93 sec
+[7.246s] 
+[7.246s] 88% tests passed[0;0m, [0;31m1 tests failed[0;0m out of 8
+[7.246s] 
+[7.246s] Label Time Summary:
+[7.246s] cppcheck      =   0.15 sec*proc (1 test)
+[7.246s] flake8        =   0.26 sec*proc (1 test)
+[7.246s] gtest         =   3.34 sec*proc (2 tests)
+[7.246s] lint_cmake    =   0.17 sec*proc (1 test)
+[7.246s] linter        =   3.88 sec*proc (6 tests)
+[7.246s] pep257        =   0.19 sec*proc (1 test)
+[7.246s] uncrustify    =   0.17 sec*proc (1 test)
+[7.246s] xmllint       =   2.93 sec*proc (1 test)
+[7.247s] 
+[7.247s] Total Test time (real) =   7.22 sec
+[7.247s] 
+[7.247s] The following tests FAILED:
+[7.247s] 	[0;31m  7 - uncrustify (Failed)[0;0m
+[7.248s] Errors while running CTest
+[7.248s] Output from these tests are in: /root/workspace/rl-navibot/build/robot_world/Testing/Temporary/LastTest.log
+[7.248s] Use "--rerun-failed --output-on-failure" to re-run the failed cases verbosely.
+[7.251s] Invoked command in '/root/workspace/rl-navibot/build/robot_world' returned '8': AMENT_PREFIX_PATH=/root/workspace/rl-navibot/install/robot_world:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/root/workspace/rl-navibot/install/robot_world /usr/bin/ctest -C Release -D ExperimentalTest --no-compress-output -V --force-new-ctest-process

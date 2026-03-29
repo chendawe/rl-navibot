@@ -1,0 +1,48 @@
+[0.024s] Invoking command in '/root/workspace/rl-navibot/build/robot_world': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /root/workspace/rl-navibot/build/robot_world -- -j16 -l16
+[0.069s] [35m[1mConsolidate compiler generated dependencies of target gtest_main[0m
+[0.069s] [35m[1mConsolidate compiler generated dependencies of target gtest[0m
+[0.070s] [35m[1mConsolidate compiler generated dependencies of target robot_world_lib[0m
+[0.084s] [ 13%] Built target gtest
+[0.084s] [ 26%] Built target gtest_main
+[0.091s] [ 40%] [32mBuilding CXX object CMakeFiles/robot_world_lib.dir/src/world_manager.cpp.o[0m
+[0.091s] [ 40%] [32mBuilding CXX object CMakeFiles/robot_world_lib.dir/src/robot_driver.cpp.o[0m
+[19.225s] [ 46%] [32m[1mLinking CXX static library librobot_world_lib.a[0m
+[19.530s] [ 46%] Built target robot_world_lib
+[19.539s] [35m[1mConsolidate compiler generated dependencies of target test_world_manager[0m
+[19.539s] [35m[1mConsolidate compiler generated dependencies of target robot_driver[0m
+[19.540s] [35m[1mConsolidate compiler generated dependencies of target test_robot_driver[0m
+[19.540s] [35m[1mConsolidate compiler generated dependencies of target world_manager[0m
+[19.557s] [ 53%] [32mBuilding CXX object CMakeFiles/test_robot_driver.dir/test/test_robot_driver.cpp.o[0m
+[19.557s] [ 60%] [32mBuilding CXX object CMakeFiles/world_manager.dir/src/world_manager_main.cpp.o[0m
+[19.557s] [ 66%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/robot_driver_main.cpp.o[0m
+[19.562s] [ 73%] [32mBuilding CXX object CMakeFiles/test_world_manager.dir/test/test_world_manager.cpp.o[0m
+[23.518s] [ 80%] [32m[1mLinking CXX executable world_manager[0m
+[23.778s] [ 80%] Built target world_manager
+[23.814s] [ 86%] [32m[1mLinking CXX executable robot_driver[0m
+[25.123s] [ 86%] Built target robot_driver
+[25.424s] [ 93%] [32m[1mLinking CXX executable test_world_manager[0m
+[25.907s] [ 93%] Built target test_world_manager
+[33.719s] [100%] [32m[1mLinking CXX executable test_robot_driver[0m
+[35.342s] [100%] Built target test_robot_driver
+[35.356s] Invoked command in '/root/workspace/rl-navibot/build/robot_world' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /root/workspace/rl-navibot/build/robot_world -- -j16 -l16
+[35.364s] Invoking command in '/root/workspace/rl-navibot/build/robot_world': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /root/workspace/rl-navibot/build/robot_world
+[35.372s] -- Install configuration: ""
+[35.373s] -- Execute custom install script
+[35.373s] -- Up-to-date symlink: /root/workspace/rl-navibot/install/robot_world/lib/robot_world/robot_driver
+[35.373s] -- Up-to-date symlink: /root/workspace/rl-navibot/install/robot_world/lib/robot_world/world_manager
+[35.374s] -- Up-to-date symlink: /root/workspace/rl-navibot/install/robot_world/share/ament_index/resource_index/package_run_dependencies/robot_world
+[35.374s] -- Up-to-date symlink: /root/workspace/rl-navibot/install/robot_world/share/ament_index/resource_index/parent_prefix_path/robot_world
+[35.374s] -- Up-to-date symlink: /root/workspace/rl-navibot/install/robot_world/share/robot_world/environment/ament_prefix_path.sh
+[35.374s] -- Up-to-date symlink: /root/workspace/rl-navibot/install/robot_world/share/robot_world/environment/ament_prefix_path.dsv
+[35.374s] -- Up-to-date symlink: /root/workspace/rl-navibot/install/robot_world/share/robot_world/environment/path.sh
+[35.375s] -- Up-to-date symlink: /root/workspace/rl-navibot/install/robot_world/share/robot_world/environment/path.dsv
+[35.375s] -- Up-to-date symlink: /root/workspace/rl-navibot/install/robot_world/share/robot_world/local_setup.bash
+[35.375s] -- Up-to-date symlink: /root/workspace/rl-navibot/install/robot_world/share/robot_world/local_setup.sh
+[35.375s] -- Up-to-date symlink: /root/workspace/rl-navibot/install/robot_world/share/robot_world/local_setup.zsh
+[35.376s] -- Up-to-date symlink: /root/workspace/rl-navibot/install/robot_world/share/robot_world/local_setup.dsv
+[35.376s] -- Symlinking: /root/workspace/rl-navibot/install/robot_world/share/robot_world/package.dsv
+[35.385s] -- Up-to-date symlink: /root/workspace/rl-navibot/install/robot_world/share/ament_index/resource_index/packages/robot_world
+[35.385s] -- Up-to-date symlink: /root/workspace/rl-navibot/install/robot_world/share/robot_world/cmake/robot_worldConfig.cmake
+[35.385s] -- Up-to-date symlink: /root/workspace/rl-navibot/install/robot_world/share/robot_world/cmake/robot_worldConfig-version.cmake
+[35.385s] -- Up-to-date symlink: /root/workspace/rl-navibot/install/robot_world/share/robot_world/package.xml
+[35.388s] Invoked command in '/root/workspace/rl-navibot/build/robot_world' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /root/workspace/rl-navibot/build/robot_world

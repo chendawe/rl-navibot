@@ -1,0 +1,24 @@
+-- run_test.py: invoking following command in '/root/workspace/rl-navibot/src/execution/robot_world':
+ - /opt/ros/humble/bin/ament_uncrustify --xunit-file /root/workspace/rl-navibot/build/robot_world/test_results/robot_world/uncrustify.xunit.xml
+
+No code style divergence in file 'include/robot_world/robot_driver.hpp'
+
+No code style divergence in file 'include/robot_world/world_manager.hpp'
+
+No code style divergence in file 'src/robot_driver.cpp'
+
+No code style divergence in file 'src/robot_driver_main.cpp'
+
+No code style divergence in file 'src/world_manager.cpp'
+
+No code style divergence in file 'src/world_manager_main.cpp'
+
+No code style divergence in file 'test/test_robot_driver.cpp'
+
+No code style divergence in file 'test/test_world_manager.cpp'
+
+No problems found
+
+
+-- run_test.py: return code 0
+-- run_test.py: verify result file '/root/workspace/rl-navibot/build/robot_world/test_results/robot_world/uncrustify.xunit.xml'
