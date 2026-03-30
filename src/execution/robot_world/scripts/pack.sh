@@ -42,10 +42,6 @@ colcon test-result --verbose
 ament_uncrustify --reformat
 
 
-
-
-
-
 # 运行
 source install/setup.bash
 ros2 launch robot_world robot_world_sim.launch.py
@@ -53,3 +49,10 @@ ros2 launch robot_world robot_world_sim.launch.py
 
 ros2 topic echo /cmd_vel
 ros2 topic pub /rl_cmd geometry_msgs/msg/Twist "{linear: {x: 0.5}, angular: {z: 0.1}}" --once
+
+
+# 设置型号为 burger
+export TURTLEBOT3_MODEL=waffle
+
+# 启动 Gazebo 空世界 (或者用其他世界也可以)
+ros2 launch turtlebot3_gazebo empty_world.launch.py
