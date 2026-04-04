@@ -1,13 +1,13 @@
+# BUILD and RUN
 
-
-# Pull from Github
+## Pull from Github
 
 ```sh
 git clone git@github.com:chendawe/rl-navibot.git
 # 工作目录应当映射到docker的~/workspace/rl-navibot
 ```
 
-# Build ros2_my docker for my Gazebo simulation
+## Build ros2_my docker for my Gazebo simulation
 
 ```sh
 docker pull swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/osrf/ros:humble-desktop
@@ -38,7 +38,7 @@ docker run -it \
 
 ```
 
-# 启动robot_world节点（容器内）
+## 启动robot_world节点（容器内）
 
 ```sh
 # source /opt/ros/humble/setup.sh && \
@@ -60,7 +60,7 @@ ros2 topic echo /cmd_vel
 ros2 topic pub /rl_cmd geometry_msgs/msg/Twist "{linear: {x: 0.5}, angular: {z: 0.1}}" --once
 ```
 
-# 启动 Gazebo 和 TurtleBot3
+## 启动 Gazebo 和 TurtleBot3
 
 ```sh
 # 共享内存报错，process died的话：
@@ -94,6 +94,88 @@ pkill -9 -f "gzserver|gzclient|gazebo"
 # 3. 再检查一遍（现在一定干净了）
 ps aux | grep gz
 ```
+
+
+# 项目设计
+
+- 分三段
+    - 点到点避障导航；
+        - SAC训练
+        - 基础MPC
+        - 深度图 -> 24维障碍矢量；or 代价地图+CNN -> 特征矢量
+    - 已知图，给定任务，基于完整结构化图，LLM规划路线行驶；
+        - SLAM图 -> 结构化图
+    - 临时建图，给定任务，基于即时结构图碎片，LLM规划路线行驶。
+        - SLAM图，GroundingDINO -> 结构化图
+
+r_distance：接近目标奖励。
+r_collision：碰撞大惩罚。
+r_smooth：动作平滑奖励（避免疯狂抖动）。
+
+
+Prompt调整：
+“Current partial map structure is: {…}. Unknown areas are at coordinates […]. The task is ‘Find the red box’. Please decide: 1. Explore which unknown area first? 2. What is the temporary navigation goal?”
+
+- 电网资源调度：
+    - MAPPO
+    - PPO + 动作子集 + 安全屏蔽
+
+    - 对抗扰动
+    - human in the loop
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 第 4 层：灵活兜底
+ ┌─────────────────────────────────────────────┐
+ │  HITL (人在回路 / 专家规则接管)              │
+ │  解决：未知的未知 软着陆                      │
+ └─────────────────────────────────────────────┘
+          ↑ 极端长尾工况、分布外数据 (OOD) 溢出
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 第 3 层：边界探索
+ ┌─────────────────────────────────────────────┐
+ │  对抗学习 / 鲁棒压力测试   │
+ │  解决：已知边界的极限在哪里？策略会不会“蹭线”？ │
+ └─────────────────────────────────────────────┘
+          ↑ 训练时或测试时的恶意扰动穿透
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 第 2 层：行为塑造
+ ┌─────────────────────────────────────────────┐
+ │  RL 奖励中的惩罚项          │
+ │  解决：引导策略“远离”红线，而不是“触碰”红线   │
+ └─────────────────────────────────────────────┘
+          ↑ 算法层面的侥幸心理、局部最优穿透
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 第 1 层：物理法则
+ ┌─────────────────────────────────────────────┐
+ │  Grid2Op 底层物理引擎 / 真实硬件继电保护      │
+ │  解决：绝对不可能发生的事（如功率不守恒、解列） │
+ └─────────────────────────────────────────────┘
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+- Embedding Intelligent
+    - Perception
+    - Planning
+    - Decision
+    - Execution
+
+- RL Agent
+    - Body
+        - Turtlebot3
+    - Environment
+        - Turtlebot3 house simulation
+
+    - Reward
+    - Algorithm
+        - SAC
+        - MPC
+            - Asynchronous, Low-frequency
+            - weighted
+    - 
+
+- Sim to Real
+    - Ros2 + Gazebo
+    - Domain Randomization
+
 
 
 # 遇到的离谱问题
@@ -144,3 +226,13 @@ export GAZEBO_PLUGIN_PATH=/opt/ros/humble/lib:${GAZEBO_PLUGIN_PATH:+:$GAZEBO_PLU
 echo $GAZEBO_PLUGIN_PATH
 ```
 
+## FastRTPS共享内存出问题，切换dds实现设置udp发送指令
+```sh
+# 清理残留文件
+rm -rf /dev/shm/fastrtps_*
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+ros2 topic pub /rl_cmd geometry_msgs/msg/Twist "{linear: {x: 2}, angular: {z: 0.1}}"
+
+unset RMW_IMPLEMENTATION
+echo $RMW_IMPLEMENTATION
+```
