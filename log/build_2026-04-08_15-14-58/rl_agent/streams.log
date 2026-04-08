@@ -1,0 +1,59 @@
+[0.531s] Invoking command in '/root/workspace/rl-navibot/src/decision/rl_agent': PYTHONPATH=/root/workspace/rl-navibot/build/rl_agent/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/rl_agent build --build-base /root/workspace/rl-navibot/build/rl_agent/build install --record /root/workspace/rl-navibot/build/rl_agent/install.log --single-version-externally-managed install_data
+[0.693s] running egg_info
+[0.693s] creating ../../../build/rl_agent/rl_agent.egg-info
+[0.694s] writing ../../../build/rl_agent/rl_agent.egg-info/PKG-INFO
+[0.694s] writing dependency_links to ../../../build/rl_agent/rl_agent.egg-info/dependency_links.txt
+[0.695s] writing entry points to ../../../build/rl_agent/rl_agent.egg-info/entry_points.txt
+[0.695s] writing requirements to ../../../build/rl_agent/rl_agent.egg-info/requires.txt
+[0.695s] writing top-level names to ../../../build/rl_agent/rl_agent.egg-info/top_level.txt
+[0.695s] writing manifest file '../../../build/rl_agent/rl_agent.egg-info/SOURCES.txt'
+[0.696s] reading manifest file '../../../build/rl_agent/rl_agent.egg-info/SOURCES.txt'
+[0.696s] adding license file 'LICENSE'
+[0.697s] writing manifest file '../../../build/rl_agent/rl_agent.egg-info/SOURCES.txt'
+[0.697s] running build
+[0.697s] running build_py
+[0.697s] creating /root/workspace/rl-navibot/build/rl_agent/build
+[0.697s] creating /root/workspace/rl-navibot/build/rl_agent/build/lib
+[0.698s] creating /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent
+[0.698s] copying rl_agent/__init__.py -> /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent
+[0.698s] creating /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl
+[0.699s] copying rl_agent/rl/env.py -> /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl
+[0.699s] copying rl_agent/rl/algorithms.py -> /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl
+[0.699s] copying rl_agent/rl/reward.py -> /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl
+[0.699s] copying rl_agent/rl/__init__.py -> /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl
+[0.699s] creating /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/utils
+[0.699s] copying rl_agent/utils/ros2_utils.py -> /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/utils
+[0.699s] copying rl_agent/utils/__init__.py -> /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/utils
+[0.699s] copying rl_agent/utils/math_utils.py -> /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/utils
+[0.699s] running install
+[0.700s] running install_lib
+[0.700s] creating /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent
+[0.701s] creating /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl
+[0.701s] copying /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl/env.py -> /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl
+[0.702s] copying /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl/algorithms.py -> /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl
+[0.702s] copying /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl/reward.py -> /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl
+[0.702s] copying /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl/__init__.py -> /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl
+[0.702s] creating /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/utils
+[0.702s] copying /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/utils/ros2_utils.py -> /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/utils
+[0.703s] copying /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/utils/__init__.py -> /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/utils
+[0.703s] copying /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/utils/math_utils.py -> /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/utils
+[0.703s] copying /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/__init__.py -> /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent
+[0.704s] byte-compiling /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl/env.py to env.cpython-310.pyc
+[0.708s] byte-compiling /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl/algorithms.py to algorithms.cpython-310.pyc
+[0.709s] byte-compiling /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl/reward.py to reward.cpython-310.pyc
+[0.709s] byte-compiling /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl/__init__.py to __init__.cpython-310.pyc
+[0.709s] byte-compiling /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/utils/ros2_utils.py to ros2_utils.cpython-310.pyc
+[0.710s] byte-compiling /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/utils/__init__.py to __init__.cpython-310.pyc
+[0.710s] byte-compiling /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/utils/math_utils.py to math_utils.cpython-310.pyc
+[0.710s] byte-compiling /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/__init__.py to __init__.cpython-310.pyc
+[0.710s] running install_data
+[0.710s] creating /root/workspace/rl-navibot/install/rl_agent/share/ament_index
+[0.710s] creating /root/workspace/rl-navibot/install/rl_agent/share/ament_index/resource_index
+[0.710s] creating /root/workspace/rl-navibot/install/rl_agent/share/ament_index/resource_index/packages
+[0.710s] copying resource/rl_agent -> /root/workspace/rl-navibot/install/rl_agent/share/ament_index/resource_index/packages
+[0.710s] copying package.xml -> /root/workspace/rl-navibot/install/rl_agent/share/rl_agent
+[0.711s] running install_egg_info
+[0.712s] Copying ../../../build/rl_agent/rl_agent.egg-info to /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent-0.0.0-py3.10.egg-info
+[0.713s] running install_scripts
+[0.731s] writing list of installed files to '/root/workspace/rl-navibot/build/rl_agent/install.log'
+[0.753s] Invoked command in '/root/workspace/rl-navibot/src/decision/rl_agent' returned '0': PYTHONPATH=/root/workspace/rl-navibot/build/rl_agent/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/rl_agent build --build-base /root/workspace/rl-navibot/build/rl_agent/build install --record /root/workspace/rl-navibot/build/rl_agent/install.log --single-version-externally-managed install_data

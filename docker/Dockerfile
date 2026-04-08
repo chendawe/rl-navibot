@@ -17,6 +17,8 @@ RUN sudo apt update && \
         vim \
         pip \
         wget \
+        mesa-utils \
+        lsof \
         ros-humble-simulation \
         ros-humble-teleop-twist-keyboard
 
@@ -52,11 +54,11 @@ RUN apt install -y \
 # 通过rosdep key装gazebo11（尽管似乎报错说deprecated），gazebo11不行就改成gazebo
 RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable jammy main" > /etc/apt/sources.list.d/gazebo-stable.list' && \
     wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add - && \
-    apt update && \
+    apt update && \ 
     apt install -y gazebo
 
 
-RUN pip install rosdepc
+RUN pip install rosdepc && rosdepc update
 
 # # 为了多开bash cmd方便，持久化ros2和rl-navibot工作环境
 # RUN source /opt/ros/humble/setup.sh && \

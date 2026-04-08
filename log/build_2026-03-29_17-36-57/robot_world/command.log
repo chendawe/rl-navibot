@@ -1,6 +1,0 @@
-Invoking command in '/root/workspace/rl-navibot/build/robot_world': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /root/workspace/rl-navibot/src/execution/robot_world -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/root/workspace/rl-navibot/install/robot_world
-Invoked command in '/root/workspace/rl-navibot/build/robot_world' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /root/workspace/rl-navibot/src/execution/robot_world -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/root/workspace/rl-navibot/install/robot_world
-Invoking command in '/root/workspace/rl-navibot/build/robot_world': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /root/workspace/rl-navibot/build/robot_world -- -j16 -l16
-Invoked command in '/root/workspace/rl-navibot/build/robot_world' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /root/workspace/rl-navibot/build/robot_world -- -j16 -l16
-Invoking command in '/root/workspace/rl-navibot/build/robot_world': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /root/workspace/rl-navibot/build/robot_world
-Invoked command in '/root/workspace/rl-navibot/build/robot_world' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /root/workspace/rl-navibot/build/robot_world

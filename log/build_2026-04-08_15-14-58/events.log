@@ -1,0 +1,476 @@
+[0.000000] (-) TimerEvent: {}
+[0.001435] (rl_agent) JobQueued: {'identifier': 'rl_agent', 'dependencies': OrderedDict()}
+[0.001554] (robot_world) JobQueued: {'identifier': 'robot_world', 'dependencies': OrderedDict()}
+[0.001665] (rl_agent) JobStarted: {'identifier': 'rl_agent'}
+[0.023997] (robot_world) JobStarted: {'identifier': 'robot_world'}
+[0.097014] (-) TimerEvent: {}
+[0.197485] (-) TimerEvent: {}
+[0.226323] (robot_world) JobProgress: {'identifier': 'robot_world', 'progress': 'cmake'}
+[0.227701] (robot_world) Command: {'cmd': ['/usr/bin/cmake', '/root/workspace/rl-navibot/src/simulation/robot_world', '-DCMAKE_INSTALL_PREFIX=/root/workspace/rl-navibot/install/robot_world'], 'cwd': '/root/workspace/rl-navibot/build/robot_world', 'env': OrderedDict([('HOSTNAME', 'cdws'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/root'), ('OLDPWD', '/root/workspace'), ('ROS_PYTHON_VERSION', '3'), ('COLCON_PREFIX_PATH', '/root/workspace/nitrobot_ws/install:/root/workspace/turtlebot3_ws/install:/root/workspace/rl-navibot/install'), ('ROS_DISTRO', 'humble'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('NVIDIA_DRIVER_CAPABILITIES', 'all'), ('TERM', 'xterm'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('DISPLAY', ':0'), ('LANG', 'C.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('ROSDISTRO_INDEX_URL', 'https://mirrors.tuna.tsinghua.edu.cn/rosdistro/index-v4.yaml'), ('ROS_DOMAIN_ID', '0'), ('AMENT_PREFIX_PATH', '/root/workspace/nitrobot_ws/install/nitrobot:/root/workspace/turtlebot3_ws/install/turtlebot3:/root/workspace/turtlebot3_ws/install/turtlebot3_teleop:/root/workspace/turtlebot3_ws/install/turtlebot3_simulations:/root/workspace/turtlebot3_ws/install/turtlebot3_bringup:/root/workspace/turtlebot3_ws/install/turtlebot3_node:/root/workspace/turtlebot3_ws/install/turtlebot3_navigation2:/root/workspace/turtlebot3_ws/install/turtlebot3_manipulation_gazebo:/root/workspace/turtlebot3_ws/install/turtlebot3_gazebo:/root/workspace/turtlebot3_ws/install/turtlebot3_fake_node:/root/workspace/turtlebot3_ws/install/turtlebot3_example:/root/workspace/turtlebot3_ws/install/turtlebot3_description:/root/workspace/turtlebot3_ws/install/turtlebot3_cartographer:/root/workspace/rl-navibot/install/robot_world:/opt/ros/humble'), ('PWD', '/root/workspace/rl-navibot/build/robot_world'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/root/workspace/turtlebot3_ws/install/turtlebot3_teleop/lib/python3.10/site-packages:/root/workspace/turtlebot3_ws/install/turtlebot3_example/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('NVIDIA_VISIBLE_DEVICES', 'void'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/root/workspace/nitrobot_ws/install/nitrobot:/root/workspace/turtlebot3_ws/install/turtlebot3:/root/workspace/turtlebot3_ws/install/turtlebot3_simulations:/root/workspace/turtlebot3_ws/install/turtlebot3_bringup:/root/workspace/turtlebot3_ws/install/turtlebot3_node:/root/workspace/turtlebot3_ws/install/turtlebot3_navigation2:/root/workspace/turtlebot3_ws/install/turtlebot3_manipulation_gazebo:/root/workspace/turtlebot3_ws/install/turtlebot3_gazebo:/root/workspace/turtlebot3_ws/install/turtlebot3_fake_node:/root/workspace/turtlebot3_ws/install/turtlebot3_description:/root/workspace/turtlebot3_ws/install/turtlebot3_cartographer:/root/workspace/rl-navibot/install/robot_world:/root/workspace/turtlebot3_ws/install/turtlebot3_teleop:/root/workspace/turtlebot3_ws/install/turtlebot3_example:/opt/ros/humble')]), 'shell': False}
+[0.283024] (robot_world) StdoutLine: {'line': b'-- The C compiler identification is GNU 11.4.0\n'}
+[0.297594] (-) TimerEvent: {}
+[0.330087] (robot_world) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 11.4.0\n'}
+[0.336853] (robot_world) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.397687] (robot_world) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.397847] (-) TimerEvent: {}
+[0.402520] (robot_world) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc - skipped\n'}
+[0.402869] (robot_world) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.402992] (robot_world) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.404992] (robot_world) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[0.484074] (robot_world) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[0.490277] (robot_world) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ - skipped\n'}
+[0.490582] (robot_world) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[0.490882] (robot_world) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[0.495872] (robot_world) StdoutLine: {'line': b'-- Found ament_cmake: 1.3.11 (/opt/ros/humble/share/ament_cmake/cmake)\n'}
+[0.497995] (-) TimerEvent: {}
+[0.530962] (rl_agent) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'egg_info', '--egg-base', '../../../build/rl_agent', 'build', '--build-base', '/root/workspace/rl-navibot/build/rl_agent/build', 'install', '--record', '/root/workspace/rl-navibot/build/rl_agent/install.log', '--single-version-externally-managed', 'install_data'], 'cwd': '/root/workspace/rl-navibot/src/decision/rl_agent', 'env': {'HOSTNAME': 'cdws', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib', 'HOME': '/root', 'OLDPWD': '/root/workspace', 'ROS_PYTHON_VERSION': '3', 'COLCON_PREFIX_PATH': '/root/workspace/nitrobot_ws/install:/root/workspace/turtlebot3_ws/install:/root/workspace/rl-navibot/install', 'ROS_DISTRO': 'humble', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'NVIDIA_DRIVER_CAPABILITIES': 'all', 'TERM': 'xterm', 'ROS_LOCALHOST_ONLY': '0', 'PATH': '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'DISPLAY': ':0', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'ROSDISTRO_INDEX_URL': 'https://mirrors.tuna.tsinghua.edu.cn/rosdistro/index-v4.yaml', 'ROS_DOMAIN_ID': '0', 'AMENT_PREFIX_PATH': '/root/workspace/nitrobot_ws/install/nitrobot:/root/workspace/turtlebot3_ws/install/turtlebot3:/root/workspace/turtlebot3_ws/install/turtlebot3_teleop:/root/workspace/turtlebot3_ws/install/turtlebot3_simulations:/root/workspace/turtlebot3_ws/install/turtlebot3_bringup:/root/workspace/turtlebot3_ws/install/turtlebot3_node:/root/workspace/turtlebot3_ws/install/turtlebot3_navigation2:/root/workspace/turtlebot3_ws/install/turtlebot3_manipulation_gazebo:/root/workspace/turtlebot3_ws/install/turtlebot3_gazebo:/root/workspace/turtlebot3_ws/install/turtlebot3_fake_node:/root/workspace/turtlebot3_ws/install/turtlebot3_example:/root/workspace/turtlebot3_ws/install/turtlebot3_description:/root/workspace/turtlebot3_ws/install/turtlebot3_cartographer:/root/workspace/rl-navibot/install/robot_world:/opt/ros/humble', 'PWD': '/root/workspace/rl-navibot/build/rl_agent', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/root/workspace/rl-navibot/build/rl_agent/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages:/root/workspace/turtlebot3_ws/install/turtlebot3_teleop/lib/python3.10/site-packages:/root/workspace/turtlebot3_ws/install/turtlebot3_example/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages', 'NVIDIA_VISIBLE_DEVICES': 'void', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/root/workspace/nitrobot_ws/install/nitrobot:/root/workspace/turtlebot3_ws/install/turtlebot3:/root/workspace/turtlebot3_ws/install/turtlebot3_simulations:/root/workspace/turtlebot3_ws/install/turtlebot3_bringup:/root/workspace/turtlebot3_ws/install/turtlebot3_node:/root/workspace/turtlebot3_ws/install/turtlebot3_navigation2:/root/workspace/turtlebot3_ws/install/turtlebot3_manipulation_gazebo:/root/workspace/turtlebot3_ws/install/turtlebot3_gazebo:/root/workspace/turtlebot3_ws/install/turtlebot3_fake_node:/root/workspace/turtlebot3_ws/install/turtlebot3_description:/root/workspace/turtlebot3_ws/install/turtlebot3_cartographer:/root/workspace/rl-navibot/install/robot_world'}, 'shell': False}
+[0.598104] (-) TimerEvent: {}
+[0.626863] (robot_world) StdoutLine: {'line': b'-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter \n'}
+[0.694315] (rl_agent) StdoutLine: {'line': b'running egg_info\n'}
+[0.694800] (rl_agent) StdoutLine: {'line': b'creating ../../../build/rl_agent/rl_agent.egg-info\n'}
+[0.695503] (rl_agent) StdoutLine: {'line': b'writing ../../../build/rl_agent/rl_agent.egg-info/PKG-INFO\n'}
+[0.695751] (rl_agent) StdoutLine: {'line': b'writing dependency_links to ../../../build/rl_agent/rl_agent.egg-info/dependency_links.txt\n'}
+[0.696056] (rl_agent) StdoutLine: {'line': b'writing entry points to ../../../build/rl_agent/rl_agent.egg-info/entry_points.txt\n'}
+[0.696369] (rl_agent) StdoutLine: {'line': b'writing requirements to ../../../build/rl_agent/rl_agent.egg-info/requires.txt\n'}
+[0.696464] (rl_agent) StdoutLine: {'line': b'writing top-level names to ../../../build/rl_agent/rl_agent.egg-info/top_level.txt\n'}
+[0.696714] (rl_agent) StdoutLine: {'line': b"writing manifest file '../../../build/rl_agent/rl_agent.egg-info/SOURCES.txt'\n"}
+[0.697840] (rl_agent) StdoutLine: {'line': b"reading manifest file '../../../build/rl_agent/rl_agent.egg-info/SOURCES.txt'\n"}
+[0.698000] (rl_agent) StdoutLine: {'line': b"adding license file 'LICENSE'\n"}
+[0.698178] (-) TimerEvent: {}
+[0.698327] (rl_agent) StdoutLine: {'line': b"writing manifest file '../../../build/rl_agent/rl_agent.egg-info/SOURCES.txt'\n"}
+[0.698563] (rl_agent) StdoutLine: {'line': b'running build\n'}
+[0.698670] (rl_agent) StdoutLine: {'line': b'running build_py\n'}
+[0.698798] (rl_agent) StdoutLine: {'line': b'creating /root/workspace/rl-navibot/build/rl_agent/build\n'}
+[0.699040] (rl_agent) StdoutLine: {'line': b'creating /root/workspace/rl-navibot/build/rl_agent/build/lib\n'}
+[0.699293] (rl_agent) StdoutLine: {'line': b'creating /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent\n'}
+[0.699505] (rl_agent) StdoutLine: {'line': b'copying rl_agent/__init__.py -> /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent\n'}
+[0.699630] (rl_agent) StdoutLine: {'line': b'creating /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl\n'}
+[0.699953] (rl_agent) StdoutLine: {'line': b'copying rl_agent/rl/env.py -> /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl\n'}
+[0.700644] (rl_agent) StdoutLine: {'line': b'copying rl_agent/rl/algorithms.py -> /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl\n'}
+[0.700723] (rl_agent) StdoutLine: {'line': b'copying rl_agent/rl/reward.py -> /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl\n'}
+[0.700759] (rl_agent) StdoutLine: {'line': b'copying rl_agent/rl/__init__.py -> /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl\n'}
+[0.700903] (rl_agent) StdoutLine: {'line': b'creating /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/utils\n'}
+[0.701105] (rl_agent) StdoutLine: {'line': b'copying rl_agent/utils/ros2_utils.py -> /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/utils\n'}
+[0.701163] (rl_agent) StdoutLine: {'line': b'copying rl_agent/utils/__init__.py -> /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/utils\n'}
+[0.701195] (rl_agent) StdoutLine: {'line': b'copying rl_agent/utils/math_utils.py -> /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/utils\n'}
+[0.701222] (rl_agent) StdoutLine: {'line': b'running install\n'}
+[0.701429] (rl_agent) StdoutLine: {'line': b'running install_lib\n'}
+[0.702013] (rl_agent) StdoutLine: {'line': b'creating /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent\n'}
+[0.702590] (rl_agent) StdoutLine: {'line': b'creating /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl\n'}
+[0.703105] (rl_agent) StdoutLine: {'line': b'copying /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl/env.py -> /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl\n'}
+[0.703353] (rl_agent) StdoutLine: {'line': b'copying /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl/algorithms.py -> /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl\n'}
+[0.703468] (rl_agent) StdoutLine: {'line': b'copying /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl/reward.py -> /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl\n'}
+[0.703612] (rl_agent) StdoutLine: {'line': b'copying /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/rl/__init__.py -> /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl\n'}
+[0.703883] (rl_agent) StdoutLine: {'line': b'creating /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/utils\n'}
+[0.704156] (rl_agent) StdoutLine: {'line': b'copying /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/utils/ros2_utils.py -> /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/utils\n'}
+[0.704304] (rl_agent) StdoutLine: {'line': b'copying /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/utils/__init__.py -> /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/utils\n'}
+[0.704434] (rl_agent) StdoutLine: {'line': b'copying /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/utils/math_utils.py -> /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/utils\n'}
+[0.704605] (rl_agent) StdoutLine: {'line': b'copying /root/workspace/rl-navibot/build/rl_agent/build/lib/rl_agent/__init__.py -> /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent\n'}
+[0.705306] (rl_agent) StdoutLine: {'line': b'byte-compiling /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl/env.py to env.cpython-310.pyc\n'}
+[0.709318] (rl_agent) StdoutLine: {'line': b'byte-compiling /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl/algorithms.py to algorithms.cpython-310.pyc\n'}
+[0.710413] (rl_agent) StdoutLine: {'line': b'byte-compiling /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl/reward.py to reward.cpython-310.pyc\n'}
+[0.710700] (rl_agent) StdoutLine: {'line': b'byte-compiling /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/rl/__init__.py to __init__.cpython-310.pyc\n'}
+[0.710880] (rl_agent) StdoutLine: {'line': b'byte-compiling /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/utils/ros2_utils.py to ros2_utils.cpython-310.pyc\n'}
+[0.711285] (rl_agent) StdoutLine: {'line': b'byte-compiling /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/utils/__init__.py to __init__.cpython-310.pyc\n'}
+[0.711370] (rl_agent) StdoutLine: {'line': b'byte-compiling /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/utils/math_utils.py to math_utils.cpython-310.pyc\n'}
+[0.711402] (rl_agent) StdoutLine: {'line': b'byte-compiling /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent/__init__.py to __init__.cpython-310.pyc\n'}
+[0.711472] (rl_agent) StdoutLine: {'line': b'running install_data\n'}
+[0.711568] (rl_agent) StdoutLine: {'line': b'creating /root/workspace/rl-navibot/install/rl_agent/share/ament_index\n'}
+[0.711724] (rl_agent) StdoutLine: {'line': b'creating /root/workspace/rl-navibot/install/rl_agent/share/ament_index/resource_index\n'}
+[0.711879] (rl_agent) StdoutLine: {'line': b'creating /root/workspace/rl-navibot/install/rl_agent/share/ament_index/resource_index/packages\n'}
+[0.712020] (rl_agent) StdoutLine: {'line': b'copying resource/rl_agent -> /root/workspace/rl-navibot/install/rl_agent/share/ament_index/resource_index/packages\n'}
+[0.712191] (rl_agent) StdoutLine: {'line': b'copying package.xml -> /root/workspace/rl-navibot/install/rl_agent/share/rl_agent\n'}
+[0.712261] (rl_agent) StdoutLine: {'line': b'running install_egg_info\n'}
+[0.713932] (rl_agent) StdoutLine: {'line': b'Copying ../../../build/rl_agent/rl_agent.egg-info to /root/workspace/rl-navibot/install/rl_agent/lib/python3.10/site-packages/rl_agent-0.0.0-py3.10.egg-info\n'}
+[0.714640] (rl_agent) StdoutLine: {'line': b'running install_scripts\n'}
+[0.733003] (rl_agent) StdoutLine: {'line': b"writing list of installed files to '/root/workspace/rl-navibot/build/rl_agent/install.log'\n"}
+[0.734408] (robot_world) StdoutLine: {'line': b'-- Found rclcpp: 16.0.12 (/opt/ros/humble/share/rclcpp/cmake)\n'}
+[0.754257] (rl_agent) CommandEnded: {'returncode': 0}
+[0.762712] (rl_agent) JobEnded: {'identifier': 'rl_agent', 'rc': 0}
+[0.798323] (-) TimerEvent: {}
+[0.821524] (robot_world) StdoutLine: {'line': b'-- Found rosidl_generator_c: 3.1.6 (/opt/ros/humble/share/rosidl_generator_c/cmake)\n'}
+[0.832451] (robot_world) StdoutLine: {'line': b'-- Found rosidl_adapter: 3.1.6 (/opt/ros/humble/share/rosidl_adapter/cmake)\n'}
+[0.847851] (robot_world) StdoutLine: {'line': b'-- Found rosidl_generator_cpp: 3.1.6 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)\n'}
+[0.872670] (robot_world) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.898448] (-) TimerEvent: {}
+[0.899340] (robot_world) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.978210] (robot_world) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)\n'}
+[0.984756] (robot_world) StdoutLine: {'line': b'-- Found rmw_fastrtps_cpp: 6.2.7 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)\n'}
+[0.998573] (-) TimerEvent: {}
+[1.098924] (-) TimerEvent: {}
+[1.124494] (robot_world) StdoutLine: {'line': b'-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  \n'}
+[1.164095] (robot_world) StdoutLine: {'line': b'-- Found FastRTPS: /opt/ros/humble/include  \n'}
+[1.199074] (-) TimerEvent: {}
+[1.229294] (robot_world) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_fastrtps_cpp' as default\n"}
+[1.254916] (robot_world) StdoutLine: {'line': b'-- Looking for pthread.h\n'}
+[1.299243] (-) TimerEvent: {}
+[1.339151] (robot_world) StdoutLine: {'line': b'-- Looking for pthread.h - found\n'}
+[1.339689] (robot_world) StdoutLine: {'line': b'-- Performing Test CMAKE_HAVE_LIBC_PTHREAD\n'}
+[1.399359] (-) TimerEvent: {}
+[1.411041] (robot_world) StdoutLine: {'line': b'-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success\n'}
+[1.411864] (robot_world) StdoutLine: {'line': b'-- Found Threads: TRUE  \n'}
+[1.494038] (robot_world) StdoutLine: {'line': b'-- Found geometry_msgs: 4.9.0 (/opt/ros/humble/share/geometry_msgs/cmake)\n'}
+[1.499570] (-) TimerEvent: {}
+[1.517397] (robot_world) StdoutLine: {'line': b'-- Found sensor_msgs: 4.9.0 (/opt/ros/humble/share/sensor_msgs/cmake)\n'}
+[1.545279] (robot_world) StdoutLine: {'line': b'-- Found nav_msgs: 4.9.0 (/opt/ros/humble/share/nav_msgs/cmake)\n'}
+[1.574719] (robot_world) StdoutLine: {'line': b'-- Found tf2: 0.25.13 (/opt/ros/humble/share/tf2/cmake)\n'}
+[1.595443] (robot_world) StdoutLine: {'line': b'-- Found tf2_geometry_msgs: 0.25.13 (/opt/ros/humble/share/tf2_geometry_msgs/cmake)\n'}
+[1.599828] (-) TimerEvent: {}
+[1.632667] (robot_world) StdoutLine: {'line': b'-- Found eigen3_cmake_module: 0.1.1 (/opt/ros/humble/share/eigen3_cmake_module/cmake)\n'}
+[1.635055] (robot_world) StdoutLine: {'line': b'-- Found Eigen3: TRUE (found version "3.4.0") \n'}
+[1.635251] (robot_world) StdoutLine: {'line': b'-- Ensuring Eigen3 include directory is part of orocos-kdl CMake target\n'}
+[1.699984] (-) TimerEvent: {}
+[1.784635] (robot_world) StdoutLine: {'line': b'-- Found gazebo_msgs: 3.9.0 (/opt/ros/humble/share/gazebo_msgs/cmake)\n'}
+[1.800156] (-) TimerEvent: {}
+[1.839181] (robot_world) StdoutLine: {'line': b'-- Found std_srvs: 4.9.0 (/opt/ros/humble/share/std_srvs/cmake)\n'}
+[1.860503] (robot_world) StdoutLine: {'line': b'-- Found ament_cmake_gtest: 1.3.11 (/opt/ros/humble/share/ament_cmake_gtest/cmake)\n'}
+[1.866717] (robot_world) StdoutLine: {'line': b'-- Found ament_lint_auto: 0.12.12 (/opt/ros/humble/share/ament_lint_auto/cmake)\n'}
+[1.900279] (-) TimerEvent: {}
+[1.954331] (robot_world) StdoutLine: {'line': b"-- Found gtest sources under '/opt/ros/humble/src/gtest_vendor': C++ tests using 'Google Test' will be built\n"}
+[1.969690] (robot_world) StdoutLine: {'line': b"-- Added test 'cppcheck' to perform static code analysis on C / C++ code\n"}
+[1.969960] (robot_world) StdoutLine: {'line': b'-- Configured cppcheck include dirs: $<BUILD_INTERFACE:/root/workspace/rl-navibot/src/simulation/robot_world/include>\n'}
+[1.970024] (robot_world) StdoutLine: {'line': b'-- Configured cppcheck exclude dirs and/or files: \n'}
+[1.970993] (robot_world) StdoutLine: {'line': b"-- Added test 'flake8' to check Python code syntax and style conventions\n"}
+[1.971804] (robot_world) StdoutLine: {'line': b"-- Added test 'lint_cmake' to check CMake code style\n"}
+[1.972895] (robot_world) StdoutLine: {'line': b"-- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257\n"}
+[1.974335] (robot_world) StdoutLine: {'line': b"-- Added test 'uncrustify' to check C / C++ code style\n"}
+[1.974431] (robot_world) StdoutLine: {'line': b'-- Configured uncrustify additional arguments: \n'}
+[1.975307] (robot_world) StdoutLine: {'line': b"-- Added test 'xmllint' to check XML markup files\n"}
+[1.976874] (robot_world) StdoutLine: {'line': b'-- Configuring done\n'}
+[2.000415] (-) TimerEvent: {}
+[2.012689] (robot_world) StdoutLine: {'line': b'-- Generating done\n'}
+[2.025748] (robot_world) StdoutLine: {'line': b'-- Build files have been written to: /root/workspace/rl-navibot/build/robot_world\n'}
+[2.034744] (robot_world) CommandEnded: {'returncode': 0}
+[2.035438] (robot_world) JobProgress: {'identifier': 'robot_world', 'progress': 'build'}
+[2.036183] (robot_world) Command: {'cmd': ['/usr/bin/cmake', '--build', '/root/workspace/rl-navibot/build/robot_world', '--', '-j16', '-l16'], 'cwd': '/root/workspace/rl-navibot/build/robot_world', 'env': OrderedDict([('HOSTNAME', 'cdws'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/root'), ('OLDPWD', '/root/workspace'), ('ROS_PYTHON_VERSION', '3'), ('COLCON_PREFIX_PATH', '/root/workspace/nitrobot_ws/install:/root/workspace/turtlebot3_ws/install:/root/workspace/rl-navibot/install'), ('ROS_DISTRO', 'humble'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('NVIDIA_DRIVER_CAPABILITIES', 'all'), ('TERM', 'xterm'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('DISPLAY', ':0'), ('LANG', 'C.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('ROSDISTRO_INDEX_URL', 'https://mirrors.tuna.tsinghua.edu.cn/rosdistro/index-v4.yaml'), ('ROS_DOMAIN_ID', '0'), ('AMENT_PREFIX_PATH', '/root/workspace/nitrobot_ws/install/nitrobot:/root/workspace/turtlebot3_ws/install/turtlebot3:/root/workspace/turtlebot3_ws/install/turtlebot3_teleop:/root/workspace/turtlebot3_ws/install/turtlebot3_simulations:/root/workspace/turtlebot3_ws/install/turtlebot3_bringup:/root/workspace/turtlebot3_ws/install/turtlebot3_node:/root/workspace/turtlebot3_ws/install/turtlebot3_navigation2:/root/workspace/turtlebot3_ws/install/turtlebot3_manipulation_gazebo:/root/workspace/turtlebot3_ws/install/turtlebot3_gazebo:/root/workspace/turtlebot3_ws/install/turtlebot3_fake_node:/root/workspace/turtlebot3_ws/install/turtlebot3_example:/root/workspace/turtlebot3_ws/install/turtlebot3_description:/root/workspace/turtlebot3_ws/install/turtlebot3_cartographer:/root/workspace/rl-navibot/install/robot_world:/opt/ros/humble'), ('PWD', '/root/workspace/rl-navibot/build/robot_world'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/root/workspace/turtlebot3_ws/install/turtlebot3_teleop/lib/python3.10/site-packages:/root/workspace/turtlebot3_ws/install/turtlebot3_example/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('NVIDIA_VISIBLE_DEVICES', 'void'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/root/workspace/nitrobot_ws/install/nitrobot:/root/workspace/turtlebot3_ws/install/turtlebot3:/root/workspace/turtlebot3_ws/install/turtlebot3_simulations:/root/workspace/turtlebot3_ws/install/turtlebot3_bringup:/root/workspace/turtlebot3_ws/install/turtlebot3_node:/root/workspace/turtlebot3_ws/install/turtlebot3_navigation2:/root/workspace/turtlebot3_ws/install/turtlebot3_manipulation_gazebo:/root/workspace/turtlebot3_ws/install/turtlebot3_gazebo:/root/workspace/turtlebot3_ws/install/turtlebot3_fake_node:/root/workspace/turtlebot3_ws/install/turtlebot3_description:/root/workspace/turtlebot3_ws/install/turtlebot3_cartographer:/root/workspace/rl-navibot/install/robot_world:/root/workspace/turtlebot3_ws/install/turtlebot3_teleop:/root/workspace/turtlebot3_ws/install/turtlebot3_example:/opt/ros/humble')]), 'shell': False}
+[2.080555] (robot_world) StdoutLine: {'line': b'[  6%] \x1b[32mBuilding CXX object gtest/CMakeFiles/gtest.dir/src/gtest-all.cc.o\x1b[0m\n'}
+[2.080826] (robot_world) StdoutLine: {'line': b'[ 13%] \x1b[32mBuilding CXX object CMakeFiles/robot_world_lib.dir/src/world_manager.cpp.o\x1b[0m\n'}
+[2.081328] (robot_world) StdoutLine: {'line': b'[ 26%] \x1b[32mBuilding CXX object gtest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o\x1b[0m\n'}
+[2.081673] (robot_world) StdoutLine: {'line': b'[ 26%] \x1b[32mBuilding CXX object CMakeFiles/robot_world_lib.dir/src/robot_driver.cpp.o\x1b[0m\n'}
+[2.100725] (-) TimerEvent: {}
+[2.201444] (-) TimerEvent: {}
+[2.301806] (-) TimerEvent: {}
+[2.402203] (-) TimerEvent: {}
+[2.502623] (-) TimerEvent: {}
+[2.602980] (-) TimerEvent: {}
+[2.703383] (-) TimerEvent: {}
+[2.808209] (-) TimerEvent: {}
+[2.908734] (-) TimerEvent: {}
+[2.971708] (robot_world) StdoutLine: {'line': b'[ 33%] \x1b[32m\x1b[1mLinking CXX static library libgtest_main.a\x1b[0m\n'}
+[3.008602] (robot_world) StdoutLine: {'line': b'[ 33%] Built target gtest_main\n'}
+[3.008851] (-) TimerEvent: {}
+[3.109300] (-) TimerEvent: {}
+[3.209689] (-) TimerEvent: {}
+[3.310105] (-) TimerEvent: {}
+[3.410497] (-) TimerEvent: {}
+[3.510869] (-) TimerEvent: {}
+[3.611247] (-) TimerEvent: {}
+[3.711712] (-) TimerEvent: {}
+[3.812190] (-) TimerEvent: {}
+[3.912739] (-) TimerEvent: {}
+[4.013242] (-) TimerEvent: {}
+[4.113632] (-) TimerEvent: {}
+[4.214075] (-) TimerEvent: {}
+[4.314837] (-) TimerEvent: {}
+[4.415211] (-) TimerEvent: {}
+[4.515613] (-) TimerEvent: {}
+[4.616182] (-) TimerEvent: {}
+[4.716523] (-) TimerEvent: {}
+[4.816978] (-) TimerEvent: {}
+[4.917367] (-) TimerEvent: {}
+[4.929798] (robot_world) StdoutLine: {'line': b'[ 40%] \x1b[32m\x1b[1mLinking CXX static library libgtest.a\x1b[0m\n'}
+[4.982577] (robot_world) StdoutLine: {'line': b'[ 40%] Built target gtest\n'}
+[5.017517] (-) TimerEvent: {}
+[5.117874] (-) TimerEvent: {}
+[5.218405] (-) TimerEvent: {}
+[5.318744] (-) TimerEvent: {}
+[5.419214] (-) TimerEvent: {}
+[5.519571] (-) TimerEvent: {}
+[5.619916] (-) TimerEvent: {}
+[5.720307] (-) TimerEvent: {}
+[5.820641] (-) TimerEvent: {}
+[5.921025] (-) TimerEvent: {}
+[6.021398] (-) TimerEvent: {}
+[6.121806] (-) TimerEvent: {}
+[6.222151] (-) TimerEvent: {}
+[6.322597] (-) TimerEvent: {}
+[6.423052] (-) TimerEvent: {}
+[6.523416] (-) TimerEvent: {}
+[6.623814] (-) TimerEvent: {}
+[6.724392] (-) TimerEvent: {}
+[6.824755] (-) TimerEvent: {}
+[6.925110] (-) TimerEvent: {}
+[7.025482] (-) TimerEvent: {}
+[7.125830] (-) TimerEvent: {}
+[7.226188] (-) TimerEvent: {}
+[7.326564] (-) TimerEvent: {}
+[7.426929] (-) TimerEvent: {}
+[7.527465] (-) TimerEvent: {}
+[7.627799] (-) TimerEvent: {}
+[7.728298] (-) TimerEvent: {}
+[7.828655] (-) TimerEvent: {}
+[7.928999] (-) TimerEvent: {}
+[8.029409] (-) TimerEvent: {}
+[8.129835] (-) TimerEvent: {}
+[8.230266] (-) TimerEvent: {}
+[8.330618] (-) TimerEvent: {}
+[8.430989] (-) TimerEvent: {}
+[8.531443] (-) TimerEvent: {}
+[8.631929] (-) TimerEvent: {}
+[8.732296] (-) TimerEvent: {}
+[8.832663] (-) TimerEvent: {}
+[8.933085] (-) TimerEvent: {}
+[9.033488] (-) TimerEvent: {}
+[9.133882] (-) TimerEvent: {}
+[9.234233] (-) TimerEvent: {}
+[9.334591] (-) TimerEvent: {}
+[9.434977] (-) TimerEvent: {}
+[9.535336] (-) TimerEvent: {}
+[9.635689] (-) TimerEvent: {}
+[9.736032] (-) TimerEvent: {}
+[9.836493] (-) TimerEvent: {}
+[9.937034] (-) TimerEvent: {}
+[10.037417] (-) TimerEvent: {}
+[10.137805] (-) TimerEvent: {}
+[10.238149] (-) TimerEvent: {}
+[10.338557] (-) TimerEvent: {}
+[10.438955] (-) TimerEvent: {}
+[10.539618] (-) TimerEvent: {}
+[10.639977] (-) TimerEvent: {}
+[10.740322] (-) TimerEvent: {}
+[10.840806] (-) TimerEvent: {}
+[10.941204] (-) TimerEvent: {}
+[11.041570] (-) TimerEvent: {}
+[11.141923] (-) TimerEvent: {}
+[11.242335] (-) TimerEvent: {}
+[11.342691] (-) TimerEvent: {}
+[11.443072] (-) TimerEvent: {}
+[11.543473] (-) TimerEvent: {}
+[11.643927] (-) TimerEvent: {}
+[11.744269] (-) TimerEvent: {}
+[11.844611] (-) TimerEvent: {}
+[11.945076] (-) TimerEvent: {}
+[12.045530] (-) TimerEvent: {}
+[12.145925] (-) TimerEvent: {}
+[12.246350] (-) TimerEvent: {}
+[12.346752] (-) TimerEvent: {}
+[12.447106] (-) TimerEvent: {}
+[12.547478] (-) TimerEvent: {}
+[12.647827] (-) TimerEvent: {}
+[12.748209] (-) TimerEvent: {}
+[12.848574] (-) TimerEvent: {}
+[12.948935] (-) TimerEvent: {}
+[13.049277] (-) TimerEvent: {}
+[13.149605] (-) TimerEvent: {}
+[13.249972] (-) TimerEvent: {}
+[13.350305] (-) TimerEvent: {}
+[13.450683] (-) TimerEvent: {}
+[13.551017] (-) TimerEvent: {}
+[13.651396] (-) TimerEvent: {}
+[13.751751] (-) TimerEvent: {}
+[13.852204] (-) TimerEvent: {}
+[13.952551] (-) TimerEvent: {}
+[14.052896] (-) TimerEvent: {}
+[14.153283] (-) TimerEvent: {}
+[14.253751] (-) TimerEvent: {}
+[14.354112] (-) TimerEvent: {}
+[14.454456] (-) TimerEvent: {}
+[14.554788] (-) TimerEvent: {}
+[14.655124] (-) TimerEvent: {}
+[14.755461] (-) TimerEvent: {}
+[14.855869] (-) TimerEvent: {}
+[14.956219] (-) TimerEvent: {}
+[15.056681] (-) TimerEvent: {}
+[15.157024] (-) TimerEvent: {}
+[15.257416] (-) TimerEvent: {}
+[15.357737] (-) TimerEvent: {}
+[15.458122] (-) TimerEvent: {}
+[15.558456] (-) TimerEvent: {}
+[15.658816] (-) TimerEvent: {}
+[15.759173] (-) TimerEvent: {}
+[15.859643] (-) TimerEvent: {}
+[15.960040] (-) TimerEvent: {}
+[16.060380] (-) TimerEvent: {}
+[16.160741] (-) TimerEvent: {}
+[16.261073] (-) TimerEvent: {}
+[16.361487] (-) TimerEvent: {}
+[16.461874] (-) TimerEvent: {}
+[16.562267] (-) TimerEvent: {}
+[16.662624] (-) TimerEvent: {}
+[16.762975] (-) TimerEvent: {}
+[16.863340] (-) TimerEvent: {}
+[16.963662] (-) TimerEvent: {}
+[17.064068] (-) TimerEvent: {}
+[17.164465] (-) TimerEvent: {}
+[17.264803] (-) TimerEvent: {}
+[17.365171] (-) TimerEvent: {}
+[17.401124] (robot_world) StdoutLine: {'line': b'[ 46%] \x1b[32m\x1b[1mLinking CXX static library librobot_world_lib.a\x1b[0m\n'}
+[17.465366] (-) TimerEvent: {}
+[17.565724] (-) TimerEvent: {}
+[17.666144] (-) TimerEvent: {}
+[17.742617] (robot_world) StdoutLine: {'line': b'[ 46%] Built target robot_world_lib\n'}
+[17.763317] (robot_world) StdoutLine: {'line': b'[ 60%] \x1b[32mBuilding CXX object CMakeFiles/test_robot_driver.dir/test/test_robot_driver.cpp.o\x1b[0m\n'}
+[17.763586] (robot_world) StdoutLine: {'line': b'[ 66%] \x1b[32mBuilding CXX object CMakeFiles/test_world_manager.dir/test/test_world_manager.cpp.o\x1b[0m\n'}
+[17.763795] (robot_world) StdoutLine: {'line': b'[ 66%] \x1b[32mBuilding CXX object CMakeFiles/world_manager.dir/src/world_manager_main.cpp.o\x1b[0m\n'}
+[17.763868] (robot_world) StdoutLine: {'line': b'[ 73%] \x1b[32mBuilding CXX object CMakeFiles/robot_driver.dir/src/robot_driver_main.cpp.o\x1b[0m\n'}
+[17.766298] (-) TimerEvent: {}
+[17.866722] (-) TimerEvent: {}
+[17.967186] (-) TimerEvent: {}
+[18.067603] (-) TimerEvent: {}
+[18.167979] (-) TimerEvent: {}
+[18.268380] (-) TimerEvent: {}
+[18.368788] (-) TimerEvent: {}
+[18.469169] (-) TimerEvent: {}
+[18.569639] (-) TimerEvent: {}
+[18.670551] (-) TimerEvent: {}
+[18.770936] (-) TimerEvent: {}
+[18.871347] (-) TimerEvent: {}
+[18.971733] (-) TimerEvent: {}
+[19.072174] (-) TimerEvent: {}
+[19.172633] (-) TimerEvent: {}
+[19.273004] (-) TimerEvent: {}
+[19.373495] (-) TimerEvent: {}
+[19.473886] (-) TimerEvent: {}
+[19.574351] (-) TimerEvent: {}
+[19.674837] (-) TimerEvent: {}
+[19.775180] (-) TimerEvent: {}
+[19.875590] (-) TimerEvent: {}
+[19.976060] (-) TimerEvent: {}
+[20.076559] (-) TimerEvent: {}
+[20.176945] (-) TimerEvent: {}
+[20.277353] (-) TimerEvent: {}
+[20.377705] (-) TimerEvent: {}
+[20.392858] (robot_world) StdoutLine: {'line': b'[ 80%] \x1b[32m\x1b[1mLinking CXX executable world_manager\x1b[0m\n'}
+[20.477845] (-) TimerEvent: {}
+[20.578202] (-) TimerEvent: {}
+[20.629461] (robot_world) StdoutLine: {'line': b'[ 80%] Built target world_manager\n'}
+[20.660828] (robot_world) StdoutLine: {'line': b'[ 86%] \x1b[32m\x1b[1mLinking CXX executable robot_driver\x1b[0m\n'}
+[20.678365] (-) TimerEvent: {}
+[20.778854] (-) TimerEvent: {}
+[20.879450] (-) TimerEvent: {}
+[20.979815] (-) TimerEvent: {}
+[21.080217] (-) TimerEvent: {}
+[21.180732] (-) TimerEvent: {}
+[21.281126] (-) TimerEvent: {}
+[21.381528] (-) TimerEvent: {}
+[21.481917] (-) TimerEvent: {}
+[21.582327] (-) TimerEvent: {}
+[21.592415] (robot_world) StdoutLine: {'line': b'[ 86%] Built target robot_driver\n'}
+[21.682491] (-) TimerEvent: {}
+[21.782852] (-) TimerEvent: {}
+[21.883191] (-) TimerEvent: {}
+[21.983542] (-) TimerEvent: {}
+[22.021690] (robot_world) StdoutLine: {'line': b'[ 93%] \x1b[32m\x1b[1mLinking CXX executable test_world_manager\x1b[0m\n'}
+[22.083708] (-) TimerEvent: {}
+[22.184076] (-) TimerEvent: {}
+[22.284453] (-) TimerEvent: {}
+[22.337892] (robot_world) StdoutLine: {'line': b'[ 93%] Built target test_world_manager\n'}
+[22.384581] (-) TimerEvent: {}
+[22.484958] (-) TimerEvent: {}
+[22.585285] (-) TimerEvent: {}
+[22.685642] (-) TimerEvent: {}
+[22.786182] (-) TimerEvent: {}
+[22.886556] (-) TimerEvent: {}
+[22.986962] (-) TimerEvent: {}
+[23.087321] (-) TimerEvent: {}
+[23.187674] (-) TimerEvent: {}
+[23.288034] (-) TimerEvent: {}
+[23.388466] (-) TimerEvent: {}
+[23.488877] (-) TimerEvent: {}
+[23.589247] (-) TimerEvent: {}
+[23.689713] (-) TimerEvent: {}
+[23.790149] (-) TimerEvent: {}
+[23.890536] (-) TimerEvent: {}
+[23.990900] (-) TimerEvent: {}
+[24.091364] (-) TimerEvent: {}
+[24.191773] (-) TimerEvent: {}
+[24.292214] (-) TimerEvent: {}
+[24.392549] (-) TimerEvent: {}
+[24.493277] (-) TimerEvent: {}
+[24.593615] (-) TimerEvent: {}
+[24.693983] (-) TimerEvent: {}
+[24.794435] (-) TimerEvent: {}
+[24.894765] (-) TimerEvent: {}
+[24.995249] (-) TimerEvent: {}
+[25.095597] (-) TimerEvent: {}
+[25.195927] (-) TimerEvent: {}
+[25.296370] (-) TimerEvent: {}
+[25.396783] (-) TimerEvent: {}
+[25.497131] (-) TimerEvent: {}
+[25.597562] (-) TimerEvent: {}
+[25.697947] (-) TimerEvent: {}
+[25.798313] (-) TimerEvent: {}
+[25.898655] (-) TimerEvent: {}
+[25.999016] (-) TimerEvent: {}
+[26.099388] (-) TimerEvent: {}
+[26.199760] (-) TimerEvent: {}
+[26.300166] (-) TimerEvent: {}
+[26.400529] (-) TimerEvent: {}
+[26.500914] (-) TimerEvent: {}
+[26.601279] (-) TimerEvent: {}
+[26.701678] (-) TimerEvent: {}
+[26.802006] (-) TimerEvent: {}
+[26.902354] (-) TimerEvent: {}
+[27.002877] (-) TimerEvent: {}
+[27.103235] (-) TimerEvent: {}
+[27.203598] (-) TimerEvent: {}
+[27.304017] (-) TimerEvent: {}
+[27.404378] (-) TimerEvent: {}
+[27.504842] (-) TimerEvent: {}
+[27.605331] (-) TimerEvent: {}
+[27.705716] (-) TimerEvent: {}
+[27.806032] (-) TimerEvent: {}
+[27.906585] (-) TimerEvent: {}
+[28.006952] (-) TimerEvent: {}
+[28.107355] (-) TimerEvent: {}
+[28.207745] (-) TimerEvent: {}
+[28.308193] (-) TimerEvent: {}
+[28.408564] (-) TimerEvent: {}
+[28.508937] (-) TimerEvent: {}
+[28.609375] (-) TimerEvent: {}
+[28.709858] (-) TimerEvent: {}
+[28.797989] (robot_world) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking CXX executable test_robot_driver\x1b[0m\n'}
+[28.809979] (-) TimerEvent: {}
+[28.910348] (-) TimerEvent: {}
+[29.010734] (-) TimerEvent: {}
+[29.111164] (-) TimerEvent: {}
+[29.211536] (-) TimerEvent: {}
+[29.311903] (-) TimerEvent: {}
+[29.412317] (-) TimerEvent: {}
+[29.512734] (-) TimerEvent: {}
+[29.613092] (-) TimerEvent: {}
+[29.713437] (-) TimerEvent: {}
+[29.813799] (-) TimerEvent: {}
+[29.914178] (-) TimerEvent: {}
+[30.014660] (-) TimerEvent: {}
+[30.108296] (robot_world) StdoutLine: {'line': b'[100%] Built target test_robot_driver\n'}
+[30.114761] (-) TimerEvent: {}
+[30.121976] (robot_world) CommandEnded: {'returncode': 0}
+[30.122966] (robot_world) JobProgress: {'identifier': 'robot_world', 'progress': 'install'}
+[30.131017] (robot_world) Command: {'cmd': ['/usr/bin/cmake', '--install', '/root/workspace/rl-navibot/build/robot_world'], 'cwd': '/root/workspace/rl-navibot/build/robot_world', 'env': OrderedDict([('HOSTNAME', 'cdws'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/root'), ('OLDPWD', '/root/workspace'), ('ROS_PYTHON_VERSION', '3'), ('COLCON_PREFIX_PATH', '/root/workspace/nitrobot_ws/install:/root/workspace/turtlebot3_ws/install:/root/workspace/rl-navibot/install'), ('ROS_DISTRO', 'humble'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('NVIDIA_DRIVER_CAPABILITIES', 'all'), ('TERM', 'xterm'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('DISPLAY', ':0'), ('LANG', 'C.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('ROSDISTRO_INDEX_URL', 'https://mirrors.tuna.tsinghua.edu.cn/rosdistro/index-v4.yaml'), ('ROS_DOMAIN_ID', '0'), ('AMENT_PREFIX_PATH', '/root/workspace/nitrobot_ws/install/nitrobot:/root/workspace/turtlebot3_ws/install/turtlebot3:/root/workspace/turtlebot3_ws/install/turtlebot3_teleop:/root/workspace/turtlebot3_ws/install/turtlebot3_simulations:/root/workspace/turtlebot3_ws/install/turtlebot3_bringup:/root/workspace/turtlebot3_ws/install/turtlebot3_node:/root/workspace/turtlebot3_ws/install/turtlebot3_navigation2:/root/workspace/turtlebot3_ws/install/turtlebot3_manipulation_gazebo:/root/workspace/turtlebot3_ws/install/turtlebot3_gazebo:/root/workspace/turtlebot3_ws/install/turtlebot3_fake_node:/root/workspace/turtlebot3_ws/install/turtlebot3_example:/root/workspace/turtlebot3_ws/install/turtlebot3_description:/root/workspace/turtlebot3_ws/install/turtlebot3_cartographer:/root/workspace/rl-navibot/install/robot_world:/opt/ros/humble'), ('PWD', '/root/workspace/rl-navibot/build/robot_world'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/root/workspace/turtlebot3_ws/install/turtlebot3_teleop/lib/python3.10/site-packages:/root/workspace/turtlebot3_ws/install/turtlebot3_example/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('NVIDIA_VISIBLE_DEVICES', 'void'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/root/workspace/nitrobot_ws/install/nitrobot:/root/workspace/turtlebot3_ws/install/turtlebot3:/root/workspace/turtlebot3_ws/install/turtlebot3_simulations:/root/workspace/turtlebot3_ws/install/turtlebot3_bringup:/root/workspace/turtlebot3_ws/install/turtlebot3_node:/root/workspace/turtlebot3_ws/install/turtlebot3_navigation2:/root/workspace/turtlebot3_ws/install/turtlebot3_manipulation_gazebo:/root/workspace/turtlebot3_ws/install/turtlebot3_gazebo:/root/workspace/turtlebot3_ws/install/turtlebot3_fake_node:/root/workspace/turtlebot3_ws/install/turtlebot3_description:/root/workspace/turtlebot3_ws/install/turtlebot3_cartographer:/root/workspace/rl-navibot/install/robot_world:/root/workspace/turtlebot3_ws/install/turtlebot3_teleop:/root/workspace/turtlebot3_ws/install/turtlebot3_example:/opt/ros/humble')]), 'shell': False}
+[30.137680] (robot_world) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[30.138171] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/lib/robot_world/robot_driver\n'}
+[30.145390] (robot_world) StdoutLine: {'line': b'-- Set runtime path of "/root/workspace/rl-navibot/install/robot_world/lib/robot_world/robot_driver" to ""\n'}
+[30.145661] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/lib/robot_world/world_manager\n'}
+[30.146585] (robot_world) StdoutLine: {'line': b'-- Set runtime path of "/root/workspace/rl-navibot/install/robot_world/lib/robot_world/world_manager" to ""\n'}
+[30.146773] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/launch\n'}
+[30.147136] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/launch/robot_world_sim.launch.py\n'}
+[30.147237] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/launch/multi_robots.launch.py\n'}
+[30.147671] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/ament_index/resource_index/package_run_dependencies/robot_world\n'}
+[30.147970] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/ament_index/resource_index/parent_prefix_path/robot_world\n'}
+[30.148319] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/environment/ament_prefix_path.sh\n'}
+[30.148452] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/environment/ament_prefix_path.dsv\n'}
+[30.148602] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/environment/path.sh\n'}
+[30.148697] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/environment/path.dsv\n'}
+[30.148876] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/local_setup.bash\n'}
+[30.148995] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/local_setup.sh\n'}
+[30.149139] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/local_setup.zsh\n'}
+[30.149223] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/local_setup.dsv\n'}
+[30.149374] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/package.dsv\n'}
+[30.149583] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/ament_index/resource_index/packages/robot_world\n'}
+[30.149950] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/cmake/robot_worldConfig.cmake\n'}
+[30.150074] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/cmake/robot_worldConfig-version.cmake\n'}
+[30.150203] (robot_world) StdoutLine: {'line': b'-- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/package.xml\n'}
+[30.152894] (robot_world) CommandEnded: {'returncode': 0}
+[30.164928] (robot_world) JobEnded: {'identifier': 'robot_world', 'rc': 0}
+[30.166199] (-) EventReactorShutdown: {}

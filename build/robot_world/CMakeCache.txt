@@ -25,7 +25,7 @@ AMENT_CMAKE_ENVIRONMENT_PARENT_PREFIX_PATH_GENERATION:BOOL=ON
 
 //Replace the CMake install command with a custom implementation
 // using symlinks instead of copying resources
-AMENT_CMAKE_SYMLINK_INSTALL:BOOL=1
+AMENT_CMAKE_SYMLINK_INSTALL:BOOL=OFF
 
 //Generate an uninstall target to revert the effects of the install
 // step
@@ -269,7 +269,7 @@ PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
 Python3_EXECUTABLE:FILEPATH=/usr/bin/python3
 
 //Name of the computer/site where compile is being run
-SITE:STRING=e24245bc67b4
+SITE:STRING=cdws
 
 //The directory containing a CMake configuration file for TinyXML2.
 TinyXML2_DIR:PATH=TinyXML2_DIR-NOTFOUND
@@ -518,7 +518,7 @@ robot_world_BINARY_DIR:STATIC=/root/workspace/rl-navibot/build/robot_world
 robot_world_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
-robot_world_SOURCE_DIR:STATIC=/root/workspace/rl-navibot/src/execution/robot_world
+robot_world_SOURCE_DIR:STATIC=/root/workspace/rl-navibot/src/simulation/robot_world
 
 //Dependencies for the target
 robot_world_lib_LIB_DEPENDS:STATIC=general;rclcpp::rclcpp;general;geometry_msgs::geometry_msgs__rosidl_generator_c;general;geometry_msgs::geometry_msgs__rosidl_typesupport_fastrtps_c;general;geometry_msgs::geometry_msgs__rosidl_typesupport_introspection_c;general;geometry_msgs::geometry_msgs__rosidl_typesupport_c;general;geometry_msgs::geometry_msgs__rosidl_typesupport_fastrtps_cpp;general;geometry_msgs::geometry_msgs__rosidl_typesupport_introspection_cpp;general;geometry_msgs::geometry_msgs__rosidl_typesupport_cpp;general;geometry_msgs::geometry_msgs__rosidl_generator_py;general;sensor_msgs::sensor_msgs__rosidl_generator_c;general;sensor_msgs::sensor_msgs__rosidl_typesupport_fastrtps_c;general;sensor_msgs::sensor_msgs__rosidl_typesupport_fastrtps_cpp;general;sensor_msgs::sensor_msgs__rosidl_typesupport_introspection_c;general;sensor_msgs::sensor_msgs__rosidl_typesupport_c;general;sensor_msgs::sensor_msgs__rosidl_typesupport_introspection_cpp;general;sensor_msgs::sensor_msgs__rosidl_typesupport_cpp;general;sensor_msgs::sensor_msgs__rosidl_generator_py;general;nav_msgs::nav_msgs__rosidl_generator_c;general;nav_msgs::nav_msgs__rosidl_typesupport_fastrtps_c;general;nav_msgs::nav_msgs__rosidl_typesupport_fastrtps_cpp;general;nav_msgs::nav_msgs__rosidl_typesupport_introspection_c;general;nav_msgs::nav_msgs__rosidl_typesupport_c;general;nav_msgs::nav_msgs__rosidl_typesupport_introspection_cpp;general;nav_msgs::nav_msgs__rosidl_typesupport_cpp;general;nav_msgs::nav_msgs__rosidl_generator_py;general;std_msgs::std_msgs__rosidl_generator_c;general;std_msgs::std_msgs__rosidl_typesupport_fastrtps_c;general;std_msgs::std_msgs__rosidl_typesupport_fastrtps_cpp;general;std_msgs::std_msgs__rosidl_typesupport_introspection_c;general;std_msgs::std_msgs__rosidl_typesupport_c;general;std_msgs::std_msgs__rosidl_typesupport_introspection_cpp;general;std_msgs::std_msgs__rosidl_typesupport_cpp;general;std_msgs::std_msgs__rosidl_generator_py;general;tf2::tf2;general;gazebo_msgs::gazebo_msgs__rosidl_generator_c;general;gazebo_msgs::gazebo_msgs__rosidl_typesupport_fastrtps_c;general;gazebo_msgs::gazebo_msgs__rosidl_typesupport_fastrtps_cpp;general;gazebo_msgs::gazebo_msgs__rosidl_typesupport_introspection_c;general;gazebo_msgs::gazebo_msgs__rosidl_typesupport_c;general;gazebo_msgs::gazebo_msgs__rosidl_typesupport_introspection_cpp;general;gazebo_msgs::gazebo_msgs__rosidl_typesupport_cpp;general;gazebo_msgs::gazebo_msgs__rosidl_generator_py;general;std_srvs::std_srvs__rosidl_generator_c;general;std_srvs::std_srvs__rosidl_typesupport_fastrtps_c;general;std_srvs::std_srvs__rosidl_typesupport_introspection_c;general;std_srvs::std_srvs__rosidl_typesupport_c;general;std_srvs::std_srvs__rosidl_typesupport_fastrtps_cpp;general;std_srvs::std_srvs__rosidl_typesupport_introspection_cpp;general;std_srvs::std_srvs__rosidl_typesupport_cpp;general;std_srvs::std_srvs__rosidl_generator_py;
@@ -702,7 +702,7 @@ CMAKE_HAVE_LIBC_PTHREAD:INTERNAL=1
 CMAKE_HAVE_PTHREAD_H:INTERNAL=1
 //Source directory with the top level CMakeLists.txt file for this
 // project
-CMAKE_HOME_DIRECTORY:INTERNAL=/root/workspace/rl-navibot/src/execution/robot_world
+CMAKE_HOME_DIRECTORY:INTERNAL=/root/workspace/rl-navibot/src/simulation/robot_world
 //Install .so files without execute permission.
 CMAKE_INSTALL_SO_NO_EXE:INTERNAL=1
 //ADVANCED property for variable: CMAKE_LINKER
@@ -830,8 +830,6 @@ _Python3_EXECUTABLE:INTERNAL=/usr/bin/python3
 //Python3 Properties
 _Python3_INTERPRETER_PROPERTIES:INTERNAL=Python;3;10;12;64;;cpython-310-x86_64-linux-gnu;/usr/lib/python3.10;/usr/lib/python3.10;/usr/lib/python3/dist-packages;/usr/lib/python3/dist-packages
 _Python3_INTERPRETER_SIGNATURE:INTERNAL=0f3e53742e142b1d9e50e4ca5b901dd8
-//Index for unique symlink install targets
-__AMENT_CMAKE_SYMLINK_INSTALL_TARGETS_INDEX:INTERNAL=1
 __pkg_config_arguments__OPENSSL:INTERNAL=QUIET;openssl
 __pkg_config_checked__OPENSSL:INTERNAL=1
 //ADVANCED property for variable: pkgcfg_lib__OPENSSL_crypto

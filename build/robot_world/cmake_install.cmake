@@ -1,4 +1,4 @@
-# Install script for directory: /root/workspace/rl-navibot/src/execution/robot_world
+# Install script for directory: /root/workspace/rl-navibot/src/simulation/robot_world
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -43,7 +43,106 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  include("/root/workspace/rl-navibot/build/robot_world/ament_cmake_symlink_install/ament_cmake_symlink_install.cmake")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/robot_world/robot_driver" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/robot_world/robot_driver")
+    file(RPATH_CHECK
+         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/robot_world/robot_driver"
+         RPATH "")
+  endif()
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/robot_world" TYPE EXECUTABLE FILES "/root/workspace/rl-navibot/build/robot_world/robot_driver")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/robot_world/robot_driver" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/robot_world/robot_driver")
+    file(RPATH_CHANGE
+         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/robot_world/robot_driver"
+         OLD_RPATH "/opt/ros/humble/lib:"
+         NEW_RPATH "")
+    if(CMAKE_INSTALL_DO_STRIP)
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/robot_world/robot_driver")
+    endif()
+  endif()
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/robot_world/world_manager" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/robot_world/world_manager")
+    file(RPATH_CHECK
+         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/robot_world/world_manager"
+         RPATH "")
+  endif()
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/robot_world" TYPE EXECUTABLE FILES "/root/workspace/rl-navibot/build/robot_world/world_manager")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/robot_world/world_manager" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/robot_world/world_manager")
+    file(RPATH_CHANGE
+         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/robot_world/world_manager"
+         OLD_RPATH "/opt/ros/humble/lib:"
+         NEW_RPATH "")
+    if(CMAKE_INSTALL_DO_STRIP)
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/robot_world/world_manager")
+    endif()
+  endif()
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/robot_world" TYPE DIRECTORY FILES "/root/workspace/rl-navibot/src/simulation/robot_world/launch")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ament_index/resource_index/package_run_dependencies" TYPE FILE FILES "/root/workspace/rl-navibot/build/robot_world/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/robot_world")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ament_index/resource_index/parent_prefix_path" TYPE FILE FILES "/root/workspace/rl-navibot/build/robot_world/ament_cmake_index/share/ament_index/resource_index/parent_prefix_path/robot_world")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/robot_world/environment" TYPE FILE FILES "/opt/ros/humble/share/ament_cmake_core/cmake/environment_hooks/environment/ament_prefix_path.sh")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/robot_world/environment" TYPE FILE FILES "/root/workspace/rl-navibot/build/robot_world/ament_cmake_environment_hooks/ament_prefix_path.dsv")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/robot_world/environment" TYPE FILE FILES "/opt/ros/humble/share/ament_cmake_core/cmake/environment_hooks/environment/path.sh")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/robot_world/environment" TYPE FILE FILES "/root/workspace/rl-navibot/build/robot_world/ament_cmake_environment_hooks/path.dsv")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/robot_world" TYPE FILE FILES "/root/workspace/rl-navibot/build/robot_world/ament_cmake_environment_hooks/local_setup.bash")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/robot_world" TYPE FILE FILES "/root/workspace/rl-navibot/build/robot_world/ament_cmake_environment_hooks/local_setup.sh")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/robot_world" TYPE FILE FILES "/root/workspace/rl-navibot/build/robot_world/ament_cmake_environment_hooks/local_setup.zsh")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/robot_world" TYPE FILE FILES "/root/workspace/rl-navibot/build/robot_world/ament_cmake_environment_hooks/local_setup.dsv")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/robot_world" TYPE FILE FILES "/root/workspace/rl-navibot/build/robot_world/ament_cmake_environment_hooks/package.dsv")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ament_index/resource_index/packages" TYPE FILE FILES "/root/workspace/rl-navibot/build/robot_world/ament_cmake_index/share/ament_index/resource_index/packages/robot_world")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/robot_world/cmake" TYPE FILE FILES
+    "/root/workspace/rl-navibot/build/robot_world/ament_cmake_core/robot_worldConfig.cmake"
+    "/root/workspace/rl-navibot/build/robot_world/ament_cmake_core/robot_worldConfig-version.cmake"
+    )
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/robot_world" TYPE FILE FILES "/root/workspace/rl-navibot/src/simulation/robot_world/package.xml")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)

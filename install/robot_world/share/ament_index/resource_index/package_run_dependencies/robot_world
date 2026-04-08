@@ -1,1 +1,1 @@
-/root/workspace/rl-navibot/build/robot_world/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/robot_world
+rclcpp;geometry_msgs;sensor_msgs;nav_msgs;std_msgs;gazebo_msgs;std_srvs;tf2;tf2_ros;tf2_geometry_msgs;ament_lint_auto;ament_lint_common;ament_cmake_gtest

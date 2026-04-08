@@ -1,0 +1,106 @@
+[0.205s] Invoking command in '/root/workspace/rl-navibot/build/robot_world': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/workspace/turtlebot3_ws/install/turtlebot3_teleop:/root/workspace/turtlebot3_ws/install/turtlebot3_example:/opt/ros/humble /usr/bin/cmake /root/workspace/rl-navibot/src/simulation/robot_world -DCMAKE_INSTALL_PREFIX=/root/workspace/rl-navibot/install/robot_world
+[0.259s] -- The C compiler identification is GNU 11.4.0
+[0.306s] -- The CXX compiler identification is GNU 11.4.0
+[0.313s] -- Detecting C compiler ABI info
+[0.374s] -- Detecting C compiler ABI info - done
+[0.379s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.379s] -- Detecting C compile features
+[0.379s] -- Detecting C compile features - done
+[0.381s] -- Detecting CXX compiler ABI info
+[0.460s] -- Detecting CXX compiler ABI info - done
+[0.466s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.467s] -- Detecting CXX compile features
+[0.467s] -- Detecting CXX compile features - done
+[0.472s] -- Found ament_cmake: 1.3.11 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.603s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[0.711s] -- Found rclcpp: 16.0.12 (/opt/ros/humble/share/rclcpp/cmake)
+[0.798s] -- Found rosidl_generator_c: 3.1.6 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+[0.809s] -- Found rosidl_adapter: 3.1.6 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.824s] -- Found rosidl_generator_cpp: 3.1.6 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[0.849s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.875s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.954s] -- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[0.961s] -- Found rmw_fastrtps_cpp: 6.2.7 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+[1.101s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  
+[1.140s] -- Found FastRTPS: /opt/ros/humble/include  
+[1.205s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[1.231s] -- Looking for pthread.h
+[1.315s] -- Looking for pthread.h - found
+[1.316s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[1.387s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+[1.388s] -- Found Threads: TRUE  
+[1.470s] -- Found geometry_msgs: 4.9.0 (/opt/ros/humble/share/geometry_msgs/cmake)
+[1.494s] -- Found sensor_msgs: 4.9.0 (/opt/ros/humble/share/sensor_msgs/cmake)
+[1.521s] -- Found nav_msgs: 4.9.0 (/opt/ros/humble/share/nav_msgs/cmake)
+[1.551s] -- Found tf2: 0.25.13 (/opt/ros/humble/share/tf2/cmake)
+[1.572s] -- Found tf2_geometry_msgs: 0.25.13 (/opt/ros/humble/share/tf2_geometry_msgs/cmake)
+[1.609s] -- Found eigen3_cmake_module: 0.1.1 (/opt/ros/humble/share/eigen3_cmake_module/cmake)
+[1.611s] -- Found Eigen3: TRUE (found version "3.4.0") 
+[1.611s] -- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+[1.761s] -- Found gazebo_msgs: 3.9.0 (/opt/ros/humble/share/gazebo_msgs/cmake)
+[1.815s] -- Found std_srvs: 4.9.0 (/opt/ros/humble/share/std_srvs/cmake)
+[1.837s] -- Found ament_cmake_gtest: 1.3.11 (/opt/ros/humble/share/ament_cmake_gtest/cmake)
+[1.843s] -- Found ament_lint_auto: 0.12.12 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[1.930s] -- Found gtest sources under '/opt/ros/humble/src/gtest_vendor': C++ tests using 'Google Test' will be built
+[1.946s] -- Added test 'cppcheck' to perform static code analysis on C / C++ code
+[1.946s] -- Configured cppcheck include dirs: $<BUILD_INTERFACE:/root/workspace/rl-navibot/src/simulation/robot_world/include>
+[1.946s] -- Configured cppcheck exclude dirs and/or files: 
+[1.947s] -- Added test 'flake8' to check Python code syntax and style conventions
+[1.948s] -- Added test 'lint_cmake' to check CMake code style
+[1.949s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[1.950s] -- Added test 'uncrustify' to check C / C++ code style
+[1.950s] -- Configured uncrustify additional arguments: 
+[1.952s] -- Added test 'xmllint' to check XML markup files
+[1.953s] -- Configuring done
+[1.989s] -- Generating done
+[2.002s] -- Build files have been written to: /root/workspace/rl-navibot/build/robot_world
+[2.011s] Invoked command in '/root/workspace/rl-navibot/build/robot_world' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/workspace/turtlebot3_ws/install/turtlebot3_teleop:/root/workspace/turtlebot3_ws/install/turtlebot3_example:/opt/ros/humble /usr/bin/cmake /root/workspace/rl-navibot/src/simulation/robot_world -DCMAKE_INSTALL_PREFIX=/root/workspace/rl-navibot/install/robot_world
+[2.013s] Invoking command in '/root/workspace/rl-navibot/build/robot_world': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/workspace/turtlebot3_ws/install/turtlebot3_teleop:/root/workspace/turtlebot3_ws/install/turtlebot3_example:/opt/ros/humble /usr/bin/cmake --build /root/workspace/rl-navibot/build/robot_world -- -j16 -l16
+[2.057s] [  6%] [32mBuilding CXX object gtest/CMakeFiles/gtest.dir/src/gtest-all.cc.o[0m
+[2.057s] [ 13%] [32mBuilding CXX object CMakeFiles/robot_world_lib.dir/src/world_manager.cpp.o[0m
+[2.058s] [ 26%] [32mBuilding CXX object gtest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o[0m
+[2.058s] [ 26%] [32mBuilding CXX object CMakeFiles/robot_world_lib.dir/src/robot_driver.cpp.o[0m
+[2.948s] [ 33%] [32m[1mLinking CXX static library libgtest_main.a[0m
+[2.985s] [ 33%] Built target gtest_main
+[4.906s] [ 40%] [32m[1mLinking CXX static library libgtest.a[0m
+[4.959s] [ 40%] Built target gtest
+[17.377s] [ 46%] [32m[1mLinking CXX static library librobot_world_lib.a[0m
+[17.719s] [ 46%] Built target robot_world_lib
+[17.739s] [ 60%] [32mBuilding CXX object CMakeFiles/test_robot_driver.dir/test/test_robot_driver.cpp.o[0m
+[17.740s] [ 66%] [32mBuilding CXX object CMakeFiles/test_world_manager.dir/test/test_world_manager.cpp.o[0m
+[17.740s] [ 66%] [32mBuilding CXX object CMakeFiles/world_manager.dir/src/world_manager_main.cpp.o[0m
+[17.740s] [ 73%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/robot_driver_main.cpp.o[0m
+[20.369s] [ 80%] [32m[1mLinking CXX executable world_manager[0m
+[20.606s] [ 80%] Built target world_manager
+[20.637s] [ 86%] [32m[1mLinking CXX executable robot_driver[0m
+[21.569s] [ 86%] Built target robot_driver
+[21.998s] [ 93%] [32m[1mLinking CXX executable test_world_manager[0m
+[22.314s] [ 93%] Built target test_world_manager
+[28.774s] [100%] [32m[1mLinking CXX executable test_robot_driver[0m
+[30.084s] [100%] Built target test_robot_driver
+[30.098s] Invoked command in '/root/workspace/rl-navibot/build/robot_world' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/workspace/turtlebot3_ws/install/turtlebot3_teleop:/root/workspace/turtlebot3_ws/install/turtlebot3_example:/opt/ros/humble /usr/bin/cmake --build /root/workspace/rl-navibot/build/robot_world -- -j16 -l16
+[30.108s] Invoking command in '/root/workspace/rl-navibot/build/robot_world': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/workspace/turtlebot3_ws/install/turtlebot3_teleop:/root/workspace/turtlebot3_ws/install/turtlebot3_example:/opt/ros/humble /usr/bin/cmake --install /root/workspace/rl-navibot/build/robot_world
+[30.114s] -- Install configuration: ""
+[30.114s] -- Installing: /root/workspace/rl-navibot/install/robot_world/lib/robot_world/robot_driver
+[30.121s] -- Set runtime path of "/root/workspace/rl-navibot/install/robot_world/lib/robot_world/robot_driver" to ""
+[30.122s] -- Installing: /root/workspace/rl-navibot/install/robot_world/lib/robot_world/world_manager
+[30.123s] -- Set runtime path of "/root/workspace/rl-navibot/install/robot_world/lib/robot_world/world_manager" to ""
+[30.123s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/launch
+[30.123s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/launch/robot_world_sim.launch.py
+[30.123s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/launch/multi_robots.launch.py
+[30.124s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/ament_index/resource_index/package_run_dependencies/robot_world
+[30.124s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/ament_index/resource_index/parent_prefix_path/robot_world
+[30.124s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/environment/ament_prefix_path.sh
+[30.124s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/environment/ament_prefix_path.dsv
+[30.125s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/environment/path.sh
+[30.125s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/environment/path.dsv
+[30.125s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/local_setup.bash
+[30.125s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/local_setup.sh
+[30.125s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/local_setup.zsh
+[30.125s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/local_setup.dsv
+[30.125s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/package.dsv
+[30.126s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/ament_index/resource_index/packages/robot_world
+[30.126s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/cmake/robot_worldConfig.cmake
+[30.126s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/cmake/robot_worldConfig-version.cmake
+[30.126s] -- Installing: /root/workspace/rl-navibot/install/robot_world/share/robot_world/package.xml
+[30.130s] Invoked command in '/root/workspace/rl-navibot/build/robot_world' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/workspace/turtlebot3_ws/install/turtlebot3_teleop:/root/workspace/turtlebot3_ws/install/turtlebot3_example:/opt/ros/humble /usr/bin/cmake --install /root/workspace/rl-navibot/build/robot_world

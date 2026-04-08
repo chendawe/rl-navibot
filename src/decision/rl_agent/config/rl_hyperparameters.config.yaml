@@ -1,0 +1,18 @@
+training:
+  algorithm: "SAC"
+  learning_rate: 0.0003
+  n_steps: 2048
+  batch_size: 64
+  n_epochs: 10
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_range: 0.2
+  ent_coef: 0.01                # 熵系数，鼓励探索
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+  net_arch: [256, 256]          # 策略/价值网络结构
+
+  total_timesteps: 500000
+  save_freq: 10000
+  save_dir: "./tb3_rl_models/"
+  tensorboard_log: "./tb3_rl_logs/"

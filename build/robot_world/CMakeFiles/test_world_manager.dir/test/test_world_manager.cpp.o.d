@@ -1,5 +1,5 @@
 CMakeFiles/test_world_manager.dir/test/test_world_manager.cpp.o: \
- /root/workspace/rl-navibot/src/execution/robot_world/test/test_world_manager.cpp \
+ /root/workspace/rl-navibot/src/simulation/robot_world/test/test_world_manager.cpp \
  /usr/include/stdc-predef.h \
  /opt/ros/humble/src/gtest_vendor/include/gtest/gtest.h \
  /usr/include/c++/11/cstddef \
@@ -678,7 +678,7 @@ CMakeFiles/test_world_manager.dir/test/test_world_manager.cpp.o: \
  /opt/ros/humble/include/geometry_msgs/geometry_msgs/msg/detail/vector3__traits.hpp \
  /opt/ros/humble/include/gazebo_msgs/gazebo_msgs/srv/detail/set_entity_state__type_support.hpp \
  /opt/ros/humble/include/gazebo_msgs/gazebo_msgs/msg/rosidl_generator_cpp__visibility_control.hpp \
- /root/workspace/rl-navibot/src/execution/robot_world/include/robot_world/world_manager.hpp \
+ /root/workspace/rl-navibot/src/simulation/robot_world/include/robot_world/world_manager.hpp \
  /opt/ros/humble/include/geometry_msgs/geometry_msgs/msg/pose.hpp \
  /opt/ros/humble/include/geometry_msgs/geometry_msgs/msg/detail/pose__builder.hpp \
  /opt/ros/humble/include/geometry_msgs/geometry_msgs/msg/detail/pose__type_support.hpp \

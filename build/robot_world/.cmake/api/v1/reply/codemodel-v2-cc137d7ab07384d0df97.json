@@ -1,0 +1,166 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-9dc7b292860de191691c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8
+					]
+				},
+				{
+					"build" : "gtest",
+					"jsonFile" : "directory-gtest-a2408fe1a73b92c5e636.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "/opt/ros/humble/src/gtest_vendor",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"name" : "",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "robot_world",
+					"targetIndexes" : 
+					[
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "gtest",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "gtest::@0af4add9fe94340e763e",
+					"jsonFile" : "target-gtest-b560fe5a3d484937ad47.json",
+					"name" : "gtest",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "gtest_main::@0af4add9fe94340e763e",
+					"jsonFile" : "target-gtest_main-12d1721a7d6160c6ef92.json",
+					"name" : "gtest_main",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "robot_driver::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-robot_driver-6b3bf965b56cb1c0905c.json",
+					"name" : "robot_driver",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "robot_world_lib::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-robot_world_lib-de6d38ebd77c9818334c.json",
+					"name" : "robot_world_lib",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "robot_world_uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-robot_world_uninstall-3bfe7e151aff0f9d5726.json",
+					"name" : "robot_world_uninstall",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "test_robot_driver::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-test_robot_driver-cad7bb00ba1542a593b1.json",
+					"name" : "test_robot_driver",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "test_world_manager::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-test_world_manager-f0125f3faba34fe24a1a.json",
+					"name" : "test_world_manager",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-uninstall-1fc93451783c4b2b25ac.json",
+					"name" : "uninstall",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "world_manager::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-world_manager-a5219f8ee0e5ae1d33c9.json",
+					"name" : "world_manager",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/root/workspace/rl-navibot/build/robot_world",
+		"source" : "/root/workspace/rl-navibot/src/simulation/robot_world"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

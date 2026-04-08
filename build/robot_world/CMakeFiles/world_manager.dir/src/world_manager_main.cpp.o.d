@@ -1,5 +1,5 @@
 CMakeFiles/world_manager.dir/src/world_manager_main.cpp.o: \
- /root/workspace/rl-navibot/src/execution/robot_world/src/world_manager_main.cpp \
+ /root/workspace/rl-navibot/src/simulation/robot_world/src/world_manager_main.cpp \
  /usr/include/stdc-predef.h \
  /opt/ros/humble/include/rclcpp/rclcpp/rclcpp.hpp \
  /usr/include/c++/11/csignal \
@@ -618,7 +618,7 @@ CMakeFiles/world_manager.dir/src/world_manager_main.cpp.o: \
  /opt/ros/humble/include/rclcpp/rclcpp/wait_set_policies/thread_safe_synchronization.hpp \
  /opt/ros/humble/include/rclcpp/rclcpp/wait_set_policies/detail/write_preferring_read_write_lock.hpp \
  /opt/ros/humble/include/rclcpp/rclcpp/wait_set_template.hpp \
- /root/workspace/rl-navibot/src/execution/robot_world/include/robot_world/world_manager.hpp \
+ /root/workspace/rl-navibot/src/simulation/robot_world/include/robot_world/world_manager.hpp \
  /opt/ros/humble/include/std_srvs/std_srvs/srv/empty.hpp \
  /opt/ros/humble/include/std_srvs/std_srvs/srv/detail/empty__struct.hpp \
  /opt/ros/humble/include/std_srvs/std_srvs/srv/detail/empty__builder.hpp \
