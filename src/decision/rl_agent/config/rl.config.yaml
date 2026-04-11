@@ -17,8 +17,8 @@ environment:
   dist_to_goal_clip_norm: 5.0            # 目标距离归一化上限
 
   # --- 碰撞 ---
-  proximity_to_collision_threshold: 0.22     # 碰撞距离阈值 (小于此值判碰撞)
-  proximity_to_be_safe_min: 0.35         # 接近障碍物时额外惩罚
+  proximity_to_collision_threshold: 0.11     # 碰撞距离阈值 (小于此值判碰撞)
+  proximity_to_be_safe_min: 0.30         # 接近障碍物时额外惩罚
 
   # --- 物理速度极限 ---
   lin_acc_physics_max: 2.0
@@ -32,7 +32,7 @@ reward:
   penalty_at_collision: -300.0      # 碰撞
   reward_factor_approaching_goal: 5.0        # 靠近目标的比例系数
   penalty_elapsing_time: -0.5             # 每步时间惩罚
-  penalty_stuck: -2.0            # 卡住惩罚
+  penalty_stuck: -0.1            # 卡住惩罚
   reward_good_orientation: 2.0          # 好方向奖励
   penalty_in_safe_proximity: -1.0           # 安全距离内惩罚
   penalty_action_smoothness: -0.5

@@ -358,3 +358,22 @@ ros2 service call /set_entity_state gazebo_msgs/srv/SetEntityState "{state: {nam
 ```
 
 - 方案B：Python代码也在容器内跑
+
+
+## 重置环境
+在`/home/chendawww/workspace/turtlebot3_ws/install/turtlebot3_gazebo/share/turtlebot3_gazebo/worlds/turtlebot3_house.world`中设置插件：
+
+```xml
+    <plugin name="gazebo_ros_state" filename="libgazebo_ros_state.so">
+      <ros>
+        <namespace>/</namespace>
+      </ros>
+    </plugin>
+```
+```sh
+(ros2) (base) chendawww@cdws:~/workspace$ ros2 service list | grep entity
+# /delete_entity
+# /get_entity_state
+# /set_entity_state
+# /spawn_entity
+```

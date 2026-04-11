@@ -13,12 +13,12 @@ environment:
 
   # --- 目标 ---
   dist_to_goal_threshold: 0.3           # 到达目标的距离判定
-  dist_to_goal_gen_min: 1.0
+  dist_to_goal_gen_min: 2.0
   dist_to_goal_clip_norm: 5.0            # 目标距离归一化上限
 
   # --- 碰撞 ---
-  proximity_to_collision_threshold: 0.22     # 碰撞距离阈值 (小于此值判碰撞)
-  proximity_to_be_safe_min: 0.35         # 接近障碍物时额外惩罚
+  proximity_to_collision_threshold: 0.35     # 碰撞距离阈值 (小于此值判碰撞)
+  proximity_to_be_safe_min: 0.45         # 接近障碍物时额外惩罚
 
   # --- 物理速度极限 ---
   lin_acc_physics_max: 2.0
