@@ -26,16 +26,27 @@ environment:
 
   lin_vel_stuck_threshold: 0.12
 
-reward:
+# reward:
+  # # --- 奖励权重 ---
+  # reward_at_goal: 300.0            # 到达目标
+  # penalty_at_collision: -300.0      # 碰撞
+  # reward_factor_approaching_goal: 5.0        # 靠近目标的比例系数
+  # penalty_elapsing_time: -0.5             # 每步时间惩罚
+  # penalty_stuck: -0.1            # 卡住惩罚
+  # reward_good_orientation: 2.0          # 好方向奖励
+  # penalty_in_safe_proximity: -1.0           # 安全距离内惩罚
+  # penalty_action_smoothness: -0.5
   # --- 奖励权重 ---
-  reward_at_goal: 300.0            # 到达目标
-  penalty_at_collision: -300.0      # 碰撞
-  reward_factor_approaching_goal: 5.0        # 靠近目标的比例系数
-  penalty_elapsing_time: -0.5             # 每步时间惩罚
-  penalty_stuck: -0.1            # 卡住惩罚
-  reward_good_orientation: 2.0          # 好方向奖励
-  penalty_in_safe_proximity: -1.0           # 安全距离内惩罚
-  penalty_action_smoothness: -0.5
+reward:
+  reward_at_goal: 300.0            
+  penalty_at_collision: -300.0     
+  reward_factor_approaching_goal: 20.0        # 【必改】5.0 -> 20.0，让快跑的收益远超时间惩罚
+  penalty_elapsing_time: -0.2                 # 【必改】-0.5 -> -0.2，减轻慢性死亡的压力
+  penalty_stuck: -0.05                        
+  reward_good_orientation: 2.0                
+  penalty_in_safe_proximity: -1.0             
+  penalty_action_smoothness: -0.5             # 可以保持 -0.5，因为代码里加了容错阈值，现在它只惩罚抽搐了
+
   
 train:
   algorithm: "SAC"

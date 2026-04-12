@@ -160,6 +160,18 @@ class TurtleBot3NavEnv(gym.Env, Node):
         {"cx":  0.5, "cy":  0.5, "r": 0.6}, 
     ]
 
+    # house
+    DEFAULT_SAFE_ZONES = [
+        # 小垃圾房垃圾桶旁边
+        {"cx":  1.2, "cy":  1.5, "r": 0.4},
+        # 单腿茶几房茶几底下
+        {"cx":  6.5, "cy":  -4.2, "r": 0.9},
+        # 书柜红墙房右下角
+        {"cx":  -6, "cy":  2, "r": 0.8},
+        # 书柜红墙房右下角
+        {"cx":  7.5, "cy":  -3, "r": 0.9},
+    ]
+
     def __init__(self, robot_urdf: Optional[str] = None, config: Optional[Dict[str, Any]] = None):
         # 初始化 Gym 环境
         gym.Env.__init__(self)
@@ -365,7 +377,40 @@ class TurtleBot3NavEnv(gym.Env, Node):
         #         "Make sure robot_state_publisher is running in Docker.")
         # # --- 读取机器人 URDF ---
 
+        self.print_config()
         logger.info("TurtleBot3HouseEnv initialized.")
+
+    def print_config(self) :
+        # ==================== 打印实际加载的配置 ====================
+        self.get_logger().info("=" * 60)
+        self.get_logger().info("  TurtleBot3NavEnv 配置加载完毕，实际参数如下：")
+        self.get_logger().info("=" * 60)
+        self.get_logger().info("  [环境参数]")
+        self.get_logger().info(f"    laser_range_max           = {self.laser_range_max}")
+        self.get_logger().info(f"    laser_beams_num           = {self.laser_beams_num}")
+        self.get_logger().info(f"    lin_vel_max               = {self.lin_vel_max}")
+        self.get_logger().info(f"    ang_vel_max               = {self.ang_vel_max}")
+        self.get_logger().info(f"    episode_steps_max         = {self.episode_steps_max}")
+        self.get_logger().info(f"    step_duration             = {self.step_duration}")
+        self.get_logger().info(f"    dist_to_goal_threshold    = {self.dist_to_goal_threshold}")
+        self.get_logger().info(f"    dist_to_goal_gen_min      = {self.dist_to_goal_gen_min}")
+        self.get_logger().info(f"    dist_to_goal_clip_norm    = {self.dist_to_goal_clip_norm}")
+        self.get_logger().info(f"    proximity_to_collision    = {self.proximity_to_collision_threshold}")
+        self.get_logger().info(f"    proximity_to_be_safe_min  = {self.proximity_to_be_safe_min}")
+        self.get_logger().info(f"    lin_vel_stuck_threshold   = {self.lin_vel_stuck_threshold}")
+        self.get_logger().info(f"    lin_acc_physics_max       = {self.lin_acc_physics_max}")
+        self.get_logger().info(f"    ang_vel_imu_physics_max   = {self.ang_vel_imu_physics_max}")
+        self.get_logger().info("  [奖励参数]")
+        self.get_logger().info(f"    reward_at_goal            = {self.reward_at_goal}")
+        self.get_logger().info(f"    penalty_at_collision      = {self.penalty_at_collision}")
+        self.get_logger().info(f"    reward_factor_approaching = {self.reward_factor_approaching_goal}")
+        self.get_logger().info(f"    penalty_elapsing_time     = {self.penalty_elapsing_time}")
+        self.get_logger().info(f"    penalty_stuck             = {self.penalty_stuck}")
+        self.get_logger().info(f"    reward_good_orientation   = {self.reward_good_orientation}")
+        self.get_logger().info(f"    penalty_in_safe_proximity = {self.penalty_in_safe_proximity}")
+        self.get_logger().info(f"    penalty_instability       = {self.penalty_instability}")
+        self.get_logger().info(f"    penalty_action_smoothness = {self.penalty_action_smoothness}")
+        self.get_logger().info("=" * 60)
 
     # ==================== ROS2 回调与工具 ====================
 
@@ -469,7 +514,7 @@ class TurtleBot3NavEnv(gym.Env, Node):
         if self._robot_urdf is None:
             self.get_logger().error("Fatal: robot_urdf string was not provided during Env initialization!")
             raise ValueError("robot_urdf is required")
-
+ 
         # --- 只在第一次 reset 时等待服务 ---
         if not hasattr(self, '_services_ready') or not self._services_ready:
             self.get_logger().info("Waiting for Gazebo reset services...")
@@ -529,12 +574,12 @@ class TurtleBot3NavEnv(gym.Env, Node):
                     valid_ranges = [r for r in self._latest_scan.ranges if 0.15 < r < self._latest_scan.range_max]
                     if valid_ranges:
                         min_dist = min(valid_ranges)
-                    if min_dist > self.proximity_to_be_safe_min * 1.1:
+                    if min_dist > self.proximity_to_collision_threshold * 1.1:
                         self.get_logger().info(f"Reset done. Fresh min laser dist: {min_dist:.3f}m (retry {attempt+1})")
                         break
                 time.sleep(0.1)
 
-            if min_dist > self.proximity_to_be_safe_min * 1.1:
+            if min_dist > self.proximity_to_collision_threshold * 1.1:
                 self.goal_x = goal_x
                 self.goal_y = goal_y
                 success = True
@@ -856,14 +901,15 @@ class TurtleBot3NavEnv(gym.Env, Node):
         dist_delta = prev_dist - curr_dist
         reward += dist_delta * self.reward_factor_approaching_goal
 
-        # 3. 朝向奖励
+        # 3. 朝向奖励 【关键修复：防止 0.012m/s 蠕动刷分】
         yaw = odom['yaw']
         target_angle = math.atan2(self.goal_y - odom['y'], self.goal_x - odom['x'])
         yaw_error = math.atan2(math.sin(target_angle - yaw), math.cos(target_angle - yaw))
         heading_factor = math.cos(yaw_error)
         
-        if abs(odom['vx']) > 0.01:
-            reward += heading_factor * self.reward_good_orientation
+        # 修复逻辑：去掉 if abs(odom['vx']) > 0.01 的门槛，直接乘以速度！
+        # 这样只有“真正在移动”且“朝向正确”时才给奖励，站着不动朝向再好也是 0 分。
+        reward += heading_factor * self.reward_good_orientation * abs(odom['vx'])
 
         # 4. 安全惩罚
         min_dist = self._min_laser()
@@ -876,39 +922,95 @@ class TurtleBot3NavEnv(gym.Env, Node):
             tilt_factor = (roll**2 + pitch**2) / ( (math.pi/6)**2 )
             reward -= abs(self.penalty_instability) * min(tilt_factor, 1.0)
 
-        # 6. 卡住惩罚 (优化版：检测指令与实际速度的偏差)
-        # 如果指令速度很大，但实际速度很小，说明发生了打滑或卡死
+        # 6. 卡住惩罚 
         vel_error = abs(action[0]) - abs(odom['vx'])
-        if vel_error > self.lin_vel_stuck_threshold: # 允许 0.1 的控制误差
+        if vel_error > self.lin_vel_stuck_threshold: 
              reward += self.penalty_stuck * (vel_error / self.lin_vel_max)
-            # 这个逻辑的初衷是：我给了很大的油门，但车没动（比如撞墙卡死了或者打滑了），所以要惩罚。
 
-            # 需要注意的物理现象：
-            # TurtleBot3 是有加速度的。如果你上一秒给的速度是 0，这一秒突然给 0.2 m/s 的指令，在 time.sleep(step_duration) 这极短的时间内（比如 0.1秒），底盘的 odom['vx'] 可能只到了 0.05 m/s。
-            # 这时候 vel_error = 0.2 - 0.05 = 0.15，会误触发卡住惩罚。
-
-            # 对策：
-            # 不需要改代码，但在你后面调参时，self.penalty_stuck 的绝对值一定要设得非常小（比如 -0.1 甚至 -0.05），让它成为一个“长期卡死时的累积惩罚”，而不是“一瞬间没加速就狠罚”。只要它远小于正常靠近目标的奖励，网络就会学到容忍启动时的短暂延迟。
-
-
-        # 7. 动作平滑性惩罚 (新增)
-        # 1. 计算变化量
+        # 7. 动作平滑性惩罚 【关键修复：解除手脚束缚】
         diff_lin = action[0] - self.last_action[0]
         diff_ang = action[1] - self.last_action[1]
 
-        # 2. 归一化 (变化量 / 最大速度 = 变化百分比)
         norm_diff_lin = diff_lin / self.lin_vel_max
         norm_diff_ang = diff_ang / self.ang_vel_max
 
-        # 3. 计算加权欧氏距离 (此时两者量纲一致，都是 0~1 的比例)
         smoothness_penalty = np.sqrt(norm_diff_lin**2 + norm_diff_ang**2)
 
-        # 4. 施加惩罚
-        reward += self.penalty_action_smoothness * smoothness_penalty
+        # 修复逻辑：增加一个“容忍阈值”。正常的转弯和加减速不应该被惩罚，
+        # 只有类似抽搐一样的突变（比如一帧内角速度变化超过 30%）才惩罚。
+        SMOOTHNESS_TOLERANCE = 0.3 
+        if smoothness_penalty > SMOOTHNESS_TOLERANCE:
+            reward += self.penalty_action_smoothness * (smoothness_penalty - SMOOTHNESS_TOLERANCE)
+            
         # 8. 时间惩罚
         reward += self.penalty_elapsing_time
         
         return reward
+
+    # def _compute_reward(self, curr_dist, prev_dist, goal_reached, collision, action, odom, imu):
+    #     reward = 0.0
+        
+    #     # 1. 终止条件奖励
+    #     if goal_reached: return self.reward_at_goal
+    #     if collision:    return self.penalty_at_collision
+
+    #     # 2. 距离变化奖励
+    #     dist_delta = prev_dist - curr_dist
+    #     reward += dist_delta * self.reward_factor_approaching_goal
+
+    #     # 3. 朝向奖励
+    #     yaw = odom['yaw']
+    #     target_angle = math.atan2(self.goal_y - odom['y'], self.goal_x - odom['x'])
+    #     yaw_error = math.atan2(math.sin(target_angle - yaw), math.cos(target_angle - yaw))
+    #     heading_factor = math.cos(yaw_error)
+        
+    #     if abs(odom['vx']) > 0.01:
+    #         reward += heading_factor * self.reward_good_orientation
+
+    #     # 4. 安全惩罚
+    #     min_dist = self._min_laser()
+    #     if min_dist < self.proximity_to_be_safe_min:
+    #         reward += self.penalty_in_safe_proximity * ((self.proximity_to_be_safe_min - min_dist) / self.proximity_to_be_safe_min)**2
+
+    #     # 5. 稳定性惩罚 (基于 IMU 的 Roll 和 Pitch)
+    #     if imu is not None:
+    #         roll, pitch = imu['rpy']
+    #         tilt_factor = (roll**2 + pitch**2) / ( (math.pi/6)**2 )
+    #         reward -= abs(self.penalty_instability) * min(tilt_factor, 1.0)
+
+    #     # 6. 卡住惩罚 (优化版：检测指令与实际速度的偏差)
+    #     # 如果指令速度很大，但实际速度很小，说明发生了打滑或卡死
+    #     vel_error = abs(action[0]) - abs(odom['vx'])
+    #     if vel_error > self.lin_vel_stuck_threshold: # 允许 0.1 的控制误差
+    #          reward += self.penalty_stuck * (vel_error / self.lin_vel_max)
+    #         # 这个逻辑的初衷是：我给了很大的油门，但车没动（比如撞墙卡死了或者打滑了），所以要惩罚。
+
+    #         # 需要注意的物理现象：
+    #         # TurtleBot3 是有加速度的。如果你上一秒给的速度是 0，这一秒突然给 0.2 m/s 的指令，在 time.sleep(step_duration) 这极短的时间内（比如 0.1秒），底盘的 odom['vx'] 可能只到了 0.05 m/s。
+    #         # 这时候 vel_error = 0.2 - 0.05 = 0.15，会误触发卡住惩罚。
+
+    #         # 对策：
+    #         # 不需要改代码，但在你后面调参时，self.penalty_stuck 的绝对值一定要设得非常小（比如 -0.1 甚至 -0.05），让它成为一个“长期卡死时的累积惩罚”，而不是“一瞬间没加速就狠罚”。只要它远小于正常靠近目标的奖励，网络就会学到容忍启动时的短暂延迟。
+
+
+    #     # 7. 动作平滑性惩罚 (新增)
+    #     # 1. 计算变化量
+    #     diff_lin = action[0] - self.last_action[0]
+    #     diff_ang = action[1] - self.last_action[1]
+
+    #     # 2. 归一化 (变化量 / 最大速度 = 变化百分比)
+    #     norm_diff_lin = diff_lin / self.lin_vel_max
+    #     norm_diff_ang = diff_ang / self.ang_vel_max
+
+    #     # 3. 计算加权欧氏距离 (此时两者量纲一致，都是 0~1 的比例)
+    #     smoothness_penalty = np.sqrt(norm_diff_lin**2 + norm_diff_ang**2)
+
+    #     # 4. 施加惩罚
+    #     reward += self.penalty_action_smoothness * smoothness_penalty
+    #     # 8. 时间惩罚
+    #     reward += self.penalty_elapsing_time
+        
+    #     return reward
 
 
 
