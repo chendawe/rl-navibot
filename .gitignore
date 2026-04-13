@@ -1,10 +1,3 @@
-# 忽略 SAC 模型目录下所有文件
-tries/burger_navi_in_world/saved_models/SAC/**/*
-
-# 例外：保留 136000 步的模型 + 回放缓冲
-!tries/burger_navi_in_world/saved_models/SAC/sac_nav_model_136000_steps.zip
-!tries/burger_navi_in_world/saved_models/SAC/sac_nav_model_replay_buffer_136000_steps.pkl
-
 # 忽略 压缩包模型
 *.zip
 
@@ -29,3 +22,10 @@ tries/burger_navi_in_world/saved_models/SAC/**/*
 
 # # 系统文件
 # .DS_Store
+
+# 忽略 SAC 模型目录下所有文件
+tries/burger_navi_in_world/saved_models/SAC/**/*
+
+# 例外：保留 136000 步的模型 + 回放缓冲
+!tries/burger_navi_in_world/saved_models/SAC/sac_nav_model_136000_steps.zip
+!tries/burger_navi_in_world/saved_models/SAC/sac_nav_model_replay_buffer_136000_steps.pkl
