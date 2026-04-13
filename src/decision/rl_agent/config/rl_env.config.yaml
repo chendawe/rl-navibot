@@ -25,3 +25,4 @@ environment:
   ang_vel_imu_physics_max: 3.0
 
   lin_vel_stuck_threshold: 0.12
+  

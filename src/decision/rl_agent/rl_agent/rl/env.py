@@ -137,9 +137,16 @@ class TurtleBot3NavEnv(gym.Env, Node):
     """
 
     metadata = {"render_modes": []}
-
+    
+    SAFE_ZONES = {}
+    # dafault
+    SAFE_ZONES["default"] = [
+        # 角斗场底部
+        {"cx": 0, "cy":  0, "r": 1.},
+    ]
+    
     # world
-    DEFAULT_SAFE_ZONES = [
+    SAFE_ZONES["ttb3_world"] = [
         # 角斗场底部
         {"cx":  -0.5, "cy":  -1.75, "r": 0.75},
         {"cx":  0.5, "cy":  -1.75, "r": 0.75}, 
@@ -161,24 +168,51 @@ class TurtleBot3NavEnv(gym.Env, Node):
     ]
 
     # house
-    DEFAULT_SAFE_ZONES = [
+    SAFE_ZONES["ttb3_house"] = [
         # 小垃圾房垃圾桶旁边
         {"cx":  1.2, "cy":  1.5, "r": 0.4},
         # 单腿茶几房茶几底下
         {"cx":  6.5, "cy":  -4.2, "r": 0.9},
         # 书柜红墙房右下角
         {"cx":  -6, "cy":  2, "r": 0.8},
-        # 书柜红墙房右下角
+        # 书柜木墙房左下角
         {"cx":  7.5, "cy":  -3, "r": 0.9},
+        # 中央房木桌正中
+        {"cx":  -2.6, "cy":  2.5, "r": 0.6},
+        # 右上房铁桌正中
+        {"cx":  4.9, "cy":  3, "r": 1},
+        # 屋外：正门口+左右下两翼
+        {"cx":  -4, "cy":  -3, "r": 2},
+        {"cx":  2, "cy":  -4, "r": 2},
+        {"cx":  -9, "cy":  -7, "r": 1},
+        {"cx":  6, "cy":  -6, "r": 0.8},
+        # # 屋外：屋后
+        # {"cx":  -4, "cy":  8, "r": 2},
+        # {"cx":  4, "cy":  8, "r": 2},
+        # 屋外：屋右
+        {"cx":  9, "cy":  8, "r": 1},
+        {"cx":  9, "cy":  -4, "r": 1},
+        # 屋外：屋左
+        {"cx":  -9, "cy":  8, "r": 1},
+        {"cx":  -9, "cy":  -3, "r": 1},
     ]
 
-    def __init__(self, robot_urdf: Optional[str] = None, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, robot_urdf: Optional[str] = None, config: Optional[Dict[str, Any]] = None, bot_name="burger", world="ttb3_world"):
         # 初始化 Gym 环境
         gym.Env.__init__(self)
             
-        self.bot_name = "burger"
-        
+        self.bot_name = bot_name
         self._robot_urdf = robot_urdf
+        
+        # 安全区域
+        try:
+            self.safe_zones = self.SAFE_ZONES[world]
+            print(f"[World] Now bot {self.bot_name} in the world {world}!")
+        except KeyError:
+            valid_worlds = list(self.SAFE_ZONES.keys())
+            raise KeyError(f"无效的 world: {world}，请使用 {valid_worlds}") from None
+        # finally :
+        #     self.safe_zones = self.SAFE_ZONES["default"]
 
         # 默认配置结构
         default_config = {
@@ -251,9 +285,6 @@ class TurtleBot3NavEnv(gym.Env, Node):
         self.penalty_in_safe_proximity = cfg_rew.get("penalty_in_safe_proximity")
         self.penalty_instability = cfg_rew.get("penalty_instability")
         self.penalty_action_smoothness = cfg_rew.get("penalty_action_smoothness")
-
-        # 安全区域
-        self.safe_zones = self.DEFAULT_SAFE_ZONES
 
         # --- 初始化 ROS2 Node ---
         if not rclpy.ok():
@@ -424,7 +455,11 @@ class TurtleBot3NavEnv(gym.Env, Node):
     def _scan_cb(self, msg: LaserScan):
         with self._lock:
             # 【核心修复】滤掉打到自身轮子/底盘的噪点
-            msg.ranges = [msg.range_max if r < 0.15 else r for r in msg.ranges]
+            # 正确做法：遍历原地修改底层数组，而不是生成新 list 覆盖
+            for i in range(len(msg.ranges)):
+                if msg.ranges[i] < 0.15:
+                    msg.ranges[i] = msg.range_max
+                    
             self._latest_scan = msg
             self._latest_scan_time = time.time()
 
@@ -515,7 +550,6 @@ class TurtleBot3NavEnv(gym.Env, Node):
             self.get_logger().error("Fatal: robot_urdf string was not provided during Env initialization!")
             raise ValueError("robot_urdf is required")
  
-        # --- 只在第一次 reset 时等待服务 ---
         if not hasattr(self, '_services_ready') or not self._services_ready:
             self.get_logger().info("Waiting for Gazebo reset services...")
             try:
@@ -523,94 +557,109 @@ class TurtleBot3NavEnv(gym.Env, Node):
                     raise RuntimeError("SetEntityState service not found!")
                 if not self._reset_world_client.wait_for_service(timeout_sec=5.0):
                     raise RuntimeError("ResetWorld service not found!")
-                
                 self._services_ready = True
                 self.get_logger().info("Gazebo services are ready!")
             except Exception as e:
                 self.get_logger().error(f"Service check failed: {e}")
                 return self._get_zero_obs(), {}
 
-        # 清空内部缓存
         with self._lock:
             self._latest_scan = None
             self._latest_scan_time = 0.0
 
+        # 解析参数
+        custom_start = options.get("start_pos", None) if options else None
+        custom_goal = options.get("goal_pos", None) if options else None
+        safe_threshold = options.get("safe_threshold", None) if options else None
+        skip_spawn_check = options.get("skip_spawn_check", False) if options else False
+
+        if custom_goal is not None:
+            self.goal_x, self.goal_y = custom_goal[0], custom_goal[1]
+
         max_retries = 5
         success = False
+        use_custom_start = custom_start is not None
 
         for attempt in range(max_retries):
-            spawn_x, spawn_y = self._sample_safe_position()
-            spawn_yaw = self.np_random.uniform(-math.pi, math.pi)
-            goal_x, goal_y = self._sample_safe_position()
+            # 确定起点
+            if use_custom_start:
+                spawn_x, spawn_y, spawn_yaw = custom_start[0], custom_start[1], custom_start[2]
+            else:
+                spawn_x, spawn_y = self._sample_safe_position()
+                spawn_yaw = self.np_random.uniform(-math.pi, math.pi)
 
-            # 1. 调用 /reset_world (直接用 __init__ 创建好的 client)
+            # 确定终点
+            if custom_goal is None:
+                self.goal_x, self.goal_y = self._sample_safe_position()
+
+            # ==========================================
+            # 校验 1: 起点终点距离是否足够远 (仅限随机生成时校验)
+            # ==========================================
+            if not use_custom_start and custom_goal is None:
+                dist = self._euclidean((spawn_x, spawn_y), (self.goal_x, self.goal_y))
+                if dist < self.dist_to_goal_gen_min:
+                    self.get_logger().warn(f"Goal too close to spawn ({dist:.2f}m < {self.dist_to_goal_gen_min}m), retrying...")
+                    continue  # 距离太近，直接进入下一次重试，不浪费时间去调Gazebo
+
+            # --- Gazebo 服务调用 ---
             future = self._reset_world_client.call_async(std_srvs.srv.Empty.Request())
             start = time.time()
-            while not future.done() and time.time() - start < 3.0:
-                time.sleep(0.05)
+            while not future.done() and time.time() - start < 3.0: time.sleep(0.05)
 
-            # 2. 调用 /set_entity_state 传送机器人
             req = SetEntityState.Request()
-            req.state.name = "burger" 
+            req.state.name = self.bot_name
             req.state.pose.position.x = float(spawn_x)
             req.state.pose.position.y = float(spawn_y)
             req.state.pose.position.z = 0.0
             req.state.pose.orientation.z = math.sin(spawn_yaw / 2.0)
             req.state.pose.orientation.w = math.cos(spawn_yaw / 2.0)
             req.state.reference_frame = "world"
-            
             future = self._reset_client.call_async(req)
             start = time.time()
-            while not future.done() and time.time() - start < 3.0:
-                time.sleep(0.05)
+            while not future.done() and time.time() - start < 3.0: time.sleep(0.05)
 
-            # 3. 等待雷达数据并验证安全距离
+            # ==========================================
+            # 校验 2 & 3: 激光防撞检查 & 终点本身安全性
+            # ==========================================
             time.sleep(0.5)
-            timeout = time.time() + 3.0
-            min_dist = 0.0
-            
-            while time.time() < timeout:
-                if self._latest_scan is not None:
-                    valid_ranges = [r for r in self._latest_scan.ranges if 0.15 < r < self._latest_scan.range_max]
-                    if valid_ranges:
-                        min_dist = min(valid_ranges)
-                    if min_dist > self.proximity_to_collision_threshold * 1.1:
-                        self.get_logger().info(f"Reset done. Fresh min laser dist: {min_dist:.3f}m (retry {attempt+1})")
-                        break
-                time.sleep(0.1)
+            spawn_is_safe = True
+            goal_is_safe = True
 
-            if min_dist > self.proximity_to_collision_threshold * 1.1:
-                self.goal_x = goal_x
-                self.goal_y = goal_y
+            if not skip_spawn_check:
+                spawn_is_safe = self._check_spawn_pos(timeout=3.0, threshold=safe_threshold)
+            
+            # 只在随机生成终点时，检查终点本身是否合法
+            if custom_goal is None:
+                goal_is_safe = self._check_goal_pos(self.goal_x, self.goal_y)
+
+            if spawn_is_safe and goal_is_safe:
                 success = True
                 break
             else:
-                self.get_logger().warn(f"Spawn too close ({min_dist:.3f}m), retrying...")
+                if not use_custom_start:
+                    self.get_logger().warn(f"Position check failed, retrying... ({attempt+1}/{max_retries})")
 
+        # 兜底逻辑
         if not success:
-            # 真正的兜底：不仅赋值 goal，还要把机器人传送到安全点！
-            self.get_logger().warn("All retries failed! Fallback to (0,0).")
-            req = SetEntityState.Request()
-            req.state.name = "burger"
-            req.state.pose.position.x = 0.5
-            req.state.pose.position.y = 0.5
-            req.state.pose.position.z = 0.0
-            req.state.pose.orientation.w = 1.0
-            req.state.reference_frame = "world"
-            future = self._reset_client.call_async(req)
-            start = time.time()
-            while not future.done() and time.time() - start < 3.0:
-                time.sleep(0.05)
-                
-            # 修复变量名：self.goal_x 而不是 self._target_goal_x
-            self.goal_x = goal_x
-            self.goal_y = goal_y
+            if not use_custom_start:
+                self.get_logger().warn("All retries failed! Fallback to (0.5, 0.5).")
+                req = SetEntityState.Request()
+                req.state.name = "burger"
+                req.state.pose.position.x = 0.5
+                req.state.pose.position.y = 0.5
+                req.state.pose.position.z = 0.0
+                req.state.pose.orientation.w = 1.0
+                req.state.reference_frame = "world"
+                future = self._reset_client.call_async(req)
+                start = time.time()
+                while not future.done() and time.time() - start < 3.0: time.sleep(0.05)
+            else:
+                self.get_logger().error(f"Failed to set custom start pose: {custom_start}")
 
         obs = self._get_obs()
-        
         self.prev_dist = self._goal_dist(self._get_odom_data()) if self._get_odom_data() else 1.0
         self.episode_step = 0
-        self.last_action = np.zeros(2, dtype=np.float32) # 初始化上一步动作
+        self.last_action = np.zeros(2, dtype=np.float32)
         
         info = {
             "spawn_pos": (spawn_x, spawn_y),
@@ -618,6 +667,118 @@ class TurtleBot3NavEnv(gym.Env, Node):
             "initial_dist": math.hypot(spawn_x - self.goal_x, spawn_y - self.goal_y)
         }
         return obs, info
+
+
+    # def reset(self, seed=None, options=None):
+    #     super().reset(seed=seed, options=options)
+        
+    #     if self._robot_urdf is None:
+    #         self.get_logger().error("Fatal: robot_urdf string was not provided during Env initialization!")
+    #         raise ValueError("robot_urdf is required")
+ 
+    #     # --- 只在第一次 reset 时等待服务 ---
+    #     if not hasattr(self, '_services_ready') or not self._services_ready:
+    #         self.get_logger().info("Waiting for Gazebo reset services...")
+    #         try:
+    #             if not self._reset_client.wait_for_service(timeout_sec=5.0):
+    #                 raise RuntimeError("SetEntityState service not found!")
+    #             if not self._reset_world_client.wait_for_service(timeout_sec=5.0):
+    #                 raise RuntimeError("ResetWorld service not found!")
+                
+    #             self._services_ready = True
+    #             self.get_logger().info("Gazebo services are ready!")
+    #         except Exception as e:
+    #             self.get_logger().error(f"Service check failed: {e}")
+    #             return self._get_zero_obs(), {}
+
+    #     # 清空内部缓存
+    #     with self._lock:
+    #         self._latest_scan = None
+    #         self._latest_scan_time = 0.0
+
+    #     max_retries = 5
+    #     success = False
+
+    #     for attempt in range(max_retries):
+    #         spawn_x, spawn_y = self._sample_safe_position()
+    #         spawn_yaw = self.np_random.uniform(-math.pi, math.pi)
+    #         goal_x, goal_y = self._sample_safe_position()
+
+    #         # 1. 调用 /reset_world (直接用 __init__ 创建好的 client)
+    #         future = self._reset_world_client.call_async(std_srvs.srv.Empty.Request())
+    #         start = time.time()
+    #         while not future.done() and time.time() - start < 3.0:
+    #             time.sleep(0.05)
+
+    #         # 2. 调用 /set_entity_state 传送机器人
+    #         req = SetEntityState.Request()
+    #         req.state.name = "burger" 
+    #         req.state.pose.position.x = float(spawn_x)
+    #         req.state.pose.position.y = float(spawn_y)
+    #         req.state.pose.position.z = 0.0
+    #         req.state.pose.orientation.z = math.sin(spawn_yaw / 2.0)
+    #         req.state.pose.orientation.w = math.cos(spawn_yaw / 2.0)
+    #         req.state.reference_frame = "world"
+            
+    #         future = self._reset_client.call_async(req)
+    #         start = time.time()
+    #         while not future.done() and time.time() - start < 3.0:
+    #             time.sleep(0.05)
+
+    #         # 3. 等待雷达数据并验证安全距离
+    #         time.sleep(0.5)
+    #         timeout = time.time() + 3.0
+    #         min_dist = 0.0
+            
+    #         while time.time() < timeout:
+    #             if self._latest_scan is not None:
+    #                 valid_ranges = [r for r in self._latest_scan.ranges if 0.15 < r < self._latest_scan.range_max]
+    #                 if valid_ranges:
+    #                     min_dist = min(valid_ranges)
+    #                 if min_dist > self.dist_to_goal_gen_min:
+    #                     self.get_logger().info(f"Reset done. Fresh min laser dist: {min_dist:.3f}m (retry {attempt+1})")
+    #                     break
+    #             time.sleep(0.1)
+
+    #         if min_dist > self.dist_to_goal_gen_min:
+    #             self.goal_x = goal_x
+    #             self.goal_y = goal_y
+    #             success = True
+    #             break
+    #         else:
+    #             self.get_logger().warn(f"Spawn too close ({min_dist:.3f}m), retrying...")
+
+    #     if not success:
+    #         # 真正的兜底：不仅赋值 goal，还要把机器人传送到安全点！
+    #         self.get_logger().warn("All retries failed! Fallback to (0,0).")
+    #         req = SetEntityState.Request()
+    #         req.state.name = "burger"
+    #         req.state.pose.position.x = 0.5
+    #         req.state.pose.position.y = 0.5
+    #         req.state.pose.position.z = 0.0
+    #         req.state.pose.orientation.w = 1.0
+    #         req.state.reference_frame = "world"
+    #         future = self._reset_client.call_async(req)
+    #         start = time.time()
+    #         while not future.done() and time.time() - start < 3.0:
+    #             time.sleep(0.05)
+                
+    #         # 修复变量名：self.goal_x 而不是 self._target_goal_x
+    #         self.goal_x = goal_x
+    #         self.goal_y = goal_y
+
+    #     obs = self._get_obs()
+        
+    #     self.prev_dist = self._goal_dist(self._get_odom_data()) if self._get_odom_data() else 1.0
+    #     self.episode_step = 0
+    #     self.last_action = np.zeros(2, dtype=np.float32) # 初始化上一步动作
+        
+    #     info = {
+    #         "spawn_pos": (spawn_x, spawn_y),
+    #         "goal_pos": (self.goal_x, self.goal_y),
+    #         "initial_dist": math.hypot(spawn_x - self.goal_x, spawn_y - self.goal_y)
+    #     }
+    #     return obs, info
 
 
     # # 方法 A: 简单粗暴 - 重置整个世界 (所有物体回到初始位置)
@@ -794,6 +955,100 @@ class TurtleBot3NavEnv(gym.Env, Node):
 
         return obs, float(reward), terminated, truncated, info
 
+    def run_episode(self, model, start_pos=None, goal_pos=None, deterministic=True, safe_threshold=None, skip_spawn_check=False):
+        options = {}
+        """
+        在当前环境中运行一个完整的 Episode
+        
+        参数:
+            model: 加载好的 RL 模型 (如 SAC, PPO)
+            start_pos: 指定起点 [x, y, yaw]，None 则随机安全采样
+            goal_pos: 指定终点 [x, y]，None 则随机安全采样
+            deterministic: 是否使用确定性策略预测动作
+        
+        返回:
+            dict: 包含该次 episode 的统计指标
+        """
+        options = {}
+        if start_pos is not None:
+            options["start_pos"] = start_pos
+        if goal_pos is not None:
+            options["goal_pos"] = goal_pos
+        # 补全缺失的 options 传递
+        if safe_threshold is not None:
+            options["safe_threshold"] = safe_threshold
+        if skip_spawn_check:
+            options["skip_spawn_check"] = True
+            
+        obs, info = self.reset(options=options if options else None)
+        
+        ep_reward = 0.0
+        step = 0
+        done = False
+        
+        # 修复参数名
+        while not done:
+            action, _ = model.predict(obs, deterministic=deterministic)
+            obs, reward, terminated, truncated, info = self.step(action)
+            ep_reward += reward
+            step += 1
+            done = terminated or truncated
+            
+        return {
+            "reward": ep_reward,
+            "success": info.get('goal_reached', False),
+            "steps": step,
+            "final_dist": info.get('final_dist', -1.0)
+        }
+
+    def run_episodes(self, model, num_episodes=10, start_pos_list=None, goal_pos_list=None, deterministic=True, safe_threshold=None):
+        """
+        批量运行 Episode
+        如果传入了 list，则按 list 顺序执行；如果没传，则随机生成。
+        """
+        results = []
+        
+        # 参数校验
+        if start_pos_list is not None and goal_pos_list is not None:
+            if len(start_pos_list) != len(goal_pos_list):
+                raise ValueError("start_pos_list 和 goal_pos_list 长度必须一致！")
+            num_episodes = len(start_pos_list)
+        elif start_pos_list is not None:
+            num_episodes = len(start_pos_list)
+        elif goal_pos_list is not None:
+            num_episodes = len(goal_pos_list)
+
+        for i in range(num_episodes):
+            s_pos = start_pos_list[i] if start_pos_list is not None else None
+            g_pos = goal_pos_list[i] if goal_pos_list is not None else None
+            
+            # 如果指定了起点，默认跳过防撞检查（因为往往是为了测特定难点）
+            skip_check = (s_pos is not None)
+            
+            res = self.run_episode(
+                model=model,
+                start_pos=s_pos,
+                goal_pos=g_pos,
+                deterministic=deterministic,
+                safe_threshold=safe_threshold,
+                skip_spawn_check=skip_check
+            )
+            results.append(res)
+            
+            # 打印单次进度
+            status = "✅" if res["success"] else "❌"
+            print(f"\r[Episode {i+1}/{num_episodes}] {status} Reward: {res['reward']:.2f} | Steps: {res['steps']}", end="", flush=True)
+        print() # 换行
+
+        # 汇总统计
+        total_success = sum(1 for r in results if r["success"])
+        return {
+            "num_episodes": num_episodes,
+            "success_rate": (total_success / num_episodes) * 100 if num_episodes > 0 else 0,
+            "mean_reward": np.mean([r["reward"] for r in results]) if results else -1,
+            "mean_steps": np.mean([r["steps"] for r in results]) if results else -1,
+            "details": results  # 保留明细，方便画图
+        }
 
     def close(self):
         self.send_velocity(0.0, 0.0)
@@ -815,31 +1070,125 @@ class TurtleBot3NavEnv(gym.Env, Node):
         return math.hypot(a[0] - b[0], a[1] - b[1])
 
     def _goal_dist(self, odom: Dict) -> float:
-        return math.hypot(self.goal_x - odom["x"], self.goal_y - odom["y"])
+        return self._euclidean(
+            (self.goal_x, self.goal_y), 
+            (odom["x"], odom["y"])
+        )
         
     def _check_collision(self) -> bool:
+        # 雷达数据过期检查 (在获取数据前做，如果为空说明没数据)
         with self._lock:
-            if self._latest_scan is None: 
-                self.get_logger().info("No laser scan data available for collision check")
-                return False
-            # 雷达数据超过 250ms 视为过期，不判碰撞
-            age = time.time() - self._latest_scan_time
-            if age > 0.25:
-                self.get_logger().debug(
-                    f"Stale scan ({age:.2f}s old), skip collision check")
-                return False
+            is_none = self._latest_scan is None
+            age = time.time() - self._latest_scan_time if not is_none else 1.0
             
-            ranges = np.array(self._latest_scan.ranges)
-            ranges = np.nan_to_num(ranges, nan=self.laser_range_max, posinf=self.laser_range_max)
-            min_dist = float(np.min(ranges))
+        if is_none:
+            return False
+        if age > 0.25:
+            return False
             
-            # 添加调试日志
-            if min_dist < self.proximity_to_collision_threshold:
-                self.get_logger().debug(f"Collision detected! Min laser dist: {min_dist:.3f}m (threshold: {self.proximity_to_collision_threshold:.3f}m)")
-            else:
-                self.get_logger().debug(f"No collision. Min laser dist: {min_dist:.3f}m (threshold: {self.proximity_to_collision_threshold:.3f}m)")
+        # 直接复用，拿到的是 [0, 1] 归一化后的降采样数据
+        laser_norm = self._get_laser_data()
+        
+        # 还原成真实物理距离 (乘以最大范围)
+        min_dist = float(np.min(laser_norm)) * self.laser_range_max
+        
+        if min_dist < self.proximity_to_collision_threshold:
+            self.get_logger().debug(f"Collision! Min dist: {min_dist:.3f}m")
+            return True
+            
+        return False
+
+    def _check_spawn_pos(self, timeout=3.0, threshold=None):
+        if threshold is None:
+            threshold = getattr(self, 'proximity_to_be_safe_min', 0.3) * 0.9
+            
+        timeout_deadline = time.time() + timeout
+        
+        while time.time() < timeout_deadline:
+            # 如果 _latest_scan 为空，_get_laser_data 会返回全 1.0，还原后就是 range_max，肯定 > threshold，不会误判
+            laser_norm = self._get_laser_data()
+            min_dist = float(np.min(laser_norm)) * self.laser_range_max
+            
+            if min_dist > threshold:
+                return True
+            time.sleep(0.1)
+            
+        self.get_logger().warn(f"Spawn check failed. Min dist: {min_dist:.3f}m < Threshold: {threshold:.3f}m")
+        return False
+
+    def _check_goal_pos(self, goal_x: float, goal_y: float) -> bool:
+        for zone in self.safe_zones:
+            dist_to_center = self._euclidean((goal_x, goal_y), (zone["cx"], zone["cy"]))
+            if dist_to_center <= zone["r"]:
+                return True
                 
-            return min_dist < self.proximity_to_collision_threshold
+        self.get_logger().warn(f"Goal ({goal_x:.2f}, {goal_y:.2f}) is outside all safe zones!")
+        return False
+
+
+    # def _check_collision(self) -> bool:
+    #     with self._lock:
+    #         if self._latest_scan is None: 
+    #             self.get_logger().info("No laser scan data available for collision check")
+    #             return False
+    #         # 雷达数据超过 250ms 视为过期，不判碰撞
+    #         age = time.time() - self._latest_scan_time
+    #         if age > 0.25:
+    #             self.get_logger().debug(
+    #                 f"Stale scan ({age:.2f}s old), skip collision check")
+    #             return False
+            
+    #         ranges = np.array(self._latest_scan.ranges)
+    #         ranges = np.nan_to_num(ranges, nan=self.laser_range_max, posinf=self.laser_range_max)
+            
+    #         min_dist = float(np.min(ranges))
+            
+    #         # 添加调试日志
+    #         if min_dist < self.proximity_to_collision_threshold:
+    #             self.get_logger().debug(f"Collision detected! Min laser dist: {min_dist:.3f}m (threshold: {self.proximity_to_collision_threshold:.3f}m)")
+    #         else:
+    #             self.get_logger().debug(f"No collision. Min laser dist: {min_dist:.3f}m (threshold: {self.proximity_to_collision_threshold:.3f}m)")
+                
+    #         return min_dist < self.proximity_to_collision_threshold
+
+    # def _check_spawn_pos(self, timeout=3.0, threshold=None):
+    #     if threshold is None:
+    #         threshold = getattr(self, 'proximity_to_be_safe_min', 0.3) * 0.9
+            
+    #     timeout_deadline = time.time() + timeout
+    #     min_dist = 0.0
+        
+    #     while time.time() < timeout_deadline:
+    #         # 👇 必须加锁！
+    #         with self._lock:
+    #             scan_data = self._latest_scan.ranges if self._latest_scan is not None else None
+                
+    #         if scan_data is not None:
+    #             valid_ranges = [r for r in scan_data if 0.15 < r < self.laser_range_max] # 建议统一用 self.laser_range_max
+    #             if valid_ranges:
+    #                 min_dist = min(valid_ranges)
+    #             if min_dist > threshold:
+    #                 return True
+    #         time.sleep(0.1)
+            
+    #     self.get_logger().warn(f"Spawn check failed. Min laser dist: {min_dist:.3f}m < Threshold: {threshold:.3f}m")
+    #     return False
+
+    # def _check_goal_pos(self, goal_x: float, goal_y: float) -> bool:
+    #     """
+    #     检查目标点是否落在预设的安全区域内
+    #     """
+    #     for zone in self.safe_zones:
+    #         # 计算目标点与安全区域圆心的距离
+    #         dist_to_center = math.hypot(goal_x - zone["cx"], goal_y - zone["cy"])
+    #         # 如果在任意一个安全圆内，则判定为安全
+    #         if dist_to_center <= zone["r"]:
+    #             return True
+                
+    #     # 遍历完所有安全区都不在里面，说明可能在障碍物或墙壁上
+    #     self.get_logger().warn(f"Goal ({goal_x:.2f}, {goal_y:.2f}) is outside all safe zones!")
+    #     return False
+
 
     def _min_laser(self) -> float:
         with self._lock:
@@ -1012,6 +1361,8 @@ class TurtleBot3NavEnv(gym.Env, Node):
         
     #     return reward
 
+class NaviMissionAssigner() :
+    pass
 
 
 

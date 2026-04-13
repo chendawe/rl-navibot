@@ -1,0 +1,65 @@
+environment:
+  # --- 激光雷达 ---
+  laser_range_max: 3.5          # 激光最大有效距离
+  laser_beams_num: 24           # 降采样后光束数 (360 -> 24)
+
+  # --- 动作空间 ---
+  lin_vel_max: 0.22             # 最大线速度
+  ang_vel_max: 1.5              # 最大角速度
+
+  # --- Episode 控制 ---
+  episode_steps_max: 5000        # 单 episode 最大步数
+  step_duration: 0.1            # 每步仿真时间
+
+  # --- 目标 ---
+  dist_to_goal_threshold: 0.3           # 到达目标的距离判定
+  dist_to_goal_gen_min: 2.0
+  dist_to_goal_clip_norm: 5.0            # 目标距离归一化上限
+
+  # --- 碰撞 ---
+  proximity_to_collision_threshold: 0.18     # 碰撞距离阈值 (小于此值判碰撞)
+  proximity_to_be_safe_min: 0.35         # 接近障碍物时额外惩罚
+
+# TurtleBot3 Burger: 直径约 0.178 米，半径约 0.09 米。
+# TurtleBot3 Waffle: 直径约 0.281 米，半径约 0.14 米。
+# A. 碰撞终止阈值 (proximity_to_collision_threshold)
+# 如果是 Burger: 建议设为 0.12 ~ 0.15 （即离墙 3~6 厘米算撞）。
+# 如果是 Waffle: 建议设为 0.18 ~ 0.20。
+# B. 接近惩罚阈值 (proximity_to_be_safe_min)
+# 如果是 Burger: 建议设为 0.20 ~ 0.25 （即离墙 11~16 厘米开始扣分）。
+# 如果是 Waffle: 建议设为 0.28 ~ 0.35。
+
+  # --- 物理速度极限 ---
+  lin_acc_physics_max: 2.0
+  ang_vel_imu_physics_max: 3.0
+
+  lin_vel_stuck_threshold: 0.12
+reward:
+  reward_at_goal: 300.0            
+  penalty_at_collision: -300.0     
+  reward_factor_approaching_goal: 20.0        # 【必改】5.0 -> 20.0，让快跑的收益远超时间惩罚
+  penalty_elapsing_time: -0.2                 # 【必改】-0.5 -> -0.2，减轻慢性死亡的压力
+  penalty_stuck: -0.05                        
+  reward_good_orientation: 2.0                
+  penalty_in_safe_proximity: -1.0             
+  penalty_action_smoothness: -0.5             # 可以保持 -0.5，因为代码里加了容错阈值，现在它只惩罚抽搐了
+
+  
+train:
+  algorithm: "SAC"
+  learning_rate: 0.0003
+  n_steps: 2048
+  batch_size: 64
+  n_epochs: 10
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_range: 0.2
+  ent_coef: 0.01                # 熵系数，鼓励探索
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+  net_arch: [256, 256]          # 策略/价值网络结构
+
+  total_timesteps: 500000
+  save_freq: 10000
+  save_dir: "./tb3_rl_models/"
+  tensorboard_log: "./tb3_rl_logs/"

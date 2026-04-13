@@ -115,6 +115,9 @@ docker run -it \
 # source install/setup.sh && \
 # source ~/.bashrc
 
+# export FASTRTPS_DEFAULT_PROFILES_FILE=~/fastdds_no_shm.xml
+# export RMW_FASTRTPS_USE_QOS_FROM_XML=0
+
 # 窗口1
 ros2 launch robot_world robot_world_sim.launch.py
 
@@ -152,7 +155,7 @@ export LIBGL_ALWAYS_SOFTWARE=1
 # unset LIBGL_ALWAYS_SOFTWARE
 
 # 设置型号为 burger
-export TURTLEBOT3_MODEL=waffle
+export TURTLEBOT3_MODEL=burger
 # export TURTLEBOT3_MODEL=burger
 # 启动 Gazebo house世界 (或者用其他世界也可以)
 ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py
