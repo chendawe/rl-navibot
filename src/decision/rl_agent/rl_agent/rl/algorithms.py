@@ -118,55 +118,65 @@ from stable_baselines3.common.type_aliases import GymEnv, MaybeCallback, Schedul
 #         self.policy = RuleBasedPolicy(self.observation_space, self.action_space, self.config)
 
 
-def get_algorithm(algo_name: str, env: GymEnv, config: dict, **kwargs) -> BaseAlgorithm:
+def get_algorithm(algo_name: str, env: Env, config: dict, log_dir: str = None, **kwargs) -> BaseAlgorithm:
     """
-    算法工厂函数：根据配置字符串返回统一的算法实例。
-    
-    Args:
-        algo_name (str): "ppo", "sac", "rule_baseline"
-        env (GymEnv): 实例化好的环境
-        config (dict): 全局配置字典
-        **kwargs: 传递给 SB3 算法的额外参数 (如 learning_rate, batch_size)
-    
-    Returns:
-        BaseAlgorithm: SB3 的 PPO/SAC 实例，或 RuleBasedModel 实例
+    算法工厂函数：根据配置字典返回统一的算法实例。
     """
     algo_name = algo_name.lower()
-    
-    if algo_name == "ppo":
-        # 从 config 中提取 PPO 专属参数，如果没设置则使用 SB3 默认值
-        ppo_params = {
-            "policy": "MlpPolicy",
-            "env": env,
-            "learning_rate": config.get("ppo", {}).get("learning_rate", 3e-4),
-            "n_steps": config.get("ppo", {}).get("n_steps", 2048),
-            "batch_size": config.get("ppo", {}).get("batch_size", 64),
-            "verbose": 1,
-            **kwargs
-        }
-        print("Initializing PPO Algorithm...")
-        return PPO(**ppo_params)
-        
-    elif algo_name == "sac":
-        sac_params = {
-            "policy": "MlpPolicy",
-            "env": env,
-            "learning_rate": config.get("sac", {}).get("learning_rate", 3e-4),
-            "batch_size": config.get("sac", {}).get("batch_size", 256),
-            "buffer_size": config.get("sac", {}).get("buffer_size", 1_000_000),
-            "verbose": 1,
-            **kwargs
-        }
+    common_params = {
+        "policy": "MlpPolicy",
+        "env": env,
+        "verbose": 1,
+        "device": kwargs.get("device", "cuda"),
+        "tensorboard_log": log_dir,
+        **kwargs
+    }
+
+    if algo_name == "sac":
+        sac_cfg = config.get("sac_params", {})
+        common_params.update({
+            "learning_rate": sac_cfg.get("learning_rate", 3e-4),
+            "buffer_size": sac_cfg.get("buffer_size", 100000),
+            "learning_starts": sac_cfg.get("learning_starts", 1000),
+            "batch_size": sac_cfg.get("batch_size", 256),
+            "tau": sac_cfg.get("tau", 0.005),
+            "gamma": sac_cfg.get("gamma", 0.99),
+            "ent_coef": sac_cfg.get("ent_coef", "auto"),
+            # SAC 的网络结构是统一的列表
+            "policy_kwargs": dict(net_arch=sac_cfg.get("net_arch", [256, 256]))
+        })
         print("Initializing SAC Algorithm...")
-        return SAC(**sac_params)
+        return SAC(**common_params)
+
+    elif algo_name == "ppo":
+        ppo_cfg = config.get("ppo_params", {})
+        common_params.update({
+            "learning_rate": ppo_cfg.get("learning_rate", 3e-4),
+            "n_steps": ppo_cfg.get("n_steps", 2048),
+            "batch_size": ppo_cfg.get("batch_size", 64),
+            "n_epochs": ppo_cfg.get("n_epochs", 10),
+            "gamma": ppo_cfg.get("gamma", 0.99),
+            "gae_lambda": ppo_cfg.get("gae_lambda", 0.95),
+            "clip_range": ppo_cfg.get("clip_range", 0.2),
+            "ent_coef": ppo_cfg.get("ent_coef", 0.01),
+            "vf_coef": ppo_cfg.get("vf_coef", 0.5),
+            "max_grad_norm": ppo_cfg.get("max_grad_norm", 0.5),
+            # PPO 的网络结构是分离的字典
+            "policy_kwargs": dict(
+                net_arch=dict(
+                    pi=ppo_cfg.get("net_arch_pi", [256, 256]),
+                    vf=ppo_cfg.get("net_arch_vf", [256, 256])
+                )
+            )
+        })
+        print("Initializing PPO Algorithm...")
+        return PPO(**common_params)
         
-    elif algo_name == "rule_baseline":
-        print("Initializing Rule-Based Baseline...")
-        return RuleBasedModel(config=config, env=env, verbose=1)
+    # elif algo_name == "rule_baseline":
+    #     return RuleBasedModel(config=config, env=env, verbose=1)
         
     else:
-        raise ValueError(f"Unknown algorithm name: {algo_name}. Choose from ['ppo', 'sac', 'rule_baseline'].")
-
+        raise ValueError(f"Unknown algorithm: {algo_name}. Choose from ['ppo', 'sac'].")
 
 class RuleBasedPolicy:
     """

@@ -1,353 +1,7 @@
-# # import sys
-# # import os
-# # import time
-# # import math
-# # import numpy as np
-# # import yaml
-# # import rclpy
-# # from pathlib import Path
-
-# # # ========== 1. 你的路径与项目导入 ==========
-# # sys.path.append("/home/chendawww/workspace/rl-navibot/src")
-# # from decision.rl_agent.rl_agent.rl.env import TurtleBot3NavEnv, fetch_tb3_urdf
-
-# # # ========== 2. 加载配置文件 ==========
-# # BASE_DIR = Path(__file__).parent.parent
-# # CONFIG_PATH = BASE_DIR / "config" / "rl.config.yaml"
-# # with open(CONFIG_PATH, "r") as f:
-# #     config = yaml.safe_load(f)
-    
-# # # ========== 3. 极其关键：初始化 ROS2 ==========
-# # rclpy.init()
-# # print("ROS2 initialized...")
-
-# # # ========== 4. 实例化环境 (原生的，不要用 DummyVecEnv) ==========
-# # my_robot_urdf = fetch_tb3_urdf()
-# # env = TurtleBot3NavEnv(robot_urdf=my_robot_urdf, config=config)
-
-# # # ========== 5. 导入 SAC 和 Callback ==========
-# # from stable_baselines3 import SAC
-# # from stable_baselines3.common.callbacks import CheckpointCallback, BaseCallback
-
-# # # ========== 6. 自定义 Callback：记录成功率 + 打印动作分布 ==========
-# # class SuccessRateCallback(BaseCallback):
-# #     def __init__(self, verbose=0):
-# #         super().__init__(verbose)
-# #         self.episode_rewards = []
-# #         self.episode_successes = []
-# #         self.action_means = []  # 存储动作均值
-# #         self.action_stds = []   # 存储动作标准差
-# #         self._current_rewards = {}
-# #         self._current_successes = {}
-
-# #     def _on_step(self) -> bool:
-# #         infos = self.locals.get("infos", [])
-# #         dones = self.locals.get("dones", [])
-# #         rewards = self.locals.get("rewards", [])
-# #         actions = self.locals.get("actions", [])  # 获取当前批次的动作
-
-# #         # 计算当前批次的动作均值和标准差
-# #         if len(actions) > 0:
-# #             action_mean = np.mean(actions, axis=0)
-# #             action_std = np.std(actions, axis=0)
-# #             self.action_means.append(action_mean)
-# #             self.action_stds.append(action_std)
-            
-# #             # 每100步打印一次动作分布
-# #             if len(self.action_means) % 100 == 0:
-# #                 print(f"\n[Action Distribution] Mean: {action_mean}, Std: {action_std}")
-# #                 print(f"[Recent Episodes: {len(self.episode_rewards)}] "
-# #                       f"Success Rate: {np.mean(self.episode_successes[-10:])*100:.0f}% | "
-# #                       f"Avg Reward: {np.mean(self.episode_rewards[-10:]):.1f}")
-
-# #         # 遍历所有环境
-# #         for i in range(len(dones)):
-# #             # 累积当前环境的 reward
-# #             self._current_rewards[i] = self._current_rewards.get(i, 0.0) + rewards[i]
-
-# #             # 检查当前环境是否到达目标
-# #             if infos[i].get('goal_reached', False):
-# #                 self._current_successes[i] = True
-
-# #             # 如果当前环境这一个 Episode 结束了
-# #             if dones[i]:
-# #                 # 记录到总历史列表中
-# #                 self.episode_rewards.append(self._current_rewards[i])
-# #                 self.episode_successes.append(float(self._current_successes.get(i, False)))
-
-# #                 # 从字典中删掉该环境的状态
-# #                 del self._current_rewards[i]
-# #                 self._current_successes.pop(i, None)
-
-# #         return True
-
-# #     def _on_training_end(self) -> None:
-# #         # 训练结束时打印最终动作分布
-# #         if len(self.action_means) > 0:
-# #             final_mean = np.mean(self.action_means, axis=0)
-# #             final_std = np.mean(self.action_stds, axis=0)
-# #             print(f"\n[Final Action Distribution] Mean: {final_mean}, Std: {final_std}")
-# #             print(f"[Total Episodes: {len(self.episode_rewards)}] "
-# #                   f"Success Rate: {np.mean(self.episode_successes)*100:.0f}% | "
-# #                   f"Avg Reward: {np.mean(self.episode_rewards):.1f}")
-
-
-# # # ========== 7. 配置 SAC 算法 ==========
-# # # 注意：SAC 的 batch_size 通常比 PPO 大很多，256 是标配，4060 跑起来毫无压力
-# # model = SAC(
-# #     "MlpPolicy",
-# #     env,
-# #     device="cuda",
-# #     learning_rate=3e-4,
-# #     buffer_size=100000,
-# #     learning_starts=1000,
-# #     batch_size=512,
-# #     tau=0.005,
-# #     gamma=0.99,
-# #     ent_coef='auto',
-# #     policy_kwargs=dict(net_arch=[256, 256]),
-# #     verbose=1,
-# #     tensorboard_log=BASE_DIR / "saved_models" / "SAC" / "log",
-# # )
-
-# # # ========== 8. 加载checkpoint并继续训练 ==========
-# # print("=" * 50)
-# # print("Loading checkpoint and continuing training...")
-# # print("=" * 50)
-
-# # # 加载最新的checkpoint（假设是148000步）
-# # CHECKPOINT_PATH = BASE_DIR / "saved_models" / "SAC" / "sac_nav_model_148000_steps"
-# # model.load(CHECKPOINT_PATH)
-# # print(f"Model loaded from: {CHECKPOINT_PATH}")
-
-# # # 继续训练的步数（如50000步）
-# # CONTINUE_TIMESTEPS = 50000
-
-# # # ========== 9. 开始继续训练 ==========
-# # try:
-# #     # 断点保存 Callback
-# #     checkpoint_callback = CheckpointCallback(
-# #         save_freq=4000,
-# #         save_path=BASE_DIR / "saved_models" / "SAC",
-# #         name_prefix="sac_nav_model",
-# #         save_replay_buffer=True,
-# #     )
-
-# #     model.learn(
-# #         total_timesteps=CONTINUE_TIMESTEPS,
-# #         callback=[
-# #             checkpoint_callback,
-# #             SuccessRateCallback(),
-# #         ],
-# #         progress_bar=True,
-# #     )
-
-# # finally:
-# #     # 保存最终模型
-# #     model.save(BASE_DIR / "saved_models" / "SAC" / "sac_nav_model_final")
-# #     print("Final model saved!")
-# #     env.close()
-# #     rclpy.shutdown()
-# #     print("ROS2 shutdown. Done!")
-# #     os.system(f"docker exec gazebo_sim pkill -9 gzserver 2>/dev/null")
-# #     print(f"Gazebo sim terminated")
-
-
-# import sys
-# import os
-# import time
-# import math
-# import numpy as np
-# import yaml
-# import rclpy
-# from pathlib import Path
-
-# # ========== 1. 你的路径与项目导入 ==========
-# sys.path.append("/home/chendawww/workspace/rl-navibot/src")
-# from decision.rl_agent.rl_agent.rl.env import TurtleBot3NavEnv, fetch_tb3_urdf
-
-# # ========== 2. 加载配置文件 ==========
-# BASE_DIR = Path(__file__).parent.parent
-# CONFIG_PATH = BASE_DIR / "config" / "rl.config.yaml"
-# with open(CONFIG_PATH, "r") as f:
-#     config = yaml.safe_load(f)
-    
-# # # 重定向所有输出到文件
-# # log_file = open(BASE_DIR / "saved_models" / "log" / "training_output.log", "w")
-# # sys.stdout = log_file
-# # sys.stderr = log_file
-
-# # ========== 3. 极其关键：初始化 ROS2 ==========
-# # 你的环境底层用了 rclpy，必须在实例化环境前初始化！
-# rclpy.init()
-# print("ROS2 initialized...")
-
-# # ========== 4. 实例化环境 (原生的，不要用 DummyVecEnv) ==========
-# my_robot_urdf = fetch_tb3_urdf()
-# env = TurtleBot3NavEnv(robot_urdf=my_robot_urdf, config=config)
-
-# # ========== 5. 导入 SAC 和 Callback ==========
-# from stable_baselines3 import SAC, PPO
-# from stable_baselines3.common.callbacks import CheckpointCallback, BaseCallback
-
-
-# CONTAINER_NAME = "ros2my"  # 换成你 docker ps 里看到的真实名字
-# class GazeboShutdownCallback(BaseCallback):
-#     """
-#     训练结束后关闭 Docker 内的 Gazebo。
-#     stop_container=True: 整个容器停掉
-#     stop_container=False: 只杀 gzserver 进程
-#     """
-#     def __init__(self, container_name=CONTAINER_NAME, stop_container=False, verbose=0):
-#         super().__init__(verbose)
-#         self.container_name = container_name
-#         self.stop_container = stop_container
-        
-#     def _on_step(self) -> bool:
-#         return True
-    
-#     def _on_training_end(self) -> None:
-#         if self.stop_container:
-#             print(f"\n[Shutdown] 停止容器: {self.container_name}")
-#             os.system(f"docker stop {self.container_name}")
-#         else:
-#             print(f"\n[Shutdown] 杀掉容器内 gzserver")
-#             os.system(f"docker exec {self.container_name} pkill -9 gzserver 2>/dev/null")
-#         print("[Shutdown] 完成。")
-
-        
-# # ========== 6. 自定义 Callback：记录成功率 ==========
-# class SuccessRateCallback(BaseCallback):
-#     def __init__(self, verbose=0):
-#         super().__init__(verbose)
-#         self.episode_rewards = []
-#         self.episode_successes = []
-#         # 用字典存储每个环境(按索引)的独立状态
-#         self._current_rewards = {}
-#         self._current_successes = {}
-
-#     def _on_step(self) -> bool:
-#         infos = self.locals.get("infos", [])
-#         dones = self.locals.get("dones", [])
-#         rewards = self.locals.get("rewards", [])
-
-#         # 遍历所有环境 (单环境时 len 就是 1，多环境时就是 N)
-#         for i in range(len(dones)):
-#             # 累积当前环境的 reward
-#             self._current_rewards[i] = self._current_rewards.get(i, 0.0) + rewards[i]
-
-#             # 检查当前环境是否到达目标
-#             if infos[i].get('goal_reached', False):
-#                 self._current_successes[i] = True
-
-#             # 如果当前环境这一个 Episode 结束了
-#             if dones[i]:
-#                 # 记录到总历史列表中
-#                 self.episode_rewards.append(self._current_rewards[i])
-#                 self.episode_successes.append(float(self._current_successes.get(i, False)))
-
-#                 # 从字典中删掉该环境的状态，为它下一个 episode 做准备
-#                 del self._current_rewards[i]
-#                 self._current_successes.pop(i, None)
-
-#         # 打印日志 (每凑齐 10 个 episode 打印一次)
-#         if len(self.episode_rewards) > 0 and len(self.episode_rewards) % 10 == 0:
-#             recent = self.episode_successes[-10:]
-#             avg_r = np.mean(self.episode_rewards[-10:])
-#             rate = np.mean(recent) * 100
-#             print(f"[Total Episodes: {len(self.episode_rewards)}] "
-#                   f"Success Rate: {rate:.0f}% | Avg Reward: {avg_r:.1f}")
-
-#         return True
-
-
-# # # ========== 7. 配置 SAC 算法 ==========
-# # # 注意：SAC 的 batch_size 通常比 PPO 大很多，256 是标配，4060 跑起来毫无压力
-# # model = SAC(
-# #     "MlpPolicy",
-# #     env,
-# #     device="cuda",
-# #     learning_rate=3e-4,
-# #     buffer_size=100000,     # 经验回放池大小 (10万步足够初期学习，内存不够可以改小)
-# #     learning_starts=1000,   # 前 1000 步纯随机探索，不更新网络 (攒点初始数据)
-# #     batch_size=512,         # SAC 标配 256
-# #     tau=0.005,              # 软更新系数
-# #     gamma=0.99,             # 折扣因子
-# #     ent_coef='auto',        # 极其关键！SAC 的灵魂，自动调节探索熵，防止过早收敛
-# #     # 网络结构：Actor 和 Critic 都用两层 256 的全连接
-# #     policy_kwargs=dict(net_arch=[256, 256]), 
-# #     verbose=1,
-# #     tensorboard_log=BASE_DIR / "saved_models" / "SAC" / "log",
-# # )
-
-# model = PPO(
-#     "MlpPolicy",
-#     env,
-#     device="cuda",
-#     learning_rate=3e-4,
-#     n_steps=2048,          # 每次更新采集 2048 步
-#     batch_size=64,         # 4060 8G 完全够用
-#     n_epochs=10,           # 每批数据训练 10 轮
-#     gamma=0.99,            # 折扣因子
-#     gae_lambda=0.95,       # GAE 参数
-#     clip_range=0.2,        # PPO 裁剪范围
-#     ent_coef=0.01,         # 熵正则化，鼓励探索（导航任务很重要！）
-#     vf_coef=0.5,           # value function 权重
-#     max_grad_norm=0.5,     # 梯度裁剪
-#     policy_kwargs={
-#         "net_arch": [dict(pi=[256, 256], vf=[256, 256])],  # 4060 跑得动
-#     },
-#     verbose=1,
-#     tensorboard_log=BASE_DIR / "saved_models" / "PPO" / "log",
-# )
-
-# # ========== 8. 开始训练 ==========
-# print("=" * 50)
-# print("SAC Training started!")
-# print("Monitor: tensorboard --logdir=./tb_logs_sac/")
-# print("=" * 50)
-
-# try:
-#     # ========== 1. 断点保存 Callback ==========
-#     checkpoint_callback = CheckpointCallback(
-#         save_freq=4000,
-#         save_path=BASE_DIR / "saved_models" / "PPO",
-#         name_prefix="ppo_nav_model",
-#         save_replay_buffer=True,  # 自动保存经验池
-#     )
-
-#     model.learn(
-#         # total_timesteps=1,
-#         total_timesteps=200_000,  # SAC 收敛比 PPO 慢一点，先跑 20 万步看趋势
-#         callback=[
-#             checkpoint_callback,
-#             SuccessRateCallback(),
-#             GazeboShutdownCallback(container_name=CONTAINER_NAME, stop_container=False),
-#         ],
-#         progress_bar=True,
-#     )
-
-# finally:
-#     # 无论成功还是报错，务必清理资源
-#     model.save(BASE_DIR / "saved_models" / "PPO" / "ppo_nav_model")
-#     print("Model saved!")
-#     env.close()
-#     rclpy.shutdown()
-#     print("ROS2 shutdown. Done!")
-#     os.system(f"docker exec gazebo_sim pkill -9 gzserver 2>/dev/null")
-#     print(f"Gazebo sim in {CONTAINER_NAME} container is terminated")
-
-
-
-
-
-
-
-
 import sys
 import os
-import time
-import math
+import re
+import argparse
 import numpy as np
 import yaml
 import rclpy
@@ -356,26 +10,13 @@ from pathlib import Path
 # ========== 1. 路径与项目导入 ==========
 sys.path.append("/home/chendawww/workspace/rl-navibot/src")
 from decision.rl_agent.rl_agent.rl.env import TurtleBot3NavEnv, fetch_tb3_urdf
+from decision.rl_agent.rl_agent.rl.algorithms import get_algorithm
 
-# ========== 2. 加载配置文件 ==========
-BASE_DIR = Path(__file__).parent.parent
-CONFIG_PATH = BASE_DIR / "config" / "rl.config.yaml"
-with open(CONFIG_PATH, "r") as f:
-    config = yaml.safe_load(f)
-
-# ========== 3. 初始化 ROS2 ==========
-rclpy.init()
-print("ROS2 initialized...")
-
-# ========== 4. 实例化环境 ==========
-my_robot_urdf = fetch_tb3_urdf()
-env = TurtleBot3NavEnv(robot_urdf=my_robot_urdf, config=config)
-
-# ========== 5. 导入算法与Callback ==========
-from stable_baselines3 import PPO
+# ========== 2. 导入算法与 Callback ==========
+from stable_baselines3 import SAC, PPO
 from stable_baselines3.common.callbacks import CheckpointCallback, BaseCallback
 
-# ========== 6. 自定义Callback（保持不变）==========
+# ========== 3. 通用 Callback 定义 ==========
 class SuccessRateCallback(BaseCallback):
     def __init__(self, verbose=0):
         super().__init__(verbose)
@@ -404,9 +45,7 @@ class SuccessRateCallback(BaseCallback):
             recent = self.episode_successes[-10:]
             avg_r = np.mean(self.episode_rewards[-10:])
             rate = np.mean(recent) * 100
-            print(f"[Total Episodes: {len(self.episode_rewards)}] "
-                  f"Success Rate: {rate:.0f}% | Avg Reward: {avg_r:.1f}")
-
+            print(f"[Episodes: {len(self.episode_rewards)}] SR: {rate:.0f}% | Avg Reward: {avg_r:.1f}")
         return True
 
 class GazeboShutdownCallback(BaseCallback):
@@ -420,91 +59,195 @@ class GazeboShutdownCallback(BaseCallback):
 
     def _on_training_end(self) -> None:
         if self.stop_container:
-            print(f"\n[Shutdown] 停止容器: {self.container_name}")
             os.system(f"docker stop {self.container_name}")
         else:
-            print(f"\n[Shutdown] 杀掉容器内 gzserver")
             os.system(f"docker exec {self.container_name} pkill -9 gzserver 2>/dev/null")
-        print("[Shutdown] 完成。")
+        print("[Shutdown] Gazebo terminated.")
 
-MODEL_DIR = BASE_DIR / "saved_models" / "PPO"
-MODEL_NAME_PREFIX = "ppo_nav_model"
-MODEL_NAME_FINAL = "ppo_nav_model" + "_final"
-
-# ========== 7. 配置PPO算法（保持不变）==========
-model = PPO(
-    "MlpPolicy",
-    env,
-    device="cuda",
-    learning_rate=3e-4,
-    n_steps=2048,
-    batch_size=64,
-    n_epochs=10,
-    gamma=0.99,
-    gae_lambda=0.95,
-    clip_range=0.2,
-    ent_coef=0.01,
-    vf_coef=0.5,
-    max_grad_norm=0.5,
-    policy_kwargs={"net_arch": dict(pi=[256, 256], vf=[256, 256])},
-    verbose=1,
-    tensorboard_log=MODEL_DIR / "log",
-)
-
-
-# ========== 8. 断点续训逻辑（核心修改）==========
-print("=" * 50)
-print("Checking for checkpoint...")
-print("=" * 50)
-
-import re
-
-checkpoint_files = [f for f in MODEL_DIR.glob(f"{MODEL_NAME_PREFIX}_*.zip") if "final" not in f.stem]
-if checkpoint_files:
-    # 使用正则表达式提取文件名中的数字（步数）
-    def extract_steps(filename):
-        match = re.search(r"(\d+)", filename.stem)  # 匹配文件名中的数字
-        return int(match.group(1)) if match else 0  # 如果找到数字则返回，否则返回0
-
-    # 找到步数最大的checkpoint（最新的训练进度）
-    latest_checkpoint = max(checkpoint_files, key=extract_steps)
-    trained_steps = extract_steps(latest_checkpoint)  # 已训练步数
-    TOTAL_TIMESTEPS = 200_000  # 总目标步数
-    CONTINUE_TIMESTEPS = TOTAL_TIMESTEPS - trained_steps  # 剩余步数
+# ========== 4. 核心逻辑：动态构建模型 ==========
+def build_model(algo_name, env, algo_config, train_config, log_dir):
+    device = train_config.get("device", "cuda")
     
-    model.load(latest_checkpoint)
+    if algo_name == "SAC":
+        params = algo_config["sac_params"]
+        return SAC(
+            "MlpPolicy", env, device=device,
+            learning_rate=params.get("learning_rate", 3e-4),
+            buffer_size=params.get("buffer_size", 100000),
+            learning_starts=params.get("learning_starts", 1000),
+            batch_size=params.get("batch_size", 256),
+            tau=params.get("tau", 0.005),
+            gamma=params.get("gamma", 0.99),
+            ent_coef=params.get("ent_coef", "auto"),
+            policy_kwargs=dict(net_arch=params.get("net_arch", [256, 256])),
+            verbose=1,
+            tensorboard_log=log_dir,
+        )
+    elif algo_name == "PPO":
+        params = algo_config["ppo_params"]
+        return PPO(
+            "MlpPolicy", env, device=device,
+            learning_rate=params.get("learning_rate", 3e-4),
+            n_steps=params.get("n_steps", 2048),
+            batch_size=params.get("batch_size", 64),
+            n_epochs=params.get("n_epochs", 10),
+            gamma=params.get("gamma", 0.99),
+            gae_lambda=params.get("gae_lambda", 0.95),
+            clip_range=params.get("clip_range", 0.2),
+            ent_coef=params.get("ent_coef", 0.01),
+            vf_coef=params.get("vf_coef", 0.5),
+            max_grad_norm=params.get("max_grad_norm", 0.5),
+            policy_kwargs=dict(net_arch=dict(
+                pi=params.get("net_arch_pi", [256, 256]),
+                vf=params.get("net_arch_vf", [256, 256])
+            )),
+            verbose=1,
+            tensorboard_log=log_dir,
+        )
+    else:
+        raise ValueError(f"不支持的算法: {algo_name}")
+
+# ========== 5. 断点续训查找逻辑 ==========
+# 通过文件名找
+# def find_latest_checkpoint(model_dir, prefix):
+#     checkpoint_files = [f for f in model_dir.glob(f"{prefix}_*.zip") if "final" not in f.stem]
+#     if not checkpoint_files: return None, 0
+#     def extract_steps(filename):
+#         match = re.search(r"_(\d+)_steps", filename.stem)
+#         return int(match.group(1)) if match else 0
+#     latest = max(checkpoint_files, key=extract_steps)
+#     return latest, extract_steps(latest)
+
+# 直接通过断点文件找
+def find_latest_checkpoint(model_dir, prefix):
+    checkpoint_files = [f for f in model_dir.glob(f"{prefix}_*.zip") if "final" not in f.stem]
+    if not checkpoint_files:
+        return None, 0
+    # 按文件修改时间排序，取最新的
+    latest = max(checkpoint_files, key=lambda f: f.stat().st_mtime)
+    return latest, 0  # 步数后面从模型里读
+
+
+def main():
+    # 1. 接收命令行参数 (新增 base_dir 和 model_prefix)
+    parser = argparse.ArgumentParser(description="RL Navigation Trainer")
+    parser.add_argument("--algo_config", type=str, required=True, help="算法 YAML 配置路径")
+    parser.add_argument("--env_config", type=str, required=True, help="环境 YAML 配置路径")
+    parser.add_argument("--base_dir", type=str, default=None, help="覆盖 YAML 中的基础存储路径")
+    parser.add_argument("--model_prefix", type=str, default=None, help="覆盖 YAML 中的模型名前缀")
+    args = parser.parse_args()
+
+    # 2. 加载配置
+    with open(args.algo_config, "r") as f:
+        algo_config = yaml.safe_load(f)
+    with open(args.env_config, "r") as f:
+        env_config = yaml.safe_load(f)
+
+    algo_name = algo_config["algorithm"]
+    train_cfg = algo_config["training"]
+    paths_cfg = algo_config.get("paths", {})
     
-    print(f"Loaded checkpoint: {latest_checkpoint}")
-    print(f"Already trained: {trained_steps} steps, continuing for {CONTINUE_TIMESTEPS} steps.")
-else:
-    print("No checkpoint found, starting new training.")
+    # 🔥 核心逻辑：优先取命令行参数，没有则取 YAML，都没有则兜底
+    BASE_DIR = Path(args.base_dir if args.base_dir else paths_cfg.get("base_dir", "."))
+    MODEL_PREFIX = args.model_prefix if args.model_prefix else paths_cfg.get("model_prefix", algo_name.lower())
+
+    # 🔥 严格构建存储树
+    MODEL_DIR = BASE_DIR / "saved_models" / MODEL_PREFIX
+    LOG_DIR = MODEL_DIR / "log"
+    MODEL_DIR.mkdir(parents=True, exist_ok=True)
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+    seed = train_cfg.get("seed", 42)
+    
+    # 打印确认，一眼看清存在哪
+    print("="*50)
+    print(f"Algorithm  : {algo_name.upper()}")
+    print(f"World      : {env_config['world']['name']}")
+    print(f"Bot        : {env_config['bot']['name']}")
+    print(f"Seed       : {seed}")
+    print(f"Base Dir   : {BASE_DIR}")
+    print(f"Model Prefix: {MODEL_PREFIX}")
+    print(f"Save Path  : {MODEL_DIR}")
+    print(f"TB Log Path: {LOG_DIR}")
+    print("="*50)
+
+    # 3. 初始化环境
+    rclpy.init()
+    env = None
+    my_robot_urdf = fetch_tb3_urdf()
+    env = TurtleBot3NavEnv(robot_urdf=my_robot_urdf, env_config=env_config)
+
+    # 4. 调用工厂函数，把 LOG_DIR 塞进去
+    model = get_algorithm(
+        algo_name=algo_name,
+        env=env,
+        config=algo_config,
+        log_dir=str(LOG_DIR)
+    )
+
+    # 5. 断点续训 (根据 MODEL_PREFIX 找 zip)
+    latest_ckpt, _ = find_latest_checkpoint(MODEL_DIR, MODEL_PREFIX)
     trained_steps = 0
-    CONTINUE_TIMESTEPS = 200_000  # 总步数（从头开始）
+    continue_steps = train_cfg["total_timesteps"]
 
-# ========== 9. 开始训练（保持不变）==========
-try:
-    checkpoint_callback = CheckpointCallback(
-        save_freq=4000,
-        save_path=MODEL_DIR,
-        name_prefix=MODEL_NAME_PREFIX,
-        save_replay_buffer=True,
-    )
+    if latest_ckpt:
+        # 用类方法 load，返回的是加载好数据的新模型对象
+        algo_class = type(model)  # 拿到 SAC / PPO 等具体的算法类
+        model = algo_class.load(latest_ckpt, env=env, reset_num_timesteps=False)
+        model.set_random_seed(seed)
 
-    model.learn(
-        total_timesteps=CONTINUE_TIMESTEPS,
-        callback=[
-            checkpoint_callback,
+        trained_steps = model.num_timesteps
+        continue_steps = train_cfg["total_timesteps"] - trained_steps
+        
+        if continue_steps > 0:
+            print(f"\n[Resume] 找到断点: {latest_ckpt.name} (已训 {trained_steps} 步)")
+            print(f"\n[Resume] 找到断点: {latest_ckpt.name}")
+            print(f"  ├─ 算法: {algo_class.__name__}")
+            print(f"  ├─ 已训步数: {trained_steps}")
+            print(f"  ├─ 目标总步数: {train_cfg['total_timesteps']}")
+            print(f"  ├─ 剩余需训练: {continue_steps} 步")
+            print(f"  ├─ 已完成: {trained_steps / train_cfg['total_timesteps'] * 100:.1f}%")
+            print(f"  ├─ 网络结构: {model.policy.net_arch}")
+            print(f"  ├─ 学习率: {model.learning_rate}")
+            print(f"  ├─ γ (discount): {model.gamma}")
+            if hasattr(model, 'ent_coef'):
+                print(f"  ├─ 熵系数: {model.ent_coef}")
+            print(f"  └─ 缓冲区大小: {model.buffer_size}")
+        else:
+            print(f"\n[Done] 已达到目标步数 {train_cfg['total_timesteps']}，无需继续训练。退出。")
+            env.close()
+            rclpy.shutdown()
+            return
+    else:
+        model.set_random_seed(seed)
+        print(f"\n[New] 未找到断点，从头开始训练 {train_cfg['total_timesteps']} 步...")
+
+
+    # 6. 训练
+    try:
+        callbacks = [
+            CheckpointCallback(
+                save_freq=train_cfg["save_freq"], 
+                save_path=MODEL_DIR,         # 模型存这
+                name_prefix=MODEL_PREFIX,    # 文件前缀用你指定的
+                save_replay_buffer=True,
+            ),
             SuccessRateCallback(),
-            GazeboShutdownCallback(container_name="ros2my", stop_container=False),
-        ],
-        progress_bar=True,
-    )
+        ]
+        if train_cfg.get("auto_kill_gazebo"):
+            callbacks.append(GazeboShutdownCallback(container_name=train_cfg.get("docker_container", "ros2my")))
+            
+        model.learn(
+            total_timesteps=continue_steps, 
+            callback=callbacks, 
+            progress_bar=True, 
+            reset_num_timesteps=False
+        )
+    finally:
+        model.save(MODEL_DIR / f"{MODEL_PREFIX}_final")
+        print(f"\n[Save] 最终模型已保存至: {MODEL_DIR / f'{MODEL_PREFIX}_final.zip'}")
+        env.close()
+        rclpy.shutdown()
 
-finally:
-    model.save(MODEL_DIR / MODEL_NAME_FINAL)
-    print("Final model saved!")
-    env.close()
-    rclpy.shutdown()
-    print("ROS2 shutdown. Done!")
-    os.system(f"docker exec ros2my pkill -9 gzserver 2>/dev/null")
-    print("Gazebo sim terminated.")
+if __name__ == "__main__":
+    main()

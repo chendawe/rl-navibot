@@ -1,0 +1,41 @@
+# 算法选择: "SAC" 或 "PPO"
+algorithm: "SAC"
+
+paths:
+  base_dir: "/home/chendawww/workspace/rl-navibot/tries/burger_navi_in_house" # 绝对指定，拒绝瞎猜
+  model_prefix: "sac_house_v1"                      # 你自己起的名字，随便怎么起
+
+# 通用训练参数
+training:
+  total_timesteps: 300000
+  save_freq: 5000
+  seed: 42               # 🔥 定义死随机数，保证每次重启起点终点序列完全一致
+  device: "cuda"
+  auto_kill_gazebo: true
+  docker_container: "ros2my"
+
+# SAC 专属参数
+sac_params:
+  learning_rate: 0.0003
+  buffer_size: 100000
+  learning_starts: 1000
+  batch_size: 512
+  tau: 0.005
+  gamma: 0.99
+  ent_coef: "auto"        # 注意 yaml 里 auto 要加引号
+  net_arch: [256, 256]    # SAC 的网络格式
+
+# # PPO 专属参数 (如果选 SAC 这段可以不要或留着不管)
+# ppo_params:
+#   learning_rate: 0.0003
+#   n_steps: 2048
+#   batch_size: 64
+#   n_epochs: 10
+#   gamma: 0.99
+#   gae_lambda: 0.95
+#   clip_range: 0.2
+#   ent_coef: 0.01
+#   vf_coef: 0.5
+#   max_grad_norm: 0.5
+#   net_arch_pi: [256, 256] # PPO 的网络格式
+#   net_arch_vf: [256, 256]

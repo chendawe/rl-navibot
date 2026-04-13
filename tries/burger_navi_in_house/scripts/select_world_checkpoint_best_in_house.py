@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from decision.rl_agent.rl_agent.rl.env import TurtleBot3NavEnv, fetch_tb3_urdf
 import yaml
+import pickle
 from pathlib import Path
 import re
 from glob import glob
@@ -12,6 +13,7 @@ import rclpy
 import math
 
 from stable_baselines3 import SAC
+
 
 BASE_DIR = Path("/home/chendawww/workspace/rl-navibot")
 CONFIG_DIR = BASE_DIR / "src/decision/rl_agent/config"
@@ -76,32 +78,32 @@ start_list = [t["start_pos"] for t in test_tasks]
 goal_list = [t["goal_pos"] for t in test_tasks]
 
 
+
 # ==================== 遍历 Checkpoint 测试 ====================
 SAC_MODEL_DIR = MODEL_DIR / "SAC"
-checkpoint_paths = []
+checkpoint_data = [] 
+
 for path in glob(str(SAC_MODEL_DIR / "sac_nav_model_*_steps.zip")):
     match = re.search(r"sac_nav_model_(\d+)_steps", path)
     if not match: continue
     step = int(match.group(1))
-    if step >= MIN_STEP and step <= MAX_STEP:
-        checkpoint_paths.append((step, path))
-        
-print(checkpoint_paths)
+    if step >= MIN_STEP:
+        checkpoint_data.append((step, path))
 
-checkpoint_paths.sort(key=lambda x: x[0])
-checkpoint_paths = [path for step, path in checkpoint_paths]
+checkpoint_data.sort(key=lambda x: x[0])
 
 best_model = None
-best_metrics = {"success_rate": 0, "mean_reward": 0, "mean_steps": 0, "path": ""}
+best_metrics = {"success_rate": 0, "mean_reward": 0, "mean_steps": 0, "path": "", "step": 0}
 
-print(f"\n开始评估 {len(checkpoint_paths)} 个模型，共用同一套 {len(start_list)} 个任务...")
+all_model_results = [] 
 
-for checkpoint_path in checkpoint_paths:
+print(f"\n开始评估 {len(checkpoint_data)} 个模型，共用同一套 {len(start_list)} 个任务...")
+
+for step, checkpoint_path in checkpoint_data:
     print(f"\nTesting: {Path(checkpoint_path).name}")
     try:
         model = SAC.load(checkpoint_path, env=env, device="cuda")
         
-        # 传入固定考卷
         summary = env.run_episodes(
             model, 
             start_pos_list=start_list, 
@@ -109,25 +111,88 @@ for checkpoint_path in checkpoint_paths:
             deterministic=True
         )
         
-        if (summary["success_rate"] > best_metrics["success_rate"]) or \
-           (summary["success_rate"] == best_metrics["success_rate"] and summary["mean_reward"] > best_metrics["mean_reward"]):
+        current_sr = summary["success_rate"]
+        current_mr = summary["mean_reward"]
+        current_ms = summary["mean_steps"]
+        
+        # 👇 核心改动：把 summary 的 details (每一局的明细) 也原封不动存进来
+        all_model_results.append({
+            "train_step": step,
+            "model_path": str(checkpoint_path),
+            "success_rate": current_sr,
+            "mean_reward": current_mr,
+            "mean_steps": current_ms,
+            "ep_details": summary["details"]  # 这是一个 list of dict
+        })
+        
+        if (current_sr > best_metrics["success_rate"]) or \
+           (current_sr == best_metrics["success_rate"] and current_mr > best_metrics["mean_reward"]):
             best_metrics.update({
-                "success_rate": summary["success_rate"],
-                "mean_reward": summary["mean_reward"],
-                "mean_steps": summary["mean_steps"],
-                "path": checkpoint_path
+                "success_rate": current_sr,
+                "mean_reward": current_mr,
+                "mean_steps": current_ms,
+                "path": checkpoint_path,
+                "step": step
             })
             best_model = model
             
     except Exception as e:
         print(f"  -> 失败: {e}")
 
+
+# ==================== 保存全量记录 (YAML + PKL) ====================
+RESULTS_YAML_PATH = TRY_DIR / "all_checkpoints_eval_results.yaml"
+RESULTS_PKL_PATH = TRY_DIR / "all_checkpoints_eval_data.pkl"
+
+# 1. 存 YAML（方便人看、方便快速找路径）
+# 注意：pkl 里存了 details，yaml 存 details 会太长太乱，所以 yaml 我们只存聚合指标
+yaml_data_for_human = [{k: v for k, v in r.items() if k != "ep_details"} for r in all_model_results]
+with open(RESULTS_YAML_PATH, "w") as f:
+    yaml.dump(yaml_data_for_human, f, default_flow_style=False, allow_unicode=True)
+print(f"📄 聚合指标已保存至 (YAML): {RESULTS_YAML_PATH}")
+
+# 2. 存 PKL（包含所有细节，方便 pandas/写论文做高级分析）
+with open(RESULTS_PKL_PATH, "wb") as f:
+    pickle.dump(all_model_results, f)
+print(f"📦 全量明细数据已保存至 (PKL): {RESULTS_PKL_PATH}")
+
+
+# ==================== 绘制性能演化曲线 ====================
+if all_model_results:
+    steps = [r["train_step"] for r in all_model_results]
+    sr_list = [r["success_rate"] for r in all_model_results]
+    mr_list = [r["mean_reward"] for r in all_model_results]
+    
+    fig, ax1 = plt.subplots(figsize=(10, 6))
+    
+    color = 'tab:green'
+    ax1.set_xlabel('Training Steps')
+    ax1.set_ylabel('Success Rate (%)', color=color)
+    ax1.plot(steps, sr_list, color=color, marker='o', linestyle='-', label='Success Rate')
+    ax1.tick_params(axis='y', labelcolor=color)
+    ax1.grid(True, alpha=0.3)
+    
+    ax2 = ax1.twinx()  
+    color = 'tab:blue'
+    ax2.set_ylabel('Mean Reward', color=color)
+    ax2.plot(steps, mr_list, color=color, marker='x', linestyle='--', label='Mean Reward')
+    ax2.tick_params(axis='y', labelcolor=color)
+    
+    plt.title('Model Performance Evolution across Checkpoints (Fixed Test Suite)')
+    fig.tight_layout()
+    
+    evo_plot_path = TRY_DIR / "plots" / "best_ttb3_world_SAC_for_ttb3_house" / "performance_evolution.png"
+    evo_plot_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(evo_plot_path)
+    print(f"📈 模型性能演化曲线已保存至: {evo_plot_path}")
+    plt.close(fig) 
+
 print("\n=== 最优基座模型 ===")
+print(f"训练步数: {best_metrics['step']}")
 print(f"路径: {best_metrics['path']}")
 print(f"成功率: {best_metrics['success_rate']:.1f}%")
 print(f"平均奖励: {best_metrics['mean_reward']:.2f}")
 print(f"平均步数: {best_metrics['mean_steps']:.1f}")
-
 
 # ==================== 画图 (逻辑不变) ====================
 if best_model is not None:
