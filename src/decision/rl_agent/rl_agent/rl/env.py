@@ -777,20 +777,36 @@ class TurtleBot3NavEnv(gym.Env, Node):
     # ==================== Reward 维度拆解 ====================
     
     # --- 🟩 正向奖励区 (基于 reward_ 前缀) ---
+    # def _rwd_distance(self, curr_dist, prev_dist) -> float:
+    #     dist_delta = prev_dist - curr_dist  # 靠近为正，远离为负
+    #     return dist_delta * self.rew["reward_factor_approaching_goal"]
     def _rwd_distance(self, curr_dist, prev_dist) -> float:
-        dist_delta = prev_dist - curr_dist  # 靠近为正，远离为负
+        dist_delta = prev_dist - curr_dist  
+        # 🔥 修复：忽略极微小的距离变化（比如小于1厘米），判定为雷达噪点
+        if abs(dist_delta) < 0.01:
+            return 0.0
         return dist_delta * self.rew["reward_factor_approaching_goal"]
 
+    # def _rwd_heading(self, odom) -> float:
+    #     yaw = odom['yaw']
+    #     target_angle = math.atan2(self.state["goal_y"] - odom['y'], self.state["goal_x"] - odom['x'])
+    #     yaw_error = math.atan2(math.sin(target_angle - yaw), math.cos(target_angle - yaw))
+    #     heading_factor = math.cos(yaw_error)  # 朝向好为正，背对为负
+        
+    #     if abs(odom['vx']) > 0.01:
+    #         return heading_factor * self.rew["reward_good_orientation"]
+    #     return 0.0
+    #     # return heading_factor * self.rew["reward_good_orientation"] * abs(odom['vx'])
     def _rwd_heading(self, odom) -> float:
         yaw = odom['yaw']
         target_angle = math.atan2(self.state["goal_y"] - odom['y'], self.state["goal_x"] - odom['x'])
         yaw_error = math.atan2(math.sin(target_angle - yaw), math.cos(target_angle - yaw))
-        heading_factor = math.cos(yaw_error)  # 朝向好为正，背对为负
+        heading_factor = math.cos(yaw_error)  
         
-        if abs(odom['vx']) > 0.01:
-            return heading_factor * self.rew["reward_good_orientation"]
+        # 🔥 修复：硬截断。只有真正跑起来（速度大于有效阈值），才给满额朝向分
+        if abs(odom['vx']) > 0.05:  
+            return heading_factor * self.rew["reward_good_orientation"] # 不打折，直接给满
         return 0.0
-        # return heading_factor * self.rew["reward_good_orientation"] * abs(odom['vx'])
 
     # --- 🟥 负向惩罚区 (基于 penalty_ 前缀，YAML里已带负号) ---
     def _rwd_safety(self) -> float:
@@ -1228,7 +1244,7 @@ class NaviMissionAssigner() :
 #         self._spin_thread.start()
 
 #         # --- 空间定义 ---
-#         # obs_size 计算细节: 24(Lidar) + 3(ImuAcc) + 3(ImuGyro) + 2(ImuRP) + 1(GoalAng) + 1(GoalDist) + 2(OdomVel) + 1(LastAct)
+#         # obs_size 计算细节: 24(Lidar) + 3(ImuAcc) + 3(ImuGyro) + 2(ImuRP) + 1(GoalAng) + 1(GoalDist) + 2(OdomVel) + 2(LastAct)
 #         self._obs_size = 38
 #         self.observation_space = spaces.Box(
 #             low=-1.0, high=1.0, shape=(self._obs_size,), dtype=np.float32

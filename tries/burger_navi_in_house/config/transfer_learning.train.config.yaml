@@ -7,7 +7,7 @@ paths:
 
 # 通用训练参数
 training:
-  total_timesteps: 300000
+  total_timesteps: 350000
   save_freq: 5000
   seed: 42               # 🔥 定义死随机数，保证每次重启起点终点序列完全一致
   device: "cuda"
@@ -24,6 +24,7 @@ sac_params:
   gamma: 0.99
   ent_coef: "auto"        # 注意 yaml 里 auto 要加引号
   net_arch: [256, 256]    # SAC 的网络格式
+  gradient_steps: 5
 
 # # PPO 专属参数 (如果选 SAC 这段可以不要或留着不管)
 # ppo_params:

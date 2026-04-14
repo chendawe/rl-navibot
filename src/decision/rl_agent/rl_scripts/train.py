@@ -196,6 +196,9 @@ def main():
         model = algo_class.load(latest_ckpt, env=env, reset_num_timesteps=False)
         model.set_random_seed(seed)
 
+        model.tensorboard_log = str(LOG_DIR)   # 强制指定 log 路径
+        model._logger = None                   # 杀掉可能存在的僵尸 logger
+        
         trained_steps = model.num_timesteps
         continue_steps = train_cfg["total_timesteps"] - trained_steps
         

@@ -142,6 +142,7 @@ def get_algorithm(algo_name: str, env: Env, config: dict, log_dir: str = None, *
             "tau": sac_cfg.get("tau", 0.005),
             "gamma": sac_cfg.get("gamma", 0.99),
             "ent_coef": sac_cfg.get("ent_coef", "auto"),
+            "gradient_steps": sac_cfg.get("gradient_steps", 1),
             # SAC 的网络结构是统一的列表
             "policy_kwargs": dict(net_arch=sac_cfg.get("net_arch", [256, 256]))
         })
