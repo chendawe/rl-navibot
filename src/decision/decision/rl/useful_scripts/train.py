@@ -119,7 +119,7 @@ def main():
     print("="*50)
     print(f"Algorithm  : {algo_name.upper()}")
     print(f"World      : {env_config['world']['name']}")
-    print(f"Bot        : {env_config['bot']['name']}")
+    print(f"robot        : {env_config['robot']['name']}")
     print(f"Seed       : {seed}")
     print(f"Base Dir   : {BASE_DIR}")
     print(f"Model Prefix: {MODEL_PREFIX}")

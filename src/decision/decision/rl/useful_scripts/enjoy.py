@@ -96,12 +96,12 @@ def main():
             print("=" * 50)
             print(f"Mode       : Evaluation (Rule Baseline)")
             print(f"World      : {env_config['world']['name']}")
-            print(f"Bot        : {env_config['bot']['name']}")
+            print(f"robot        : {env_config['robot']['name']}")
             print("=" * 50)
             
             # 💡 兼容性处理：你的 RuleBasedPolicy 里读的是 config["environment"]，
-            # 但重构后 env_config 已经拆成了 bot/world。这里临时拼一个给它吃。
-            rule_cfg = {"environment": {**env_config.get("bot", {}), **env_config.get("world", {})}}
+            # 但重构后 env_config 已经拆成了 robot/world。这里临时拼一个给它吃。
+            rule_cfg = {"environment": {**env_config.get("robot", {}), **env_config.get("world", {})}}
             model = RuleBasedModel(config=rule_cfg, env=env)
             model_file = Path("rule_baseline") # 伪路径，用于后续日志打印
             
@@ -118,7 +118,7 @@ def main():
             print(f"Mode       : Evaluation (Enjoy)")
             print(f"Algorithm  : {algo_name.upper()}")
             print(f"World      : {env_config['world']['name']}")
-            print(f"Bot        : {env_config['bot']['name']}")
+            print(f"robot        : {env_config['robot']['name']}")
             print(f"Model      : {model_file.name}")
             print(f"Episodes   : {args.episodes}")
             print(f"Verbose    : {args.verbose}")

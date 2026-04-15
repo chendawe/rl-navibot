@@ -1,13 +1,15 @@
 # ==================== 机器人本体配置 ====================
 bot:
-  name: "burger"             # 机器人实例名 (burger / waffle / waffle_pi)
+  name: "waffle"             # 机器人实例名 (burger / waffle / waffle_pi)
   
   # --- 激光雷达 ---
   laser_range_max: 3.5           # 激光最大有效距离
   laser_beams_num: 24            # 降采样后光束数 (360 -> 24)
-
+  laser_noise_threshold: 0.12
   # --- 动作空间 ---
-  lin_vel_max: 0.22              # 最大线速度
+  # lin_vel_max: 0.22              # 最大线速度
+  # ang_vel_max: 1.5               # 最大角速度
+  lin_vel_max: 0.26              # 最大线速度
   ang_vel_max: 1.5               # 最大角速度
 
   # --- 碰撞与安全 (与底盘尺寸强相关) ---
@@ -19,8 +21,8 @@ bot:
   # B. 接近惩罚阈值 (proximity_to_be_safe_min)
   # 如果是 Burger: 建议设为 0.20 ~ 0.25 （即离墙 11~16 厘米开始扣分）。
   # 如果是 Waffle: 建议设为 0.28 ~ 0.35。
-  proximity_to_collision_threshold: 0.18  
-  proximity_to_be_safe_min: 0.35      
+  proximity_to_collision_threshold: 0.25
+  proximity_to_be_safe_min: 0.45
 
   # --- 物理速度极限 (内部约束，非 RL 直接输出) ---
   lin_acc_physics_max: 2.0
@@ -85,7 +87,7 @@ reward:
   reward_factor_approaching_goal: 100.0
   penalty_elapsing_time: -0.2
   penalty_stuck: -0.05                        
-  reward_good_orientation: 2.0                
-  penalty_in_safe_proximity: -1.0             
+  reward_good_orientation: 5.0                
+  penalty_factor_in_safe_proximity: -1.0             
   penalty_action_smoothness: -0.5
   penalty_instability: -2.0
