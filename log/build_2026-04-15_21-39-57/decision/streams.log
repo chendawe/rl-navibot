@@ -1,0 +1,18 @@
+[0.613s] Invoking command in '/home/chendawww/workspace/rl-navibot/build/decision': CONDA_PROMPT_MODIFIER=(ros2) PYTHONPATH=/home/chendawww/workspace/rl-navibot/build/decision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/chendawww/workspace/rl-navibot/install/decision/lib/python3.10/site-packages:${PYTHONPATH} _=/usr/bin/env /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/chendawww/workspace/rl-navibot/build/decision/build --no-deps symlink_data
+[0.781s] running develop
+[0.823s] /usr/lib/python3/dist-packages/pkg_resources/__init__.py:116: PkgResourcesDeprecationWarning: 2.22.1ubuntu1 is an invalid version and will not be supported in a future release
+[0.823s]   warnings.warn(
+[0.889s] running egg_info
+[0.889s] writing decision.egg-info/PKG-INFO
+[0.889s] writing dependency_links to decision.egg-info/dependency_links.txt
+[0.889s] writing entry points to decision.egg-info/entry_points.txt
+[0.889s] writing requirements to decision.egg-info/requires.txt
+[0.889s] writing top-level names to decision.egg-info/top_level.txt
+[0.891s] reading manifest file 'decision.egg-info/SOURCES.txt'
+[0.891s] writing manifest file 'decision.egg-info/SOURCES.txt'
+[0.915s] running build_ext
+[0.915s] Creating /home/chendawww/workspace/rl-navibot/install/decision/lib/python3.10/site-packages/decision.egg-link (link to .)
+[0.915s] 
+[0.915s] Installed /home/chendawww/workspace/rl-navibot/build/decision
+[0.916s] running symlink_data
+[0.935s] Invoked command in '/home/chendawww/workspace/rl-navibot/build/decision' returned '0': CONDA_PROMPT_MODIFIER=(ros2) PYTHONPATH=/home/chendawww/workspace/rl-navibot/build/decision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/chendawww/workspace/rl-navibot/install/decision/lib/python3.10/site-packages:${PYTHONPATH} _=/usr/bin/env /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/chendawww/workspace/rl-navibot/build/decision/build --no-deps symlink_data

@@ -2,15 +2,15 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>perception</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="261364887@qq.com">chendawww</maintainer>
-  <license>TODO: License declaration</license>
+  <version>0.1.0</version>
+  <description>SLAM topology extraction (DRG) package</description>
+  <maintainer email="chendawww@todo.todo">chendawww</maintainer>
+  <license>MIT</license>
 
-  <test_depend>ament_copyright</test_depend>
-  <test_depend>ament_flake8</test_depend>
-  <test_depend>ament_pep257</test_depend>
-  <test_depend>python3-pytest</test_depend>
+  <!-- ★ 关键：指定为 Python 构建类型 -->
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <depend>rclpy</depend>
 
   <export>
     <build_type>ament_python</build_type>

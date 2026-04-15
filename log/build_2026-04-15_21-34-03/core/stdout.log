@@ -1,0 +1,21 @@
+running develop
+running egg_info
+creating core.egg-info
+writing core.egg-info/PKG-INFO
+writing dependency_links to core.egg-info/dependency_links.txt
+writing entry points to core.egg-info/entry_points.txt
+writing requirements to core.egg-info/requires.txt
+writing top-level names to core.egg-info/top_level.txt
+writing manifest file 'core.egg-info/SOURCES.txt'
+reading manifest file 'core.egg-info/SOURCES.txt'
+writing manifest file 'core.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/chendawww/workspace/rl-navibot/install/core/lib/python3.10/site-packages/core.egg-link (link to .)
+
+Installed /home/chendawww/workspace/rl-navibot/build/core
+running symlink_data
+creating /home/chendawww/workspace/rl-navibot/install/core/share/ament_index
+creating /home/chendawww/workspace/rl-navibot/install/core/share/ament_index/resource_index
+creating /home/chendawww/workspace/rl-navibot/install/core/share/ament_index/resource_index/packages
+symbolically linking /home/chendawww/workspace/rl-navibot/build/core/resource/core -> /home/chendawww/workspace/rl-navibot/install/core/share/ament_index/resource_index/packages
+symbolically linking /home/chendawww/workspace/rl-navibot/build/core/package.xml -> /home/chendawww/workspace/rl-navibot/install/core/share/core
