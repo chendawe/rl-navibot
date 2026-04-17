@@ -13,9 +13,10 @@ from pathlib import Path
 # if str(_SRC_DIR) not in sys.path:
 #     sys.path.insert(0, str(_SRC_DIR))
     
-from decision.rl.environments import TurtleBot3NavEnv, fetch_tb3_urdf
-# 🔥 统一使用工厂函数，不再直接 import SAC, PPO
-from decision.rl.algorithm import get_algorithm
+from core.ros2.runtime import Ros2Runtime
+from decision.rl.environments import TurtleBot3NaviEnv
+# 🔥 fetch_tb3_urdf 不再需要，Env 内部按 reset_mode 自行调度
+from decision.rl.algorithms import get_algorithm
 
 # ========== 2. 导入 Callback ==========
 from stable_baselines3.common.callbacks import CheckpointCallback, BaseCallback
@@ -86,6 +87,9 @@ def main():
     parser.add_argument("--env_config", type=str, required=True, help="环境 YAML 配置路径")
     parser.add_argument("--base_dir", type=str, default=None, help="覆盖 YAML 中的基础存储路径")
     parser.add_argument("--model_prefix", type=str, default=None, help="覆盖 YAML 中的模型名前缀")
+    parser.add_argument("--reset_mode", type=str, default="teleport",
+                        choices=["teleport", "spawn"],
+                        help="仿真重置模式: teleport(极速瞬移, 默认) / spawn(URDF重生, 适合Debug)")
     args = parser.parse_args()
 
     # 2. 加载配置
@@ -112,7 +116,7 @@ def main():
     
     # 🔥 拦截规则基线：训练脚本只负责深度学习算法
     if algo_name.lower() == "rule_baseline":
-        print("[Error] 训练脚本不支持 rule_baseline。如需测试规则基线，请使用 enjoy.py。")
+        print("[Error] 训练脚本不支持 rule_baseline。如需测试规则基线，请使用 eval.py。")
         return
     
     # 打印确认，一眼看清存在哪
@@ -128,11 +132,17 @@ def main():
     print("="*50)
 
     env = None
+    runtime = None
     try:
-        # 3. 初始化环境 (不再手动 rclpy.init)
-        my_robot_urdf = fetch_tb3_urdf()
-        env = TurtleBot3NavEnv(robot_urdf=my_robot_urdf, env_config=env_config)
+        # 3. 初始化运行时与环境
+        runtime = Ros2Runtime()
 
+        if "world" not in env_config:
+            env_config["world"] = {}
+        env_config["world"]["reset_mode"] = args.reset_mode
+
+        env = TurtleBot3NaviEnv(runtime=runtime, robot_urdf=None, env_config=env_config, rl_runtime_mode="train")
+        
         # 4. 调用工厂函数，把 LOG_DIR 塞进去 (去除了旧版的 build_model)
         model = get_algorithm(
             algo_name=algo_name,
@@ -206,8 +216,9 @@ def main():
     finally:
         if env is not None:
             env.close()
-        # 🔥 彻底去除 rclpy.shutdown()，守护线程随进程自动销毁
-        print("[Env] 资源已释放。")
-
+        if runtime is not None:
+            runtime.shutdown()
+        print("[System] 资源已释放。")
+        
 if __name__ == "__main__":
     main()

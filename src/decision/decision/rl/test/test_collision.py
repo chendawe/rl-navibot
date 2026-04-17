@@ -1,6 +1,6 @@
 import numpy as np
 import yaml
-from decision.rl.environments import TurtleBot3NavEnv, fetch_tb3_urdf
+from decision.rl.environments import TurtleBot3NaviEnv, fetch_tb3_urdf
 
 def test_collision_reward():
     print("=" * 60)
@@ -16,7 +16,7 @@ def test_collision_reward():
     
     with open(test_config, "r") as f:
         test_config = yaml.safe_load(f)
-    env = TurtleBot3NavEnv(robot_urdf=urdf, env_config=test_config)
+    env = TurtleBot3NaviEnv(robot_urdf=urdf, env_config=test_config)
 
     # 2. 重置环境，并把目标扔到 (100, 100) 的天边去，确保它绝对不可能“意外到达目标”
     print("[2/3] 重置环境 (目标已设为极远处)...")

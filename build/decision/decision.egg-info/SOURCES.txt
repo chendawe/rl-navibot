@@ -9,4 +9,8 @@ decision.egg-info/entry_points.txt
 decision.egg-info/requires.txt
 decision.egg-info/top_level.txt
 decision.egg-info/zip-safe
+decision/rl/__init__.py
+decision/rl/_v1_environments.py
+decision/rl/algorithms.py
+decision/rl/rewards.py
 resource/decision

@@ -88,6 +88,6 @@ reward:
   penalty_elapsing_time: -0.2
   penalty_stuck: -0.05                        
   reward_good_orientation: 5.0                
-  penalty_factor_in_safe_proximity: -1.0             
+  penalty_factor_in_safe_proximity: -5.0             
   penalty_action_smoothness: -0.5
   penalty_instability: -2.0
