@@ -92,7 +92,7 @@ async def lifespan(app: FastAPI):
             from core.ros2.channels.streamers.video import RGBStreamer
             # rgb_streamer = RGBStreamer(runtime, topic='/camera/image_raw/compressed')
             rgb_streamer = RGBStreamer(runtime, topic='/camera/image_raw')
-            runtime.register_node(rgb_streamer) # 别忘了入驻 Runtime 线程池！
+            # runtime.register_node(rgb_streamer) # 别忘了入驻 Runtime 线程池！；实际上会自己入驻
             print("✅ 成功实例化并注册 RGBStreamer")
         except Exception as e:
             print(f"⚠️ 实例化 RGBStreamer 失败，视频流将显示黑屏: {e}")

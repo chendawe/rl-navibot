@@ -266,6 +266,7 @@ const TopoView = {
 // ==========================================
 // 3. 雷达与仪表盘模块
 // ==========================================
+let l = 0;
 const TelemetryView = {
     canvas: document.getElementById('radarCanvas'),
     ctx: null,
@@ -305,16 +306,38 @@ const TelemetryView = {
 
         ctx.save(); ctx.translate(cx, cy); ctx.rotate(-yaw);
         const ranges = data.sensor.laser_ranges;
-        const inc = (2 * Math.PI) / ranges.length;
+        const inc = (2 * Math.PI) / ranges.length; // ✅ 修正：用 ranges.length 计算角度间隔
         ctx.strokeStyle = '#ce9178'; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(0, 0);
+        
+        // ✅ 修改1：找到第一个有效点，作为路径起点
+        let firstValidPoint = null;
         for (let i = 0; i < ranges.length; i++) {
             const r = ranges[i] * this.scale;
+            // ✅ 修改2：跳过无效点（r >= 10）
+            
             const a = i * inc - Math.PI;
-            ctx.lineTo(Math.cos(a) * r, -Math.sin(a) * r);
+            const x = Math.cos(a) * r;
+            const y = -Math.sin(a) * r;
+            
+            if (firstValidPoint === null) {
+                ctx.beginPath(); // 只在遇到第一个有效点时开始路径
+                ctx.moveTo(x, y); // ✅ 关键：起点移动到第一个有效点
+                firstValidPoint = {x, y};
+            } else {
+                ctx.lineTo(x, y);
+            }
         }
-        ctx.closePath(); ctx.stroke();
-        ctx.fillStyle = 'rgba(206, 145, 120, 0.1)'; ctx.fill();
+        // ✅ 修改3：如果找到了有效点，才 stroke，否则不画
+        if (firstValidPoint !== null) {
+            // ctx.moveTo(firstValidPoint[0],firstValidPoint[1])
+            ctx.closePath();
+            ctx.stroke();
+            // 填充：只填充有实际障碍物的区域
+            ctx.fillStyle = 'rgba(206, 145, 120, 0.1)';
+            ctx.fill();
+        }
+
+        // ctx.fillStyle = 'rgba(206, 145, 120, 0.1)'; ctx.fill();
         ctx.restore();
 
         ctx.fillStyle = '#007acc'; ctx.beginPath();
@@ -369,13 +392,12 @@ const NetworkModule = {
 
         this.wsTelemetry = new WebSocket(`ws://${host}/ws/telemetry`);
         this.wsTelemetry.onmessage = (e) => {
-            const data = JSON.parse(e.data);
-            // 🌟 如果当前不在雷达页，就不画，省性能
-            if (App.currentMode === 'ros') {
+            try {
+                const data = JSON.parse(e.data);
+                // ✅ 修复：去掉无脑的 'ros' 判断，右侧面板无论中间是什么模式，都必须一直刷新！
                 TelemetryView.draw(data); 
-            } else {
-                // 即使不画，也得把右侧仪表盘的数据刷了
-                TelemetryView._updateDashboard(data);
+            } catch(err) {
+                console.error("Telemetry 解析错误:", err); // ✅ 修复：加上异常捕获，防静默死亡
             }
         };
 

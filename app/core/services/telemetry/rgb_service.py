@@ -38,3 +38,11 @@ class RGBService:
         self._last_frame_id = None
         return self._mock_frame
 
+
+
+# 3. PNG 编码的开销
+# cv2.imencode('.png') 每次调用都是 CPU 密集操作。地图 1Hz 更新还好，但如果未来数据量上来或者更高帧率，可以考虑：
+
+# 地图没变化时跳过编码（对比前后 msg.data 的 hash）
+# 用更快的编码（但 PNG 已经很适合栅格地图这种高压缩比场景）
+# 这个目前不是问题，留个心就行。

@@ -4,7 +4,8 @@ from typing import Optional
 
 import rclpy
 from rclpy.node import Node
-from rclpy.callback_groups import ReentrantCallbackGroup
+# from rclpy.callback_groups import ReentrantCallbackGroup
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup 
 
 class BaseStreamer(Node, ABC):
     """
@@ -28,10 +29,15 @@ class BaseStreamer(Node, ABC):
         self._latest_frame: Optional[bytes] = None
         self._last_send_time: float = 0.0
         
-        # 🔥 核心：向 Runtime 申请一个“允许并发执行”的通行证
-        # 有了这个组，哪怕 _process_msg 里的 cv2.imencode 卡了 20ms，
-        # 也不会阻塞 Runtime 处理其他 Streamer 或 RL Bridge 的消息
-        self.cg = ReentrantCallbackGroup()
+        # # 🔥 核心：向 Runtime 申请一个“允许并发执行”的通行证
+        # # 有了这个组，哪怕 _process_msg 里的 cv2.imencode 卡了 20ms，
+        # # 也不会阻塞 Runtime 处理其他 Streamer 或 RL Bridge 的消息
+        # self.cg = ReentrantCallbackGroup()
+        
+        # 2. 这里：实例化改为互斥组
+        # 效果：如果上一张图片的 cv2.imencode 还没处理完，新来的图片会在队列里等待
+        # 配合 ROS 2 的 QoS depth=1，新图片甚至会直接覆盖旧图片，永远只处理最新帧
+        self.cg = MutuallyExclusiveCallbackGroup()
 
     # ----------------------------------------
     # 对外暴露的统一接口 (供 FastAPI 调用)

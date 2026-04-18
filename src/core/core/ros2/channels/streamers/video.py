@@ -57,7 +57,11 @@ class RGBStreamer(BaseStreamer):
                 # 压成 JPEG
                 success, jpeg_array = cv2.imencode('.jpg', img_array, [cv2.IMWRITE_JPEG_QUALITY, 80])
                 if success:
-                    jpeg_bytes = jpeg_array.tobytes()  # 🌟 转为 bytes
+                    # 1. tobytes() 在内存里生成了一个【全新的】 bytes 对象
+                    jpeg_bytes = jpeg_array.tobytes() 
+                    
+                    # 2. 下面这一行，在 CPython 中仅仅是一条字节码指令 (STORE_ATTR)
+                    # 它的本质是把 self._latest_frame 这个“指针”，指向新对象的内存地址
                     self._latest_frame = jpeg_bytes
                     logger.debug(f"[DEBUG] JPEG 头: {jpeg_bytes[:3].hex()}")
                     
@@ -86,4 +90,4 @@ class DepthStreamer(BaseStreamer):
             _, jpg_bytes = cv2.imencode('.jpg', depth_8u, [cv2.IMWRITE_JPEG_QUALITY, 80])
             self._latest_frame = jpg_bytes.tobytes()
         except Exception:
-            pass
+            logger.warning(f'深度图处理失败: {e}')

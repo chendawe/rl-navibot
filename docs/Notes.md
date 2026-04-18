@@ -125,6 +125,50 @@ ros2 service call /set_entity_state gazebo_msgs/srv/SetEntityState "{state: {nam
 # /spawn_entity
 ```
 
+## 添加SLAM节点
+
+0. 检查节点和频道存在性
+```sh
+ros2 node list
+ros2 topic list
+```
+
+1. 确认slam.launch位置
+```sh
+root@cdws:~/workspace/turtlebot3_ws# ls /opt/ros/humble/share/nav2_bringup/launch/
+# bringup_launch.py                      localization_launch.py  rviz_launch.py  tb3_simulation_launch.py
+# cloned_multi_tb3_simulation_launch.py  navigation_launch.py    slam_launch.py  unique_multi_tb3_simulation_launch.py
+```
+2. 启动节点
+```sh
+# 启动SLAM节点（需根据机器人配置调整参数）
+ros2 launch nav2_bringup slam_launch.py use_sim_time:=True
+```
+3.启动后出现相应slam节点和频道
+```sh
+(ros2) chendawww@cdws:~/workspace/rl-navibot$ ros2 node list
+# /lifecycle_manager_slam
+# /map_saver
+# /slam_toolbox
+# /transform_listener_impl_6010c4b9e460
+(ros2) chendawww@cdws:~/workspace/rl-navibot$ ros2 topic list
+# /bond
+# /clock
+# /diagnostics
+# /map
+# /map_metadata
+# /map_saver/transition_event
+# /parameter_events
+# /pose
+# /rosout
+# /scan
+# /slam_toolbox/feedback
+# /slam_toolbox/graph_visualization
+# /slam_toolbox/scan_visualization
+# /slam_toolbox/update
+# /tf
+# /tf_static
+```
 ---
 ---
 ---
