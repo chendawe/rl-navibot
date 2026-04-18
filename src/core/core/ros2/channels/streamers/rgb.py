@@ -3,6 +3,7 @@ from core.ros2.channels.streamers.base import BaseStreamer
 # from cv_bridge import CvBridge
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 import cv2
+import numpy as np
 
 import logging
 logger = logging.getLogger(__name__)
@@ -54,6 +55,13 @@ class RGBStreamer(BaseStreamer):
                 img_array = np.frombuffer(msg.data, dtype=np.uint8).reshape(
                     (msg.height, msg.width, 3)
                 )
+                # 检查编码并转换到 BGR
+                if msg.encoding == "rgb8":
+                    img_array = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
+                elif msg.encoding == "bgr8":
+                    pass  # 已经是 BGR，无需转换
+                else:
+                    logger.warning(f"未知图像编码: {msg.encoding}，按 BGR 处理")
                 # 压成 JPEG
                 success, jpeg_array = cv2.imencode('.jpg', img_array, [cv2.IMWRITE_JPEG_QUALITY, 80])
                 if success:
@@ -69,25 +77,3 @@ class RGBStreamer(BaseStreamer):
         except Exception as e:
             print(f"[RGBStreamer] 图像处理失败: {e}")
 
-
-import cv2
-import numpy as np
-from sensor_msgs.msg import Image
-
-class DepthStreamer(BaseStreamer):
-    """处理深度图，Float32 -> 8bit 灰度的轻量转换"""
-    def __init__(self, runtime, topic: str = '/camera/depth/image_raw'):
-        super().__init__(node_name='web_depth_streamer', runtime=runtime, default_fps=10)
-        # 🔥 唯一改动：绑定 callback_group=self.cg
-        self.sub = self.create_subscription(
-            Image, topic, self._process_msg, 10, callback_group=self.cg
-        )
-
-    def _process_msg(self, msg: Image):
-        try:
-            depth_arr = np.frombuffer(msg.data, dtype=np.float32).reshape(msg.height, msg.width)
-            depth_8u = cv2.normalize(depth_arr, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-            _, jpg_bytes = cv2.imencode('.jpg', depth_8u, [cv2.IMWRITE_JPEG_QUALITY, 80])
-            self._latest_frame = jpg_bytes.tobytes()
-        except Exception:
-            logger.warning(f'深度图处理失败: {e}')

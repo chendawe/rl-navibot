@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>具身智能中控台 v2.0 - Golden Layout (修复交互版)</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/golden-layout@1.5.9/src/css/goldenlayout-base.css">
+    <link rel="stylesheet" href="https://unpkg.com/golden-layout@1.5.9/src/css/goldenlayout-dark-theme.css">
+    <script src="https://cdn.jsdelivr.net/npm/golden-layout@1.5.9/dist/goldenlayout.min.js"></script>
+
+    <style>
+        /* ===== 样式保持不变，略作整理 ===== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            margin: 0; font-family: 'Segoe UI', monospace; background: #1e1e1e; color: #fff; 
+            overflow: hidden; width: 100vw; height: 100vh;
+        }
+        #layout-container { 
+            position: absolute; top: 40px; left: 0; right: 0; bottom: 0; background: #1e1e1e; 
+        }
+        #system-statusbar {
+            position: fixed; top: 0; left: 0; right: 0; height: 40px; background: #1e1e1e;
+            border-bottom: 1px solid #3c3c3c; display: flex; align-items: center; padding: 0 15px;
+            gap: 20px; z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,0.3); pointer-events: auto;
+        }
+        .window-controls { display: flex; gap: 8px; }
+        .window-btn {
+            background: #2d2d2d; color: #ccc; border: 1px solid #444; padding: 6px 16px;
+            border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500;
+            transition: all 0.15s; pointer-events: auto;
+        }
+        .window-btn:hover { background: #007acc; color: white; border-color: #007acc; }
+        .window-btn.active { background: #007acc; color: white; border-color: #007acc; }
+        .system-status {
+            margin-left: auto; display: flex; align-items: center; gap: 15px; color: #4ec9b0; font-size: 12px;
+        }
+        .lm_goldenlayout { height: 100% !important; width: 100% !important; background: #1e1e1e; }
+        .lm_content { height: 100% !important; width: 100% !important; overflow: hidden !important; }
+        .lm_item_container { position: relative; width: 100%; height: 100%; }
+        .lm_header { flex-shrink: 0; background: #252526 !important; border-bottom: 1px solid #333 !important; }
+        .lm_tab { background: #2d2d2d !important; color: #969696 !important; border-right: 1px solid #1e1e1e !important; }
+        .lm_tab.lm_active { background: #1e1e1e !important; color: #fff !important; border-bottom: 2px solid #007acc !important; }
+        .lm_tab:hover { background: #2d2d2d !important; color: #fff !important; }
+        .lm_close_tab { top: 5px !important; right: 5px !important; }
+        .lm_draghandle { background: #333 !important; }
+        .lm_controls { pointer-events: auto !important; opacity: 1 !important; }
+        .msg { max-width: 90%; padding: 10px 12px; border-radius: 6px; line-height: 1.4; font-size: 13px; white-space: pre-wrap; }
+        .user-msg { background: #007acc; align-self: flex-end; color: white; }
+        .bot-msg { background: #333; align-self: flex-start; border: 1px solid #444; color: #d4d4d4; }
+        .value { font-size: 20px; font-weight: bold; color: #4ec9b0; }
+        .warn { color: #f48771; } .good { color: #89d185; }
+        .full-panel { 
+            position: absolute !important; top: 0; left: 0; right: 0; bottom: 0; 
+            display: flex; flex-direction: column; background: #1e1e1e; overflow: hidden; 
+        }
+        .chat-body { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #252526;}
+        .chat-input-area { display: flex; border-top: 1px solid #333; background: #252526; flex-shrink: 0; }
+        .chat-input-area input { flex: 1; padding: 10px; background: #333; border: none; outline: none; color: white; font-size: 13px;}
+        .chat-input-area button { padding: 10px 15px; background: #007acc; color: white; border: none; cursor: pointer; font-size: 13px;}
+        .dashboard-grid { flex: 1; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; overflow-y: auto; background: #252526;}
+        .dash-card { background: #2d2d2d; padding: 10px; border-radius: 6px; border-left: 3px solid #007acc; }
+        .dash-card h3 { margin: 0 0 5px 0; color: #9cdcfe; font-size: 12px; }
+        .radar-wrapper { grid-column: span 2; display: flex; flex-direction: column; min-height: 180px; }
+        .radar-wrapper canvas { width: 100%; flex: 1; background: #000; border-radius: 4px; margin-top: 5px; }
+        .full-panel canvas, .full-panel img { flex: 1; width: 100%; object-fit: contain; display: block; background: #2d2d2d; }
+        .lm_stack .lm_header { background: #2d2d2d !important; }
+        .lm_stack .lm_tab { background: #3c3c3c !important; color: #ccc !important; }
+        .lm_stack .lm_tab.lm_active { background: #1e1e1e !important; color: white !important; }
+    </style>
+</head>
+<body>
+
+<div id="system-statusbar">
+    <div class="window-controls">
+        <button class="window-btn" data-panel="chat">🧠 决策大脑</button>
+        <button class="window-btn" data-panel="topo">🗺️ 拓扑动画</button>
+        <button class="window-btn" data-panel="rgb">📷 RGB 视觉</button>
+        <button class="window-btn" data-panel="depth">🔍 深度图</button>
+        <button class="window-btn" data-panel="map">🗺️ SLAM 地图</button>
+        <button class="window-btn" data-panel="telemetry">📡 遥测仪表盘</button>
+    </div>
+    <div class="system-status">
+        <button class="window-btn" id="reset-all-btn">🔄 重置布局</button>
+        <button class="window-btn" id="close-all-btn">❌ 全部关闭</button>
+        <span id="sys-time"></span>
+        <span>🟢 系统在线</span>
+    </div>
+</div>
+<div id="layout-container"></div>
+
+<script>
+// ====================== 业务模块 (完全不变) ======================
+const ChatModule = {
+    el: null, input: null,
+    init(wrapper) {
+        if (!wrapper) return;
+        this.el = wrapper.querySelector('.chat-body');
+        this.input = wrapper.querySelector('#userInput');
+        if (this.el && this.el.children.length === 0) {
+            this.append("系统就绪，请输入指令", false);
+        }
+    },
+    append(text, isUser) {
+        if(!this.el) return;
+        const div = document.createElement('div');
+        div.className = isUser ? 'msg user-msg' : 'msg bot-msg';
+        div.innerText = text;
+        this.el.appendChild(div);
+        this.el.scrollTop = this.el.scrollHeight;
+        return div;
+    },
+    async send() {
+        if(!this.input) return;
+        const text = this.input.value.trim();
+        if (!text) return;
+        this.input.value = '';
+        this.append(text, true);
+        const botDiv = this.append("思考中...", false);
+        try {
+            const res = await fetch('/api/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({msg: text}) });
+            const reader = res.body.getReader(); const decoder = new TextDecoder(); let fullText = "";
+            while (true) {
+                const {done, value} = await reader.read(); if (done) break;
+                fullText += decoder.decode(value, {stream: true});
+                if (fullText.includes("[DATA_JSON]:")) {
+                    const parts = fullText.split("[DATA_JSON]:"); botDiv.innerText = parts[0];
+                    NetworkModule.sendToDrg({type: "execute", payload: JSON.parse(parts[1])});
+                } else { botDiv.innerText = fullText; }
+                this.el.scrollTop = this.el.scrollHeight;
+            }
+        } catch (e) { 
+            botDiv.innerText = "⚠️ 网络错误 (演示模式)"; 
+            console.warn("API不可用，演示模式");
+        }
+    }
+};
+
+const TopoView = {
+    canvas: null, ctx: null,
+    NODES: { "N_0":{x:1,y:1,w:8,h:8}, "N_1":{x:3,y:1,w:8,h:8}, "N_2":{x:5,y:1,w:8,h:8}, "N_3":{x:5,y:3,w:8,h:8}, "N_4":{x:7,y:1,w:8,h:8} },
+    EDGES: [["N_0","N_1"],["N_1","N_2"],["N_2","N_3"],["N_2","N_4"]],
+    path: [], bot: {x: 1, y: 1}, clickState: 'start', selectedStart: null, selectedEnd: null, SCALE: 60,
+    init(canvasEl) {
+        if (!canvasEl) return;
+        this.canvas = canvasEl; this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        this.canvas.onclick = (e) => this.onClick(e);
+        this.loadRealData();
+        this.draw();
+    },
+    resize() {
+        if(!this.canvas || !this.canvas.parentElement) return;
+        const w = this.canvas.parentElement.clientWidth || 400;
+        const h = this.canvas.parentElement.clientHeight || 300;
+        if (this.canvas.width !== w || this.canvas.height !== h) { 
+            this.canvas.width = w; this.canvas.height = h; this.draw();
+        }
+    },
+    toPixel(x, y) { return { px: 80 + x * this.SCALE, py: 80 + y * this.SCALE }; },
+    onClick(e) {
+        const rect = this.canvas.getBoundingClientRect(); const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+        let closest = null, minD = Infinity;
+        Object.keys(this.NODES).forEach(id => { const p = this.toPixel(this.NODES[id].x, this.NODES[id].y); const d = Math.hypot(mx - p.px, my - p.py); if (d < minD) { minD = d; closest = id; } });
+        if (minD > 30) return;
+        if (this.clickState === 'start') { this.selectedStart = closest; this.clickState = 'end'; }
+        else { this.selectedEnd = closest; this.clickState = 'start'; NetworkModule.sendToDrg({ type: "execute", payload: { start: this.selectedStart, end: this.selectedEnd }}); ChatModule.append(`[系统] 触发导航：${this.selectedStart} -> ${this.selectedEnd}`, false); this.selectedStart = null; this.selectedEnd = null; }
+    },
+    draw() {
+        if (!this.ctx || !this.canvas) return;
+        const ctx = this.ctx; ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        ctx.strokeStyle = '#555'; ctx.lineWidth = 2;
+        this.EDGES.forEach(e => { let p1 = this.toPixel(this.NODES[e[0]].x, this.NODES[e[0]].y); let p2 = this.toPixel(this.NODES[e[1]].x, this.NODES[e[1]].y); ctx.beginPath(); ctx.moveTo(p1.px, p1.py); ctx.lineTo(p2.px, p2.py); ctx.stroke(); });
+        if (this.path.length > 1) { ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 4; ctx.beginPath(); let sp = this.toPixel(this.NODES[this.path[0]].x, this.NODES[this.path[0]].y); ctx.moveTo(sp.px, sp.py); for(let i=1; i<this.path.length; i++){ let p = this.toPixel(this.NODES[this.path[i]].x, this.NODES[this.path[i]].y); ctx.lineTo(p.px, p.py); } ctx.stroke(); }
+        Object.keys(this.NODES).forEach(id => { let n = this.NODES[id]; let p = this.toPixel(n.x, n.y); ctx.fillStyle = '#aaa'; ctx.fillRect(p.px - n.w/2, p.py - n.h/2, n.w, n.h); ctx.fillStyle = '#fff'; ctx.font = '12px Arial'; ctx.fillText(id, p.px + n.w/2 + 4, p.py + 4); });
+        let bp = this.toPixel(this.bot.x, this.bot.y); ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.arc(bp.px, bp.py, 10, 0, Math.PI*2); ctx.fill();
+    },
+    loadRealData() {
+        fetch('/api/topo').then(r => r.json()).then(data => {
+            if (data.nodes && data.nodes.length > 0) {
+                let minX=Infinity, maxX=-Infinity, minY=Infinity, maxY=-Infinity;
+                data.nodes.forEach(n => { minX=Math.min(minX,n.x); maxX=Math.max(maxX,n.x); minY=Math.min(minY,n.y); maxY=Math.max(maxY,n.y); });
+                const rX = maxX - minX || 1, rY = maxY - minY || 1; this.NODES = {}; this.EDGES = [];
+                data.nodes.forEach(n => { this.NODES[n.id] = { x: ((n.x - minX) / rX) * 8 + 1, y: ((n.y - minY) / rY) * 8 + 1, w: Math.max(4, Math.min((n.w || 8) * 0.15, 12)), h: Math.max(4, Math.min((n.h || 8) * 0.15, 12)) }; });
+                data.edges.forEach(e => this.EDGES.push([e.from, e.to]));
+            }
+            this.draw();
+        }).catch(() => {});
+    }
+};
+
+const TelemetryView = {
+    canvas: null, ctx: null, scale: 50,
+    init(canvasEl) { this.canvas = canvasEl; this.ctx = this.canvas.getContext('2d'); this.resize(); },
+    resize() { if(!this.canvas || !this.canvas.parentElement) return; this.canvas.width = this.canvas.parentElement.clientWidth; this.canvas.height = this.canvas.parentElement.clientHeight; },
+    draw(data) {
+        if (!data || !this.ctx || !this.canvas) return;
+        const ctx = this.ctx; const w = this.canvas.width, h = this.canvas.height; if (w === 0 || h === 0) return;
+        const cx = w / 2, cy = h / 2; ctx.clearRect(0, 0, w, h);
+        ctx.strokeStyle = '#3c3c3c'; ctx.beginPath();
+        for(let i = 0; i < w; i += 50){ ctx.moveTo(i, 0); ctx.lineTo(i, h); } for(let i = 0; i < h; i += 50){ ctx.moveTo(0, i); ctx.lineTo(w, i); } ctx.stroke();
+        const yaw = data.robot.yaw;
+        ctx.fillStyle = '#89d185'; ctx.beginPath(); ctx.arc(cx + data.task.goal_x * this.scale, cy - data.task.goal_y * this.scale, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.save(); ctx.translate(cx, cy); ctx.rotate(-yaw);
+        const ranges = data.sensor.laser_ranges; const inc = (2 * Math.PI) / ranges.length; ctx.strokeStyle = '#ce9178'; ctx.lineWidth = 1;
+        let firstValidPoint = null;
+        for (let i = 0; i < ranges.length; i++) { const r = ranges[i] * this.scale; const a = i * inc - Math.PI; const x = Math.cos(a) * r; const y = -Math.sin(a) * r; if (firstValidPoint === null) { ctx.beginPath(); ctx.moveTo(x, y); firstValidPoint = {x, y}; } else { ctx.lineTo(x, y); } }
+        if (firstValidPoint !== null) { ctx.closePath(); ctx.stroke(); ctx.fillStyle = 'rgba(206, 145, 120, 0.1)'; ctx.fill(); }
+        ctx.restore(); ctx.fillStyle = '#007acc'; ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fill();
+        this._updateDashboard(data);
+    },
+    _updateDashboard(data) {
+        const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+        const setCls = (id, cls) => { const el = document.getElementById(id); if (el) el.className = "value " + cls; };
+        const perf = data?.perf || {}, rl = data?.rl || {}, robot = data?.robot || {}, task = data?.task || {}, sensor = data?.sensor || {};
+        setTxt('val-fps', (perf.step_fps || 0).toFixed(1)); setTxt('val-reward', (rl.reward || 0).toFixed(2));
+        setTxt('val-pose', `${(robot.x || 0).toFixed(2)}, ${(robot.y || 0).toFixed(2)}, ${((robot.yaw || 0) * 180 / Math.PI).toFixed(0)}°`);
+        setTxt('val-dist', (task.dist || 0).toFixed(2) + " m"); setTxt('val-laser', (sensor.min_laser || 0).toFixed(3) + " m");
+        const isCol = rl.collision, isGoal = rl.goal_reached;
+        setTxt('val-status', isCol ? "💥 COLLISION" : (isGoal ? "🏆 GOAL" : "🚀 RUNNING"));
+        setCls('val-status', isCol ? "warn" : (isGoal ? "good" : "")); setCls('val-laser', (sensor.min_laser || 1) < 0.3 ? "warn" : "");
+    }
+};
+
+const NetworkModule = {
+    wsDrg: null, wsTelemetry: null,
+    init() {
+        const host = window.location.host;
+        this.wsDrg = new WebSocket(`ws://${host}/ws/drg`);
+        this.wsDrg.onmessage = (e) => { const data = JSON.parse(e.data); if (data.type === 'path') TopoView.path = data.nodes; else if (data.type === 'pose') { TopoView.bot.x = data.x; TopoView.bot.y = data.y; } else if (data.type === 'done') { TopoView.path = []; ChatModule.append(data.msg, false); } };
+        this.wsTelemetry = new WebSocket(`ws://${host}/ws/telemetry`);
+        this.wsTelemetry.onmessage = (e) => { try { TelemetryView.draw(JSON.parse(e.data)); } catch(err) { console.error("Telemetry err", err); } };
+    },
+    sendToDrg(payload) { if (this.wsDrg && this.wsDrg.readyState === WebSocket.OPEN) this.wsDrg.send(JSON.stringify(payload)); }
+};
+
+const StreamManager = {
+    sockets: {},
+    init() {
+        const host = window.location.host;
+        this.connect('rgbView', `ws://${host}/ws/rgb`, 'image/jpeg');
+        this.connect('depthView', `ws://${host}/ws/depth`, 'image/jpeg');
+        this.connect('mapView', `ws://${host}/ws/map`, 'image/png');
+    },
+    connect(domId, url, mimeType) {
+        const ws = new WebSocket(url); ws.binaryType = "arraybuffer"; this.sockets[domId] = ws;
+        ws.onmessage = (event) => {
+            const el = document.getElementById(domId); 
+            if (!el) return; 
+            const blob = new Blob([event.data], { type: mimeType });
+            const imgUrl = URL.createObjectURL(blob);
+            el.onload = () => URL.revokeObjectURL(imgUrl);
+            el.src = imgUrl;
+        };
+        ws.onclose = () => setTimeout(() => this.connect(domId, url, mimeType), 1000);
+    }
+};
+
+// ====================== 面板管理器 ======================
+const PanelManager = {
+    instances: new Map(),
+    layout: null,
+    buttons: new Map(),
+    
+    init(layoutInstance) {
+        this.layout = layoutInstance;
+        
+        document.querySelectorAll('.window-btn[data-panel]').forEach(btn => {
+            const panelId = btn.dataset.panel;
+            this.buttons.set(panelId, btn);
+            btn.addEventListener('click', () => this.togglePanel(panelId));
+        });
+        
+        const resetBtn = document.getElementById('reset-all-btn');
+        if (resetBtn) resetBtn.addEventListener('click', () => this.resetAll());
+        
+        const closeAllBtn = document.getElementById('close-all-btn');
+        if (closeAllBtn) closeAllBtn.addEventListener('click', () => this.closeAll());
+        
+        const updateTime = () => {
+            const timeEl = document.getElementById('sys-time');
+            if (timeEl) timeEl.textContent = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+        };
+        updateTime();
+        setInterval(updateTime, 1000);
+        
+        this.layout.on('itemDestroyed', (item) => {
+            for (let [panelId, instance] of this.instances.entries()) {
+                if (instance === item) {
+                    this._onPanelDestroyed(panelId);
+                    break;
+                }
+            }
+        });
+    },
+    
+    syncInitialState() {
+        for (let [panelId, instance] of this.instances.entries()) {
+            if (instance && instance.parent) this._updateButtonState(panelId, true);
+        }
+    },
+    
+    togglePanel(panelId) {
+        const instance = this.instances.get(panelId);
+        if (instance) {
+            if (instance.parent) {
+                const parent = instance.parent;
+                if (parent && typeof parent.setActiveContentItem === 'function') parent.setActiveContentItem(instance);
+            } else {
+                this._restorePanel(panelId, instance);
+            }
+        } else {
+            this._createPanel(panelId);
+        }
+    },
+    
+    registerInstance(panelId, contentItem) {
+        const old = this.instances.get(panelId);
+        if (old && old !== contentItem) this.instances.delete(panelId);
+        this.instances.set(panelId, contentItem);
+        this._updateButtonState(panelId, true);
+        console.log(`[PanelManager] 注册面板: ${panelId}`);
+    },
+    
+    _onPanelDestroyed(panelId) {
+        const instance = this.instances.get(panelId);
+        if (!instance) return;
+        this.instances.delete(panelId);
+        this._updateButtonState(panelId, false);
+        this._cleanupPanelResources(panelId);
+        console.log(`[PanelManager] 面板已关闭: ${panelId}`);
+    },
+    
+    _restorePanel(panelId, contentItem) {
+        let target = this._findTargetContainer();
+        if (!target) return;
+        target.addChild(contentItem);
+        this._updateButtonState(panelId, true);
+        console.log(`[PanelManager] 恢复面板: ${panelId}`);
+    },
+    
+    _createPanel(panelId) {
+        let target = this._findTargetContainer();
+        if (!target) return;
+        const titles = {
+            chat: '🧠 决策大脑', topo: '🗺️ 拓扑动画', rgb: '📷 RGB 视觉',
+            depth: '🔍 深度图', map: '🗺️ SLAM 地图', telemetry: '📡 遥测仪表盘'
+        };
+        target.addChild({ type: 'component', componentName: panelId, title: titles[panelId] || panelId });
+        console.log(`[PanelManager] 创建新面板: ${panelId}`);
+    },
+    
+    _findTargetContainer() {
+        const root = this.layout.root;
+        if (!root) return null;
+        if (root.contentItems && root.contentItems.length > 0) {
+            const first = root.contentItems[0];
+            if (first && (first.type === 'row' || first.type === 'column' || first.type === 'stack')) return first;
+        }
+        return (root.type === 'row' || root.type === 'column' || root.type === 'stack') ? root : null;
+    },
+    
+    _updateButtonState(panelId, isActive) {
+        const btn = this.buttons.get(panelId);
+        if (btn) btn.classList.toggle('active', isActive);
+    },
+    
+    _cleanupPanelResources(panelId) {},
+    
+    resetAll() {
+        if (this.layout) this.layout.destroy();
+        this.instances.clear();
+        this.buttons.forEach((btn, panelId) => this._updateButtonState(panelId, true));
+        if (typeof window.createLayout === 'function') {
+            this.layout = window.createLayout();
+        } else {
+            console.error('[PanelManager] createLayout 未定义');
+        }
+        console.log('[PanelManager] 布局已完全重置');
+    },
+    
+    closeAll() {
+        const panels = Array.from(this.instances.entries());
+        for (let [panelId, instance] of panels) {
+            try {
+                if (instance.parent) instance.parent.removeChild(instance, true);
+                else if (instance.destroy) instance.destroy();
+            } catch (e) {}
+            this.instances.delete(panelId);
+            this._updateButtonState(panelId, false);
+        }
+        console.log('[PanelManager] 所有面板已关闭');
+    }
+};
+
+// ====================== 布局创建函数 ======================
+function createLayout() {
+    const layout = new GoldenLayout({
+        settings: { showPopoutIcon: false, showMaximiseIcon: true, showCloseIcon: true, selectionEnabled: false },
+        dimensions: { borderWidth: 4, headerHeight: 28 },
+        content: [{
+            type: 'row',
+            content: [
+                { type: 'component', componentName: 'chat', title: '🧠 决策大脑' },
+                { 
+                    type: 'column', 
+                    content: [
+                        { type: 'component', componentName: 'topo', title: '🗺️ 拓扑动画' },
+                        { 
+                            type: 'stack', 
+                            content: [
+                                { type: 'component', componentName: 'rgb', title: '📷 RGB 视觉' },
+                                { type: 'component', componentName: 'depth', title: '🔍 深度图' },
+                                { type: 'component', componentName: 'map', title: '🗺️ SLAM 地图' }
+                            ]
+                        }
+                    ]
+                },
+                { type: 'component', componentName: 'telemetry', title: '📡 遥测仪表盘' }
+            ]
+        }]
+    }, '#layout-container');
+
+    const registerImg = (name, id) => {
+        layout.registerComponent(name, function(container) {
+            container.getElement().html(`<div class="full-panel"><img id="${id}" src="" alt="${name}"></div>`);
+            PanelManager.registerInstance(name, container.parent);
+        });
+    };
+
+    layout.registerComponent('chat', function(container) {
+        container.getElement().html(`
+            <div class="full-panel">
+                <div class="chat-body" id="msgContainer"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="userInput" placeholder="输入指令：去厨房">
+                    <button id="sendBtn">发送</button>
+                </div>
+            </div>
+        `);
+        const wrapper = container.getElement()[0];
+        wrapper.addEventListener('click', (e) => { if (e.target.id === 'sendBtn' || e.target.tagName === 'BUTTON') ChatModule.send(); });
+        const input = wrapper.querySelector('#userInput');
+        if (input) input.addEventListener('keypress', (e) => { if (e.key === 'Enter') ChatModule.send(); });
+        ChatModule.init(wrapper);
+        PanelManager.registerInstance('chat', container.parent);
+    });
+
+    layout.registerComponent('topo', function(container) {
+        container.getElement().html(`<div class="full-panel"><canvas id="topoCanvas"></canvas></div>`);
+        const canvas = container.getElement().find('#topoCanvas')[0];
+        if (canvas) {
+            TopoView.init(canvas);
+            container.on('resize', () => { TopoView.resize(); TopoView.draw(); });
+            setTimeout(() => { TopoView.resize(); TopoView.draw(); }, 20);
+        }
+        PanelManager.registerInstance('topo', container.parent);
+    });
+
+    layout.registerComponent('telemetry', function(container) {
+        container.getElement().html(`
+            <div class="full-panel">
+                <div class="dashboard-grid">
+                    <div class="dash-card"><h3>⏱ PERF (FPS)</h3><div class="value" id="val-fps">0.0</div></div>
+                    <div class="dash-card"><h3>🎯 REWARD</h3><div class="value" id="val-reward">0.0</div></div>
+                    <div class="dash-card"><h3>🤖 ROBOT (X,Y,YAW)</h3><div class="value" id="val-pose" style="font-size:14px">0,0,0</div></div>
+                    <div class="dash-card"><h3>📏 TASK (Dist)</h3><div class="value" id="val-dist">0.0</div></div>
+                    <div class="dash-card"><h3>🛡 STATUS</h3><div class="value" id="val-status" style="font-size:14px">RUNNING</div></div>
+                    <div class="dash-card"><h3>⚠️ MIN LASER</h3><div class="value" id="val-laser">0.0</div></div>
+                    <div class="dash-card radar-wrapper"><h3>📡 雷达</h3><canvas id="radarCanvas"></canvas></div>
+                </div>
+            </div>
+        `);
+        const canvas = container.getElement().find('#radarCanvas')[0];
+        if (canvas) {
+            TelemetryView.init(canvas);
+            container.on('resize', () => TelemetryView.resize());
+            setTimeout(() => TelemetryView.resize(), 20);
+        }
+        PanelManager.registerInstance('telemetry', container.parent);
+    });
+
+    registerImg('rgb', 'rgbView');
+    registerImg('depth', 'depthView');
+    registerImg('map', 'mapView');
+
+    layout.on('initialised', () => {
+        console.log('✅ Golden Layout 初始化完成');
+        layout.updateSize();
+        setTimeout(() => {
+            TopoView.resize(); TopoView.draw();
+            TelemetryView.resize();
+        }, 100);
+        PanelManager.syncInitialState();
+    });
+
+    layout.init();
+    PanelManager.init(layout);
+    setTimeout(() => PanelManager.syncInitialState(), 150);
+    return layout;
+}
+
+// ====================== 启动一切 ======================
+window.createLayout = createLayout;
+let currentLayout = createLayout();
+
+NetworkModule.init();
+StreamManager.init();
+
+(function loop() { 
+    requestAnimationFrame(loop); 
+    if (TopoView.canvas && TopoView.ctx) TopoView.draw(); 
+})();
+
+window.addEventListener('resize', () => {
+    if (currentLayout) currentLayout.updateSize();
+    TopoView.resize();
+    TelemetryView.resize();
+});
+</script>
+</body>
+</html>
