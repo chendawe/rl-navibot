@@ -53,3 +53,16 @@ class MapService:
         
         # 拿不到就返回兜底灰图
         return self._mock_frame
+
+    def get_metadata(self):
+        if self.provider:
+            # 假设 provider 有 resolution, map_width, map_height, origin 属性
+            return {
+                "resolution": getattr(self.provider, 'resolution', 0.05),
+                "width_px": getattr(self.provider, 'map_width', 384),
+                "height_px": getattr(self.provider, 'map_height', 384),
+                "origin_x": getattr(self.provider, 'origin_x', 0.0),
+                "origin_y": getattr(self.provider, 'origin_y', 0.0)
+            }
+        # 默认Mock地图元数据（10m x 10m，分辨率0.05，200x200像素）
+        return {"resolution": 0.05, "width_px": 200, "height_px": 200, "origin_x": -5.0, "origin_y": -5.0}

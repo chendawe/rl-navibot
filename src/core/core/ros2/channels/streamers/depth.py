@@ -5,6 +5,8 @@ from sensor_msgs.msg import Image
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 from core.ros2.channels.streamers.base import BaseStreamer
 
+import logging
+logger = logging.getLogger(__name__)
 
 class DepthStreamer(BaseStreamer):
     """处理深度图，Float32 -> 8bit 灰度的轻量转换"""
@@ -21,6 +23,7 @@ class DepthStreamer(BaseStreamer):
         )
 
     def _process_msg(self, msg: Image):
+        self._record_frame(msg)   # ← 新增
         try:
             depth_arr = np.frombuffer(msg.data, dtype=np.float32).reshape(msg.height, msg.width)
             depth_8u = cv2.normalize(depth_arr, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)

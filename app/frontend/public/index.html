@@ -2,119 +2,125 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>具身智能中控台 v2.0</title>
+    <title>具身智能中控台 · 稳定版</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/golden-layout@1.5.9/src/css/goldenlayout-base.css">
+    <link rel="stylesheet" href="https://unpkg.com/golden-layout@1.5.9/src/css/goldenlayout-dark-theme.css">
+    <script src="https://cdn.jsdelivr.net/npm/golden-layout@1.5.9/dist/goldenlayout.min.js"></script>
+
     <style>
-        body { margin: 0; font-family: 'Segoe UI', monospace; background: #1e1e1e; color: #fff; display: flex; height: 100vh; overflow: hidden; }
-        
-        /* 左侧聊天面板 (25%) */
-        #left-panel { width: 25%; display: flex; flex-direction: column; border-right: 1px solid #333; background: #252526; }
-        .chat-header { padding: 15px; background: #007acc; font-weight: bold; }
-        .messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .msg { max-width: 90%; padding: 10px 12px; border-radius: 6px; line-height: 1.4; font-size: 13px; white-space: pre-wrap; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            margin: 0; font-family: 'Segoe UI', monospace; background: #1e1e1e; color: #fff; 
+            overflow: hidden; width: 100vw; height: 100vh;
+        }
+        #layout-container { 
+            position: absolute; top: 40px; left: 0; right: 0; bottom: 0; background: #1e1e1e; 
+        }
+        #system-statusbar {
+            position: fixed; top: 0; left: 0; right: 0; height: 40px; background: #1e1e1e;
+            border-bottom: 1px solid #3c3c3c; display: flex; align-items: center; padding: 0 15px;
+            gap: 20px; z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .window-controls { display: flex; gap: 8px; }
+        .window-btn {
+            background: #2d2d2d; color: #ccc; border: 1px solid #444; padding: 6px 16px;
+            border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500;
+            transition: all 0.15s; position: relative;
+        }
+        .window-btn:hover { background: #3c3c3c; }
+        /* 激活状态：黄框 + 文字亮黄 */
+        .window-btn.active {
+            background: #2d2d2d;
+            color: #ffaa00;
+            border-color: #ffaa00;
+        }
+        /* 连接状态点 */
+        .window-btn.online::after {
+            content: " ●";
+            color: #4ec9b0;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+        .window-btn.offline::after {
+            content: " ●";
+            color: #f48771;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+        .system-status {
+            margin-left: auto; display: flex; align-items: center; gap: 15px; color: #4ec9b0; font-size: 12px;
+        }
+        .lm_goldenlayout { height: 100% !important; width: 100% !important; background: #1e1e1e; }
+        .lm_content { height: 100% !important; width: 100% !important; overflow: hidden !important; }
+        /* .lm_item_container { position: relative; width: 100%; height: 100%; } */
+        /* 显示帧率+延迟进行的修改 */
+        .lm_item_container { position: relative;}
+        .lm_header { flex-shrink: 0; background: #252526 !important; border-bottom: 1px solid #333 !important; }
+        .lm_tab { background: #2d2d2d !important; color: #969696 !important; border-right: 1px solid #1e1e1e !important; }
+        .lm_tab.lm_active { background: #1e1e1e !important; color: #fff !important; border-bottom: 2px solid #007acc !important; }
+        .lm_tab:hover { background: #2d2d2d !important; color: #fff !important; }
+        .lm_close_tab { top: 5px !important; right: 5px !important; }
+        .lm_draghandle { background: #333 !important; }
+        .lm_controls { pointer-events: auto !important; opacity: 1 !important; }
+        .msg { max-width: 90%; padding: 10px 12px; border-radius: 6px; line-height: 1.4; font-size: 13px; }
         .user-msg { background: #007acc; align-self: flex-end; color: white; }
         .bot-msg { background: #333; align-self: flex-start; border: 1px solid #444; color: #d4d4d4; }
-        .input-area { display: flex; border-top: 1px solid #333; }
-        input { flex: 1; padding: 12px; background: #333; border: none; outline: none; color: white; }
-        button { padding: 12px 20px; background: #007acc; color: white; border: none; cursor: pointer; }
-
-        /* 中间仿真面板 (45%) */
-        #center-panel { width: 45%; display: flex; flex-direction: column; background: #1e1e1e; }
-        .sim-header { padding: 10px 15px; background: #333; display: flex; justify-content: space-between; align-items: center; }
-        .mode-btn { padding: 5px 10px; background: #555; border: none; color: white; cursor: pointer; border-radius: 4px; margin-left: 5px;}
-        .mode-btn.active { background: #007acc; }
-        .canvas-container { flex: 1; position: relative; }
-        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #2d2d2d; }
-        
-        /* 🌟 新增：中间面板的 RGB 图像，复用 canvas 的绝对定位铺满容器 */
-        #center-panel #rgbView {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            object-fit: contain; 
-            background: #2d2d2d;
+        .value { font-size: 20px; font-weight: bold; color: #4ec9b0; }
+        .value.no-data { color: #888 !important; }
+        .warn { color: #f48771; } .good { color: #89d185; }
+        .full-panel { 
+            position: absolute !important; top: 0; left: 0; right: 0; bottom: 0; 
+            display: flex; flex-direction: column; background: #1e1e1e; overflow: hidden; 
         }
-
-        /* 右侧仪表盘 (30%) */
-        #right-panel { width: 30%; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #252526; border-left: 1px solid #333; overflow-y: auto;}
-        .card { background: #2d2d2d; padding: 15px; border-radius: 8px; border-left: 4px solid #007acc; }
-        .card h3 { margin: 0 0 10px 0; color: #9cdcfe; font-size: 14px; }
-        .value { font-size: 24px; font-weight: bold; color: #4ec9b0; }
-        .warn { color: #f48771; }
-        .good { color: #89d185; }
-        
-        /* 🌟 修改：雷达卡片样式，占满两列（原本是 rgb-card） */
-        .radar-card { 
-            grid-column: span 2; 
-            display: flex; 
-            flex-direction: column; 
-            min-height: 200px; 
-        }
-        /* 🌟 关键：必须覆盖全局的 canvas 绝对定位，否则右侧雷达会飞出屏幕 */
-        .radar-card canvas { 
-            position: relative; 
-            top: auto; 
-            left: auto; 
-            width: 100%; 
-            height: 200px; 
-            flex: 1; 
-            border-radius: 4px; 
-            background: #000; 
-            margin-top: 10px;
-            border: 1px solid #3c3c3c;
-        }
+        .chat-body { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #252526;}
+        .chat-input-area { display: flex; border-top: 1px solid #333; background: #252526; flex-shrink: 0; }
+        .chat-input-area input { flex: 1; padding: 10px; background: #333; border: none; outline: none; color: white; font-size: 13px;}
+        .chat-input-area button { padding: 10px 15px; background: #007acc; color: white; border: none; cursor: pointer; font-size: 13px;}
+        .dashboard-grid { flex: 1; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; overflow-y: auto; background: #252526;}
+        .dash-card { background: #2d2d2d; padding: 10px; border-radius: 6px; border-left: 3px solid #007acc; }
+        .dash-card h3 { margin: 0 0 5px 0; color: #9cdcfe; font-size: 12px; }
+        .radar-wrapper { grid-column: span 2; display: flex; flex-direction: column; min-height: 180px; }
+        .radar-wrapper canvas { width: 100%; flex: 1; background: #000; border-radius: 4px; margin-top: 5px; }
+        .full-panel canvas, .full-panel img { flex: 1; width: 100%; object-fit: contain; display: block; background: #2d2d2d; }
+        .lm_stack .lm_header { background: #2d2d2d !important; }
+        .lm_stack .lm_tab { background: #3c3c3c !important; color: #ccc !important; }
+        .lm_stack .lm_tab.lm_active { background: #1e1e1e !important; color: white !important; }
     </style>
 </head>
 <body>
 
-    <!-- 左侧：聊天 -->
-    <div id="left-panel">
-        <div class="chat-header">🧠 决策大脑 LLM</div>
-        <div class="messages" id="msgContainer"></div>
-        <div class="input-area">
-            <input type="text" id="userInput" placeholder="输入指令：去厨房" onkeypress="if(event.key==='Enter')ChatModule.send()">
-            <button onclick="ChatModule.send()">发送</button>
-        </div>
+<div id="system-statusbar">
+    <div class="window-controls">
+        <button class="window-btn" data-panel="chat">🧠 决策大脑</button>
+        <button class="window-btn" data-panel="topo">🗺️ 拓扑动画</button>
+        <button class="window-btn" data-panel="rgb">📷 RGB 视觉</button>
+        <button class="window-btn" data-panel="depth">🔍 深度图</button>
+        <button class="window-btn" data-panel="map">🗺️ SLAM 地图</button>
+        <button class="window-btn" data-panel="telemetry">📡 遥测仪表盘</button>
     </div>
+    <div class="system-status">
+        <button class="window-btn" id="reset-all-btn">🔄 重置布局</button>
+        <button class="window-btn" id="close-all-btn">❌ 全部关闭</button>
+        <span id="sys-time"></span>
+        <span>🟢 系统在线</span>
+    </div>
+</div>
+<div id="layout-container"></div>
 
-    <!-- 中间：画布 (现在放拓扑 和 RGB) -->
-    <div id="center-panel">
-        <div class="sim-header">
-            <span>🤖 执行层视图</span>
-            <div>
-                <button class="mode-btn active" id="btn-topo" onclick="App.switchMode('topo')">拓扑动画</button>
-                <!-- 🌟 按钮改为 RGB 视觉 -->
-                <button class="mode-btn" id="btn-rgb" onclick="App.switchMode('rgb')">RGB 视觉</button>
-            </div>
-        </div>
-        <div class="canvas-container">
-            <canvas id="topoCanvas"></canvas>
-            <!-- 🌟 RGB 放这里，默认隐藏 -->
-            <img id="rgbView" src="" alt="RGB Camera Feed" style="display: none;">
-        </div>
-    </div>
-
-    <!-- 右侧：仪表盘 + 🌟 雷达 -->
-    <div id="right-panel">
-        <div class="card"><h3>⏱ PERF (Step FPS)</h3><div class="value" id="val-fps">0.0</div></div>
-        <div class="card"><h3>🎯 REWARD</h3><div class="value" id="val-reward">0.0</div></div>
-        <div class="card"><h3>🤖 ROBOT (X, Y, YAW)</h3><div class="value" id="val-pose" style="font-size: 16px;">0, 0, 0</div></div>
-        <div class="card"><h3>📏 TASK (Dist to Goal)</h3><div class="value" id="val-dist">0.0</div></div>
-        <div class="card"><h3>🛡 STATUS</h3><div class="value" id="val-status" style="font-size: 16px;">RUNNING</div></div>
-        <div class="card"><h3>⚠️ MIN LASER</h3><div class="value" id="val-laser">0.0</div></div>
-        
-        <!-- 🌟 雷达移到这里，常驻显示 -->
-        <div class="card radar-card">
-            <h3>📡雷达</h3>
-            <canvas id="radarCanvas"></canvas>
-        </div>
-    </div>
 <script>
-// ==========================================
-// 1. 聊天模块
-// ==========================================
+// ====================== 业务模块 (保持不变) ======================
 const ChatModule = {
-    el: document.getElementById('msgContainer'),
-    input: document.getElementById('userInput'),
-    
+    el: null, input: null,
+    init(wrapper) {
+        if (!wrapper) return;
+        this.el = wrapper.querySelector('.chat-body');
+        this.input = wrapper.querySelector('#userInput');
+        if (this.el && this.el.children.length === 0) this.append("系统就绪，请输入指令", false);
+    },
     append(text, isUser) {
+        if(!this.el) return;
         const div = document.createElement('div');
         div.className = isUser ? 'msg user-msg' : 'msg bot-msg';
         div.innerText = text;
@@ -122,85 +128,187 @@ const ChatModule = {
         this.el.scrollTop = this.el.scrollHeight;
         return div;
     },
-
     async send() {
+        if(!this.input) return;
         const text = this.input.value.trim();
         if (!text) return;
         this.input.value = '';
         this.append(text, true);
         const botDiv = this.append("思考中...", false);
-
         try {
-            const res = await fetch('/api/chat', {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({msg: text})
-            });
-            const reader = res.body.getReader();
-            const decoder = new TextDecoder();
-            let fullText = "";
-
+            const res = await fetch('/api/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({msg: text}) });
+            const reader = res.body.getReader(); const decoder = new TextDecoder(); let fullText = "";
             while (true) {
-                const {done, value} = await reader.read();
-                if (done) break;
+                const {done, value} = await reader.read(); if (done) break;
                 fullText += decoder.decode(value, {stream: true});
-                
                 if (fullText.includes("[DATA_JSON]:")) {
-                    const parts = fullText.split("[DATA_JSON]:");
-                    botDiv.innerText = parts[0];
+                    const parts = fullText.split("[DATA_JSON]:"); botDiv.innerText = parts[0];
                     NetworkModule.sendToDrg({type: "execute", payload: JSON.parse(parts[1])});
-                } else {
-                    botDiv.innerText = fullText;
-                }
+                } else { botDiv.innerText = fullText; }
                 this.el.scrollTop = this.el.scrollHeight;
             }
-        } catch (e) {
-            botDiv.innerText = "网络错误";
+        } catch (e) { 
+            botDiv.innerText = "⚠️ 网络错误 (演示模式)"; 
         }
     }
 };
 
-// ==========================================
-// 2. 拓扑图模块
-// ==========================================
 const TopoView = {
-    canvas: document.getElementById('topoCanvas'),
-    ctx: null,
-    NODES: { "N_0":{x:1,y:1,w:8,h:8}, "N_1":{x:3,y:1,w:8,h:8}, "N_2":{x:5,y:1,w:8,h:8}, "N_3":{x:5,y:3,w:8,h:8}, "N_4":{x:7,y:1,w:8,h:8} },
-    EDGES: [["N_0","N_1"],["N_1","N_2"],["N_2","N_3"],["N_2","N_4"]],
-    path: [],
-    bot: {x: 1, y: 1},
+    canvas: null, ctx: null,
+    nodes: [],           // 物理坐标（米）
+    edges: [],           // [{ from, to }]
+    path: [],            // 路径节点ID列表
+    bot: { x: 0, y: 0 }, // 机器人物理位置
+
+    view: {
+        scale: 50,        // 像素/米
+        offsetX: 0,
+        offsetY: 0,
+    },
+
     clickState: 'start',
     selectedStart: null,
     selectedEnd: null,
-    SCALE: 60,
 
-    init() {
-        this.ctx = this.canvas.getContext('2d');
+    isDragging: false,
+    lastMouseX: 0,
+    lastMouseY: 0,
+
+    // 网格参数
+    gridSpacing: 1.0,     // 1米
+
+    init(canvasEl) {
+        if (!canvasEl) return;
+        this.canvas = canvasEl;
+        this.ctx = canvasEl.getContext('2d');
         this.resize();
-        window.addEventListener('resize', () => this.resize());
+
         this.canvas.addEventListener('click', (e) => this.onClick(e));
+        this.canvas.addEventListener('wheel', (e) => this.onWheel(e));
+        this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e));
+        window.addEventListener('mousemove', (e) => this.onMouseMove(e));
+        window.addEventListener('mouseup', () => this.onMouseUp());
+        this.canvas.addEventListener('dblclick', () => this.fitToView());
+
         this.loadRealData();
+        this.draw();
     },
 
+    // ---------- 坐标转换 ----------
+    worldToCanvas(x, y) {
+        return {
+            px: x * this.view.scale + this.view.offsetX,
+            py: y * this.view.scale + this.view.offsetY
+        };
+    },
+
+    canvasToWorld(px, py) {
+        return {
+            x: (px - this.view.offsetX) / this.view.scale,
+            y: (py - this.view.offsetY) / this.view.scale
+        };
+    },
+
+    // ---------- 视口操作 ----------
     resize() {
-        this.canvas.width = this.canvas.clientWidth;
-        this.canvas.height = this.canvas.clientHeight;
+        if (!this.canvas || !this.canvas.parentElement) return;
+        const w = this.canvas.parentElement.clientWidth || 400;
+        const h = this.canvas.parentElement.clientHeight || 300;
+        if (this.canvas.width !== w || this.canvas.height !== h) {
+            this.canvas.width = w;
+            this.canvas.height = h;
+            this.draw();
+        }
     },
 
-    toPixel(x, y) { return { px: 80 + x * this.SCALE, py: 80 + y * this.SCALE }; },
+    fitToView() {
+        if (this.nodes.length === 0) return;
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        this.nodes.forEach(n => {
+            minX = Math.min(minX, n.x - n.w/2);
+            maxX = Math.max(maxX, n.x + n.w/2);
+            minY = Math.min(minY, n.y - n.h/2);
+            maxY = Math.max(maxY, n.y + n.h/2);
+        });
+        const pad = 0.5; // 米
+        minX -= pad; maxX += pad;
+        minY -= pad; maxY += pad;
 
+        const canvasW = this.canvas.width;
+        const canvasH = this.canvas.height;
+        const scaleX = canvasW / (maxX - minX);
+        const scaleY = canvasH / (maxY - minY);
+        this.view.scale = Math.min(scaleX, scaleY) * 0.9;
+
+        const centerX = (minX + maxX) / 2;
+        const centerY = (minY + maxY) / 2;
+        this.view.offsetX = canvasW / 2 - centerX * this.view.scale;
+        this.view.offsetY = canvasH / 2 - centerY * this.view.scale;
+
+        this.draw();
+    },
+
+    // ---------- 交互事件 ----------
+    onWheel(e) {
+        e.preventDefault();
+        const rect = this.canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        const worldBefore = this.canvasToWorld(mouseX, mouseY);
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        this.view.scale *= delta;
+        const worldAfter = this.canvasToWorld(mouseX, mouseY);
+
+        this.view.offsetX += (worldAfter.x - worldBefore.x) * this.view.scale;
+        this.view.offsetY += (worldAfter.y - worldBefore.y) * this.view.scale;
+        this.draw();
+    },
+
+    onMouseDown(e) {
+        this.isDragging = true;
+        this.lastMouseX = e.clientX;
+        this.lastMouseY = e.clientY;
+        this.canvas.style.cursor = 'grabbing';
+    },
+
+    onMouseMove(e) {
+        if (!this.isDragging) return;
+        const dx = e.clientX - this.lastMouseX;
+        const dy = e.clientY - this.lastMouseY;
+        this.view.offsetX += dx;
+        this.view.offsetY += dy;
+        this.lastMouseX = e.clientX;
+        this.lastMouseY = e.clientY;
+        this.draw();
+    },
+
+    onMouseUp() {
+        this.isDragging = false;
+        this.canvas.style.cursor = 'default';
+    },
+
+    // ---------- 点击选点 ----------
     onClick(e) {
         const rect = this.canvas.getBoundingClientRect();
-        const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-        let closest = null, minD = Infinity;
-        
-        Object.keys(this.NODES).forEach(id => {
-            const p = this.toPixel(this.NODES[id].x, this.NODES[id].y);
-            const d = Math.hypot(mx - p.px, my - p.py);
-            if (d < minD) { minD = d; closest = id; }
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        const world = this.canvasToWorld(mx, my);
+
+        let closest = null;
+        let minDist = Infinity;
+        this.nodes.forEach(node => {
+            const dx = node.x - world.x;
+            const dy = node.y - world.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < minDist) {
+                minDist = dist;
+                closest = node.id;
+            }
         });
 
-        if (minD > 30) return;
+        const threshold = 0.5; // 米
+        if (minDist > threshold) return;
 
         if (this.clickState === 'start') {
             this.selectedStart = closest;
@@ -208,602 +316,1081 @@ const TopoView = {
         } else {
             this.selectedEnd = closest;
             this.clickState = 'start';
-            NetworkModule.sendToDrg({ type: "execute", payload: { start: this.selectedStart, end: this.selectedEnd }});
+            NetworkModule.sendToDrg({
+                type: "execute",
+                payload: { start: this.selectedStart, end: this.selectedEnd }
+            });
             ChatModule.append(`[系统] 触发导航：${this.selectedStart} -> ${this.selectedEnd}`, false);
             this.selectedStart = null;
             this.selectedEnd = null;
         }
+        this.draw();
     },
 
+    // ---------- 绘制 ----------
     draw() {
+        if (!this.ctx || !this.canvas) return;
         const ctx = this.ctx;
-        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        ctx.strokeStyle = '#555'; ctx.lineWidth = 2;
-        this.EDGES.forEach(e => {
-            let p1 = this.toPixel(this.NODES[e[0]].x, this.NODES[e[0]].y);
-            let p2 = this.toPixel(this.NODES[e[1]].x, this.NODES[e[1]].y);
-            ctx.beginPath(); ctx.moveTo(p1.px, p1.py); ctx.lineTo(p2.px, p2.py); ctx.stroke();
+        const w = this.canvas.width, h = this.canvas.height;
+
+        // 1. 白色背景 + 黑色边框
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(0, 0, w, h);
+
+        // 2. 绘制网格与坐标轴
+        this._drawGrid(ctx);
+
+        // 3. 绘制边
+        ctx.strokeStyle = '#555';
+        ctx.lineWidth = 2;
+        this.edges.forEach(edge => {
+            const from = this.nodes.find(n => n.id === edge.from);
+            const to = this.nodes.find(n => n.id === edge.to);
+            if (!from || !to) return;
+            const p1 = this.worldToCanvas(from.x, from.y);
+            const p2 = this.worldToCanvas(to.x, to.y);
+            ctx.beginPath();
+            ctx.moveTo(p1.px, p1.py);
+            ctx.lineTo(p2.px, p2.py);
+            ctx.stroke();
         });
-        
+
+        // 4. 绘制路径（高亮）
         if (this.path.length > 1) {
-            ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 4; ctx.beginPath();
-            let sp = this.toPixel(this.NODES[this.path[0]].x, this.NODES[this.path[0]].y);
-            ctx.moveTo(sp.px, sp.py);
-            for(let i=1; i<this.path.length; i++){
-                let p = this.toPixel(this.NODES[this.path[i]].x, this.NODES[this.path[i]].y);
-                ctx.lineTo(p.px, p.py);
-            }
+            ctx.strokeStyle = '#2ecc71';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            let first = true;
+            this.path.forEach(id => {
+                const node = this.nodes.find(n => n.id === id);
+                if (!node) return;
+                const p = this.worldToCanvas(node.x, node.y);
+                if (first) { ctx.moveTo(p.px, p.py); first = false; }
+                else ctx.lineTo(p.px, p.py);
+            });
             ctx.stroke();
         }
-        
-        Object.keys(this.NODES).forEach(id => {
-            let n = this.NODES[id]; let p = this.toPixel(n.x, n.y);
-            ctx.fillStyle = '#aaa'; ctx.fillRect(p.px - n.w/2, p.py - n.h/2, n.w, n.h);
-            ctx.fillStyle = '#fff'; ctx.font = '12px Arial'; ctx.fillText(id, p.px + n.w/2 + 4, p.py + 4);
+
+        // 5. 绘制节点
+        this.nodes.forEach(node => {
+            const c = this.worldToCanvas(node.x, node.y);
+            const nodeW = node.w * this.view.scale;
+            const nodeH = node.h * this.view.scale;
+            ctx.fillStyle = '#aaa';
+            ctx.fillRect(c.px - nodeW/2, c.py - nodeH/2, nodeW, nodeH);
+            ctx.fillStyle = '#fff';
+            ctx.font = '12px Arial';
+            ctx.fillText(node.id, c.px + nodeW/2 + 4, c.py + 4);
         });
 
-        let bp = this.toPixel(this.bot.x, this.bot.y);
-        ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.arc(bp.px, bp.py, 10, 0, Math.PI*2); ctx.fill();
+        // 6. 绘制机器人
+        const botPos = this.worldToCanvas(this.bot.x, this.bot.y);
+        ctx.fillStyle = '#e74c3c';
+        ctx.beginPath();
+        ctx.arc(botPos.px, botPos.py, 10, 0, 2 * Math.PI);
+        ctx.fill();
     },
 
+    // 绘制网格、坐标轴、原点
+    _drawGrid(ctx) {
+        const w = this.canvas.width, h = this.canvas.height;
+        // 获取视口对应的物理范围
+        const topLeft = this.canvasToWorld(0, 0);
+        const bottomRight = this.canvasToWorld(w, h);
+        const minX = Math.floor(topLeft.x);
+        const maxX = Math.ceil(bottomRight.x);
+        const minY = Math.floor(bottomRight.y);   // 画布Y向下对应物理Y减小
+        const maxY = Math.ceil(topLeft.y);
+
+        // 绘制1米网格线（浅灰色）
+        ctx.save();
+        ctx.strokeStyle = '#e0e0e0';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        for (let x = minX; x <= maxX; x += this.gridSpacing) {
+            const p1 = this.worldToCanvas(x, minY);
+            const p2 = this.worldToCanvas(x, maxY);
+            ctx.moveTo(p1.px, p1.py);
+            ctx.lineTo(p2.px, p2.py);
+        }
+        for (let y = minY; y <= maxY; y += this.gridSpacing) {
+            const p1 = this.worldToCanvas(minX, y);
+            const p2 = this.worldToCanvas(maxX, y);
+            ctx.moveTo(p1.px, p1.py);
+            ctx.lineTo(p2.px, p2.py);
+        }
+        ctx.stroke();
+
+        // 绘制X轴（红色）
+        ctx.beginPath();
+        ctx.strokeStyle = '#ff0000';
+        ctx.lineWidth = 2;
+        const origin = this.worldToCanvas(0, 0);
+        const xEnd = this.worldToCanvas(1, 0);
+        ctx.moveTo(origin.px, origin.py);
+        ctx.lineTo(xEnd.px, xEnd.py);
+        ctx.stroke();
+
+        // 绘制Y轴（绿色）
+        ctx.beginPath();
+        ctx.strokeStyle = '#00ff00';
+        const yEnd = this.worldToCanvas(0, 1);
+        ctx.moveTo(origin.px, origin.py);
+        ctx.lineTo(yEnd.px, yEnd.py);
+        ctx.stroke();
+
+        // 原点蓝点
+        ctx.fillStyle = '#0000ff';
+        ctx.beginPath();
+        ctx.arc(origin.px, origin.py, 5, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.restore();
+    },
+
+    // ---------- 数据加载 ----------
+    loadRealData() {
+        fetch('/api/topo').then(r => r.json()).then(data => {
+            if (data.nodes && data.nodes.length > 0) {
+                this.nodes = data.nodes;
+                this.edges = data.edges.map(e => ({ from: e.from, to: e.to })) || [];
+                this.fitToView();
+            }
+            this.draw();
+        }).catch(() => {});
+    }
+};
+
+const TelemetryView = {
+    canvas: null, ctx: null, scale: 50,
+    init(canvasEl) { this.canvas = canvasEl; this.ctx = canvasEl.getContext('2d'); this.resize(); },
+    resize() { if(!this.canvas || !this.canvas.parentElement) return; this.canvas.width = this.canvas.parentElement.clientWidth; this.canvas.height = this.canvas.parentElement.clientHeight; },
+    draw(data) {
+        if (!data || !this.ctx || !this.canvas) return;
+        const ctx = this.ctx; const w = this.canvas.width, h = this.canvas.height; if (w === 0 || h === 0) return;
+        const cx = w / 2, cy = h / 2; ctx.clearRect(0, 0, w, h);
+        ctx.strokeStyle = '#3c3c3c'; ctx.beginPath();
+        for(let i = 0; i < w; i += 50){ ctx.moveTo(i, 0); ctx.lineTo(i, h); } for(let i = 0; i < h; i += 50){ ctx.moveTo(0, i); ctx.lineTo(w, i); } ctx.stroke();
+        const yaw = data.robot.yaw;
+        ctx.fillStyle = '#89d185'; ctx.beginPath(); ctx.arc(cx + data.task.goal_x * this.scale, cy - data.task.goal_y * this.scale, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.save(); ctx.translate(cx, cy); ctx.rotate(-yaw);
+        const ranges = data.sensor.laser_ranges; const inc = (2 * Math.PI) / ranges.length; ctx.strokeStyle = '#ce9178'; ctx.lineWidth = 1;
+        let firstValidPoint = null;
+        for (let i = 0; i < ranges.length; i++) { const r = ranges[i] * this.scale; const a = i * inc - Math.PI; const x = Math.cos(a) * r; const y = -Math.sin(a) * r; if (firstValidPoint === null) { ctx.beginPath(); ctx.moveTo(x, y); firstValidPoint = {x, y}; } else { ctx.lineTo(x, y); } }
+        if (firstValidPoint !== null) { ctx.closePath(); ctx.stroke(); ctx.fillStyle = 'rgba(206, 145, 120, 0.1)'; ctx.fill(); }
+        ctx.restore(); ctx.fillStyle = '#007acc'; ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fill();
+        this._updateDashboard(data);
+        this._updateStreamOverlays(data.streams);  // 新增
+    },
+    _updateDashboard(data) {
+        const setTxt = (id, val, isValid = true) => {
+            const el = document.getElementById(id);
+            if (el) { el.innerText = val; el.classList.toggle('no-data', !isValid); }
+        };
+        const perf = data?.perf || {}, rl = data?.rl || {}, robot = data?.robot || {}, task = data?.task || {}, sensor = data?.sensor || {};
+        const fps = perf.step_fps;
+        setTxt('val-fps', fps != null ? fps.toFixed(1) : '--', fps != null);
+        const reward = rl.reward;
+        setTxt('val-reward', reward != null ? reward.toFixed(2) : '--', reward != null);
+        const poseX = robot.x, poseY = robot.y, poseYaw = robot.yaw;
+        const poseStr = (poseX != null && poseY != null) ? `${poseX.toFixed(2)}, ${poseY.toFixed(2)}, ${((poseYaw||0)*180/Math.PI).toFixed(0)}°` : '--, --, --';
+        setTxt('val-pose', poseStr, poseX != null);
+        const vx = robot.vx;
+        setTxt('val-vx', vx != null ? `${vx.toFixed(2)} m/s` : '-- m/s', vx != null);
+        const wz = robot.wz;
+        setTxt('val-wz', wz != null ? `${wz.toFixed(2)} rad/s` : '-- rad/s', wz != null);
+        const dist = task.dist;
+        setTxt('val-dist', dist != null ? dist.toFixed(2) + ' m' : '-- m', dist != null);
+        const minLaser = sensor.min_laser;
+        setTxt('val-laser', minLaser != null ? minLaser.toFixed(3) + ' m' : '-- m', minLaser != null);
+        const isCol = rl.collision, isGoal = rl.goal_reached;
+        let statusText = '🚀 RUNNING';
+        if (isCol) statusText = '💥 COLLISION';
+        else if (isGoal) statusText = '🏆 GOAL';
+        else if (!data) statusText = '--';
+        setTxt('val-status', statusText, !isCol);
+    },
+    // 帧率+延迟相关
+    _updateStreamOverlays(streams) {
+        for (const [name, stats] of Object.entries(streams || {})) {
+            const el = document.getElementById(name + 'View');
+            if (!el) continue;
+            let overlay = el.parentElement.querySelector('.stream-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.className = 'stream-overlay';
+                overlay.style.cssText = 'position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; padding:4px 8px; border-radius:4px; font-size:12px; z-index:10;';
+                el.parentElement.style.position = 'relative';
+                el.parentElement.appendChild(overlay);
+            }
+            const fps = stats.fps?.toFixed(1) || '--';
+            const lat = stats.latency_ms?.toFixed(0) || '--';
+            overlay.textContent = `${fps} fps | ${lat} ms`;
+        }
+    }
+};
+
+const NetworkModule = {
+    wsDrg: null, wsTelemetry: null,
+    init() {
+        const host = window.location.host;
+        this.wsDrg = new WebSocket(`ws://${host}/ws/drg`);
+        this.wsDrg.onmessage = (e) => { 
+            const data = JSON.parse(e.data); 
+            ConnectionMonitor.reportData('topo');
+            if (data.type === 'path') TopoView.path = data.nodes; 
+            else if (data.type === 'pose') { TopoView.bot.x = data.x; TopoView.bot.y = data.y; } 
+            else if (data.type === 'done') { TopoView.path = []; ChatModule.append(data.msg, false); } 
+        };
+        this.wsTelemetry = new WebSocket(`ws://${host}/ws/telemetry`);
+        this.wsTelemetry.onmessage = (e) => { 
+            ConnectionMonitor.reportData('telemetry');
+            try { TelemetryView.draw(JSON.parse(e.data)); } catch(err) {} 
+        };
+    },
+    sendToDrg(payload) { if (this.wsDrg && this.wsDrg.readyState === WebSocket.OPEN) this.wsDrg.send(JSON.stringify(payload)); }
+};
+
+const StreamManager = {
+    sockets: {},
+    mapMeta: null,  // 存储元数据
+
+    async init() {
+        const host = window.location.host;
+        // 获取地图元数据
+        const res = await fetch('/api/map_meta');
+        const mapMeta = await res.json();
+        this.mapMeta = mapMeta;
+        
+        const widthMeters = mapMeta.width_px * mapMeta.resolution;
+        const heightMeters = mapMeta.height_px * mapMeta.resolution;
+        const origin = { x: mapMeta.origin_x || 0, y: mapMeta.origin_y || 0 };
+        
+        // 创建默认 Mock 地图
+        // TopoView.createDefaultMap(widthMeters, heightMeters, mapMeta.resolution, origin);
+        
+        // 连接各 WebSocket
+        this.connect('rgb', `ws://${host}/ws/rgb`, 'image/jpeg');
+        this.connect('depth', `ws://${host}/ws/depth`, 'image/jpeg');
+        this.connectMap('map', `ws://${host}/ws/map`);
+    },
+
+    connectMap(panelId, url) {
+        const ws = new WebSocket(url);
+        ws.binaryType = "arraybuffer";
+        this.sockets[panelId] = ws;
+        ws.onmessage = async (event) => {
+            ConnectionMonitor.reportData(panelId);
+            try {
+                const blob = new Blob([event.data], { type: 'image/png' });
+                const bitmap = await createImageBitmap(blob);
+                const meta = this.mapMeta;
+                const widthMeters = meta.width_px * meta.resolution;
+                const heightMeters = meta.height_px * meta.resolution;
+                const origin = { x: meta.origin_x || 0, y: meta.origin_y || 0 };
+                TopoView.setMapImage(bitmap, widthMeters, heightMeters, meta.resolution, origin);
+            } catch (e) {
+                console.error('地图图像解码失败', e);
+            }
+        };
+        ws.onclose = () => setTimeout(() => this.connectMap(panelId, url), 1000);
+    }
+};
+
+// ====================== 连接状态监控 ======================
+const ConnectionMonitor = {
+    lastDataTime: new Map(),
+    status: new Map(),
+    TIMEOUT_MS: 3000,
+    reportData(panelId) {
+        this.lastDataTime.set(panelId, Date.now());
+        const prev = this.status.get(panelId);
+        if (prev !== 'online') {
+            this.status.set(panelId, 'online');
+            PanelManager.updateConnectionStatus(panelId, 'online');
+        }
+    },
+    startMonitoring() {
+        setInterval(() => {
+            const now = Date.now();
+            for (let [panelId, lastTime] of this.lastDataTime.entries()) {
+                const isOnline = (now - lastTime) < this.TIMEOUT_MS;
+                const currentStatus = this.status.get(panelId) || 'offline';
+                const newStatus = isOnline ? 'online' : 'offline';
+                if (currentStatus !== newStatus) {
+                    this.status.set(panelId, newStatus);
+                    PanelManager.updateConnectionStatus(panelId, newStatus);
+                }
+            }
+        }, 1000);
+    }
+};
+
+// ====================== 面板管理器（简化稳定版） ======================
+const PanelManager = {
+    instances: new Map(),
+    layout: null,
+    buttons: new Map(),
+    
+    init(layoutInstance) {
+        this.layout = layoutInstance;
+        document.querySelectorAll('.window-btn[data-panel]').forEach(btn => {
+            const panelId = btn.dataset.panel;
+            this.buttons.set(panelId, btn);
+            btn.addEventListener('click', () => this.openPanel(panelId));
+        });
+        document.getElementById('reset-all-btn')?.addEventListener('click', () => this.resetAll());
+        document.getElementById('close-all-btn')?.addEventListener('click', () => this.closeAll());
+        this._startClock();
+        this.layout.on('itemDestroyed', (item) => {
+            for (let [id, inst] of this.instances.entries()) {
+                if (inst === item) {
+                    this.instances.delete(id);
+                    this._updateButtonState(id, false);
+                    break;
+                }
+            }
+        });
+    },
+    
+    openPanel(panelId) {
+        let instance = this.instances.get(panelId);
+        if (instance) {
+            // 已存在则激活标签页
+            const parent = instance.parent;
+            if (parent && parent.setActiveContentItem) parent.setActiveContentItem(instance);
+        } else {
+            this._createPanel(panelId);
+        }
+    },
+    
+    registerInstance(panelId, contentItem) {
+        this.instances.set(panelId, contentItem);
+        this._updateButtonState(panelId, true);
+    },
+    
+    updateConnectionStatus(panelId, status) {
+        const btn = this.buttons.get(panelId);
+        if (!btn) return;
+        btn.classList.remove('online', 'offline');
+        if (this.instances.has(panelId)) btn.classList.add(status);
+    },
+    
+    _createPanel(panelId) {
+        const target = this._findTargetContainer();
+        if (!target) return;
+        const titles = {
+            chat: '🧠 决策大脑', topo: '🗺️ 拓扑动画', rgb: '📷 RGB 视觉',
+            depth: '🔍 深度图', map: '🗺️ SLAM 地图', telemetry: '📡 遥测仪表盘'
+        };
+        target.addChild({ type: 'component', componentName: panelId, title: titles[panelId] || panelId });
+    },
+    
+    _findTargetContainer() {
+        const root = this.layout.root;
+        if (!root) return null;
+        if (root.contentItems?.length) return root.contentItems[0];
+        root.addChild({ type: 'row' });
+        return root.contentItems[0];
+    },
+    
+    _updateButtonState(panelId, active) {
+        const btn = this.buttons.get(panelId);
+        if (!btn) return;
+        btn.classList.toggle('active', active);
+        btn.classList.remove('online', 'offline');
+        if (active) {
+            const status = ConnectionMonitor.status.get(panelId) || 'offline';
+            btn.classList.add(status);
+        }
+    },
+    
+    _startClock() {
+        const update = () => {
+            const el = document.getElementById('sys-time');
+            if (el) el.textContent = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+        };
+        update();
+        setInterval(update, 1000);
+    },
+    
+    resetAll() {
+        if (this.layout) this.layout.destroy();
+        this.instances.clear();
+        this.buttons.forEach((_, id) => this._updateButtonState(id, true));
+        if (typeof window.createLayout === 'function') this.layout = window.createLayout();
+    },
+    
+    closeAll() {
+        for (let [id, inst] of this.instances.entries()) {
+            try {
+                if (inst.parent) inst.parent.removeChild(inst, true);
+                else if (inst.destroy) inst.destroy();
+            } catch (e) {}
+            this.instances.delete(id);
+            this._updateButtonState(id, false);
+        }
+    },
+    
+    syncInitialState() {
+        this.instances.forEach((_, id) => this._updateButtonState(id, true));
+    }
+};
+
+// ====================== 布局创建函数 ======================
+function createLayout() {
+    const layout = new GoldenLayout({
+        settings: { showPopoutIcon: false, showMaximiseIcon: true, showCloseIcon: true, selectionEnabled: false },
+        dimensions: { borderWidth: 4, headerHeight: 28 },
+        content: [{
+            type: 'row',
+            content: [
+                { type: 'component', componentName: 'chat', title: '🧠 决策大脑' },
+                { 
+                    type: 'column', 
+                    content: [
+                        { type: 'component', componentName: 'topo', title: '🗺️ 拓扑动画' },
+                        { 
+                            type: 'row', 
+                            content: [
+                                { type: 'component', componentName: 'rgb', title: '📷 RGB 视觉' },
+                                { type: 'component', componentName: 'depth', title: '🔍 深度图' },
+                                { type: 'component', componentName: 'map', title: '🗺️ SLAM 地图' }
+                            ]
+                        }
+                    ]
+                },
+                { type: 'component', componentName: 'telemetry', title: '📡 遥测仪表盘' }
+            ]
+        }]
+    }, '#layout-container');
+
+    const placeholderSvg = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'320\' height=\'240\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23222\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23aaa\' font-size=\'14\'%3E⚠️ 暂无数据%3C/text%3E%3C/svg%3E';
+
+    const registerImg = (name, id) => {
+        layout.registerComponent(name, function(container) {
+            container.getElement().html(`<div class="full-panel"><img id="${id}" src="${placeholderSvg}" alt="${name}"></div>`);
+            PanelManager.registerInstance(name, container.parent);
+        });
+    };
+
+    layout.registerComponent('chat', function(container) {
+        container.getElement().html(`
+            <div class="full-panel">
+                <div class="chat-body" id="msgContainer"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="userInput" placeholder="输入指令：去厨房">
+                    <button id="sendBtn">发送</button>
+                </div>
+            </div>
+        `);
+        const wrapper = container.getElement()[0];
+        wrapper.addEventListener('click', (e) => { if (e.target.id === 'sendBtn' || e.target.tagName === 'BUTTON') ChatModule.send(); });
+        const input = wrapper.querySelector('#userInput');
+        if (input) input.addEventListener('keypress', (e) => { if (e.key === 'Enter') ChatModule.send(); });
+        ChatModule.init(wrapper);
+        PanelManager.registerInstance('chat', container.parent);
+    });
+
+    layout.registerComponent('topo', function(container) {
+        container.getElement().html(`<div class="full-panel"><canvas id="topoCanvas"></canvas></div>`);
+        const canvas = container.getElement().find('#topoCanvas')[0];
+        if (canvas) {
+            TopoView.init(canvas);
+            container.on('resize', () => { TopoView.resize(); TopoView.draw(); });
+            setTimeout(() => { TopoView.resize(); TopoView.draw(); }, 20);
+        }
+        PanelManager.registerInstance('topo', container.parent);
+    });
+
+    layout.registerComponent('telemetry', function(container) {
+        container.getElement().html(`
+            <div class="full-panel">
+                <div class="dashboard-grid">
+                    <div class="dash-card"><h3>⏱ PERF (FPS)</h3><div class="value" id="val-fps">--</div></div>
+                    <div class="dash-card"><h3>🤖 ROBOT (X,Y,YAW)</h3><div class="value" id="val-pose" style="font-size:14px">--, --, --</div></div>
+                    <div class="dash-card"><h3>⚡ 线速度 (Vx)</h3><div class="value" id="val-vx">-- m/s</div></div>
+                    <div class="dash-card"><h3>🔄 角速度 (Wz)</h3><div class="value" id="val-wz">-- rad/s</div></div>
+                    <div class="dash-card"><h3>📏 TASK (Dist)</h3><div class="value" id="val-dist">-- m</div></div>
+                    <div class="dash-card"><h3>🛡 STATUS</h3><div class="value" id="val-status" style="font-size:14px">--</div></div>
+                    <div class="dash-card"><h3>🎯 REWARD</h3><div class="value" id="val-reward">--</div></div>
+                    <div class="dash-card"><h3>⚠️ MIN LASER</h3><div class="value" id="val-laser">-- m</div></div>
+                    <div class="dash-card radar-wrapper"><h3>📡 雷达</h3><canvas id="radarCanvas"></canvas></div>
+                </div>
+            </div>
+        `);
+        const canvas = container.getElement().find('#radarCanvas')[0];
+        if (canvas) {
+            TelemetryView.init(canvas);
+            container.on('resize', () => TelemetryView.resize());
+            setTimeout(() => TelemetryView.resize(), 20);
+        }
+        PanelManager.registerInstance('telemetry', container.parent);
+    });
+
+    registerImg('rgb', 'rgbView');
+    registerImg('depth', 'depthView');
+    registerImg('map', 'mapView');
+
+    layout.on('initialised', () => {
+        layout.updateSize();
+        setTimeout(() => {
+            TopoView.resize(); TopoView.draw();
+            TelemetryView.resize();
+        }, 100);
+        PanelManager.syncInitialState();
+    });
+
+    layout.init();
+    PanelManager.init(layout);
+    return layout;
+}
+
+// ====================== 启动一切 ======================
+window.createLayout = createLayout;
+let currentLayout = createLayout();
+
+ConnectionMonitor.startMonitoring();
+['chat','topo','rgb','depth','map','telemetry'].forEach(id => ConnectionMonitor.reportData(id));
+
+NetworkModule.init();
+StreamManager.init();
+
+(function loop() { 
+    requestAnimationFrame(loop); 
+    if (TopoView.canvas && TopoView.ctx) TopoView.draw(); 
+})();
+
+window.addEventListener('resize', () => {
+    if (currentLayout) currentLayout.updateSize();
+    TopoView.resize();
+    TelemetryView.resize();
+});
+</script>
+</body>
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>具身智能中控台 v2.0 - Golden Layout (修复交互版)</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/golden-layout@1.5.9/src/css/goldenlayout-base.css">
+    <link rel="stylesheet" href="https://unpkg.com/golden-layout@1.5.9/src/css/goldenlayout-dark-theme.css">
+    <script src="https://cdn.jsdelivr.net/npm/golden-layout@1.5.9/dist/goldenlayout.min.js"></script>
+
+    <style>
+        /* ===== 样式保持不变，略作整理 ===== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            margin: 0; font-family: 'Segoe UI', monospace; background: #1e1e1e; color: #fff; 
+            overflow: hidden; width: 100vw; height: 100vh;
+        }
+        #layout-container { 
+            position: absolute; top: 40px; left: 0; right: 0; bottom: 0; background: #1e1e1e; 
+        }
+        #system-statusbar {
+            position: fixed; top: 0; left: 0; right: 0; height: 40px; background: #1e1e1e;
+            border-bottom: 1px solid #3c3c3c; display: flex; align-items: center; padding: 0 15px;
+            gap: 20px; z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,0.3); pointer-events: auto;
+        }
+        .window-controls { display: flex; gap: 8px; }
+        .window-btn {
+            background: #2d2d2d; color: #ccc; border: 1px solid #444; padding: 6px 16px;
+            border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500;
+            transition: all 0.15s; pointer-events: auto;
+        }
+        .window-btn:hover { background: #007acc; color: white; border-color: #007acc; }
+        .window-btn.active { background: #007acc; color: white; border-color: #007acc; }
+        .system-status {
+            margin-left: auto; display: flex; align-items: center; gap: 15px; color: #4ec9b0; font-size: 12px;
+        }
+        .lm_goldenlayout { height: 100% !important; width: 100% !important; background: #1e1e1e; }
+        .lm_content { height: 100% !important; width: 100% !important; overflow: hidden !important; }
+        .lm_item_container { position: relative; width: 100%; height: 100%; }
+        .lm_header { flex-shrink: 0; background: #252526 !important; border-bottom: 1px solid #333 !important; }
+        .lm_tab { background: #2d2d2d !important; color: #969696 !important; border-right: 1px solid #1e1e1e !important; }
+        .lm_tab.lm_active { background: #1e1e1e !important; color: #fff !important; border-bottom: 2px solid #007acc !important; }
+        .lm_tab:hover { background: #2d2d2d !important; color: #fff !important; }
+        .lm_close_tab { top: 5px !important; right: 5px !important; }
+        .lm_draghandle { background: #333 !important; }
+        .lm_controls { pointer-events: auto !important; opacity: 1 !important; }
+        .msg { max-width: 90%; padding: 10px 12px; border-radius: 6px; line-height: 1.4; font-size: 13px; white-space: pre-wrap; }
+        .user-msg { background: #007acc; align-self: flex-end; color: white; }
+        .bot-msg { background: #333; align-self: flex-start; border: 1px solid #444; color: #d4d4d4; }
+        .value { font-size: 20px; font-weight: bold; color: #4ec9b0; }
+        .warn { color: #f48771; } .good { color: #89d185; }
+        .full-panel { 
+            position: absolute !important; top: 0; left: 0; right: 0; bottom: 0; 
+            display: flex; flex-direction: column; background: #1e1e1e; overflow: hidden; 
+        }
+        .chat-body { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #252526;}
+        .chat-input-area { display: flex; border-top: 1px solid #333; background: #252526; flex-shrink: 0; }
+        .chat-input-area input { flex: 1; padding: 10px; background: #333; border: none; outline: none; color: white; font-size: 13px;}
+        .chat-input-area button { padding: 10px 15px; background: #007acc; color: white; border: none; cursor: pointer; font-size: 13px;}
+        .dashboard-grid { flex: 1; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; overflow-y: auto; background: #252526;}
+        .dash-card { background: #2d2d2d; padding: 10px; border-radius: 6px; border-left: 3px solid #007acc; }
+        .dash-card h3 { margin: 0 0 5px 0; color: #9cdcfe; font-size: 12px; }
+        .radar-wrapper { grid-column: span 2; display: flex; flex-direction: column; min-height: 180px; }
+        .radar-wrapper canvas { width: 100%; flex: 1; background: #000; border-radius: 4px; margin-top: 5px; }
+        .full-panel canvas, .full-panel img { flex: 1; width: 100%; object-fit: contain; display: block; background: #2d2d2d; }
+        .lm_stack .lm_header { background: #2d2d2d !important; }
+        .lm_stack .lm_tab { background: #3c3c3c !important; color: #ccc !important; }
+        .lm_stack .lm_tab.lm_active { background: #1e1e1e !important; color: white !important; }
+    </style>
+</head>
+<body>
+
+<div id="system-statusbar">
+    <div class="window-controls">
+        <button class="window-btn" data-panel="chat">🧠 决策大脑</button>
+        <button class="window-btn" data-panel="topo">🗺️ 拓扑动画</button>
+        <button class="window-btn" data-panel="rgb">📷 RGB 视觉</button>
+        <button class="window-btn" data-panel="depth">🔍 深度图</button>
+        <button class="window-btn" data-panel="map">🗺️ SLAM 地图</button>
+        <button class="window-btn" data-panel="telemetry">📡 遥测仪表盘</button>
+    </div>
+    <div class="system-status">
+        <button class="window-btn" id="reset-all-btn">🔄 重置布局</button>
+        <button class="window-btn" id="close-all-btn">❌ 全部关闭</button>
+        <span id="sys-time"></span>
+        <span>🟢 系统在线</span>
+    </div>
+</div>
+<div id="layout-container"></div>
+
+<script>
+// ====================== 业务模块 (完全不变) ======================
+const ChatModule = {
+    el: null, input: null,
+    init(wrapper) {
+        if (!wrapper) return;
+        this.el = wrapper.querySelector('.chat-body');
+        this.input = wrapper.querySelector('#userInput');
+        if (this.el && this.el.children.length === 0) {
+            this.append("系统就绪，请输入指令", false);
+        }
+    },
+    append(text, isUser) {
+        if(!this.el) return;
+        const div = document.createElement('div');
+        div.className = isUser ? 'msg user-msg' : 'msg bot-msg';
+        div.innerText = text;
+        this.el.appendChild(div);
+        this.el.scrollTop = this.el.scrollHeight;
+        return div;
+    },
+    async send() {
+        if(!this.input) return;
+        const text = this.input.value.trim();
+        if (!text) return;
+        this.input.value = '';
+        this.append(text, true);
+        const botDiv = this.append("思考中...", false);
+        try {
+            const res = await fetch('/api/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({msg: text}) });
+            const reader = res.body.getReader(); const decoder = new TextDecoder(); let fullText = "";
+            while (true) {
+                const {done, value} = await reader.read(); if (done) break;
+                fullText += decoder.decode(value, {stream: true});
+                if (fullText.includes("[DATA_JSON]:")) {
+                    const parts = fullText.split("[DATA_JSON]:"); botDiv.innerText = parts[0];
+                    NetworkModule.sendToDrg({type: "execute", payload: JSON.parse(parts[1])});
+                } else { botDiv.innerText = fullText; }
+                this.el.scrollTop = this.el.scrollHeight;
+            }
+        } catch (e) { 
+            botDiv.innerText = "⚠️ 网络错误 (演示模式)"; 
+            console.warn("API不可用，演示模式");
+        }
+    }
+};
+
+const TopoView = {
+    canvas: null, ctx: null,
+    NODES: { "N_0":{x:1,y:1,w:8,h:8}, "N_1":{x:3,y:1,w:8,h:8}, "N_2":{x:5,y:1,w:8,h:8}, "N_3":{x:5,y:3,w:8,h:8}, "N_4":{x:7,y:1,w:8,h:8} },
+    EDGES: [["N_0","N_1"],["N_1","N_2"],["N_2","N_3"],["N_2","N_4"]],
+    path: [], bot: {x: 1, y: 1}, clickState: 'start', selectedStart: null, selectedEnd: null, SCALE: 60,
+    init(canvasEl) {
+        if (!canvasEl) return;
+        this.canvas = canvasEl; this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        this.canvas.onclick = (e) => this.onClick(e);
+        this.loadRealData();
+        this.draw();
+    },
+    resize() {
+        if(!this.canvas || !this.canvas.parentElement) return;
+        const w = this.canvas.parentElement.clientWidth || 400;
+        const h = this.canvas.parentElement.clientHeight || 300;
+        if (this.canvas.width !== w || this.canvas.height !== h) { 
+            this.canvas.width = w; this.canvas.height = h; this.draw();
+        }
+    },
+    toPixel(x, y) { return { px: 80 + x * this.SCALE, py: 80 + y * this.SCALE }; },
+    onClick(e) {
+        const rect = this.canvas.getBoundingClientRect(); const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+        let closest = null, minD = Infinity;
+        Object.keys(this.NODES).forEach(id => { const p = this.toPixel(this.NODES[id].x, this.NODES[id].y); const d = Math.hypot(mx - p.px, my - p.py); if (d < minD) { minD = d; closest = id; } });
+        if (minD > 30) return;
+        if (this.clickState === 'start') { this.selectedStart = closest; this.clickState = 'end'; }
+        else { this.selectedEnd = closest; this.clickState = 'start'; NetworkModule.sendToDrg({ type: "execute", payload: { start: this.selectedStart, end: this.selectedEnd }}); ChatModule.append(`[系统] 触发导航：${this.selectedStart} -> ${this.selectedEnd}`, false); this.selectedStart = null; this.selectedEnd = null; }
+    },
+    draw() {
+        if (!this.ctx || !this.canvas) return;
+        const ctx = this.ctx; ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        ctx.strokeStyle = '#555'; ctx.lineWidth = 2;
+        this.EDGES.forEach(e => { let p1 = this.toPixel(this.NODES[e[0]].x, this.NODES[e[0]].y); let p2 = this.toPixel(this.NODES[e[1]].x, this.NODES[e[1]].y); ctx.beginPath(); ctx.moveTo(p1.px, p1.py); ctx.lineTo(p2.px, p2.py); ctx.stroke(); });
+        if (this.path.length > 1) { ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 4; ctx.beginPath(); let sp = this.toPixel(this.NODES[this.path[0]].x, this.NODES[this.path[0]].y); ctx.moveTo(sp.px, sp.py); for(let i=1; i<this.path.length; i++){ let p = this.toPixel(this.NODES[this.path[i]].x, this.NODES[this.path[i]].y); ctx.lineTo(p.px, p.py); } ctx.stroke(); }
+        Object.keys(this.NODES).forEach(id => { let n = this.NODES[id]; let p = this.toPixel(n.x, n.y); ctx.fillStyle = '#aaa'; ctx.fillRect(p.px - n.w/2, p.py - n.h/2, n.w, n.h); ctx.fillStyle = '#fff'; ctx.font = '12px Arial'; ctx.fillText(id, p.px + n.w/2 + 4, p.py + 4); });
+        let bp = this.toPixel(this.bot.x, this.bot.y); ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.arc(bp.px, bp.py, 10, 0, Math.PI*2); ctx.fill();
+    },
     loadRealData() {
         fetch('/api/topo').then(r => r.json()).then(data => {
             if (data.nodes && data.nodes.length > 0) {
                 let minX=Infinity, maxX=-Infinity, minY=Infinity, maxY=-Infinity;
                 data.nodes.forEach(n => { minX=Math.min(minX,n.x); maxX=Math.max(maxX,n.x); minY=Math.min(minY,n.y); maxY=Math.max(maxY,n.y); });
-                const rX = maxX - minX || 1, rY = maxY - minY || 1;
-                this.NODES = {}; this.EDGES = [];
-                data.nodes.forEach(n => {
-                    this.NODES[n.id] = { x: ((n.x - minX) / rX) * 8 + 1, y: ((n.y - minY) / rY) * 8 + 1, w: Math.max(4, Math.min((n.w || 8) * 0.15, 12)), h: Math.max(4, Math.min((n.h || 8) * 0.15, 12)) };
-                });
+                const rX = maxX - minX || 1, rY = maxY - minY || 1; this.NODES = {}; this.EDGES = [];
+                data.nodes.forEach(n => { this.NODES[n.id] = { x: ((n.x - minX) / rX) * 8 + 1, y: ((n.y - minY) / rY) * 8 + 1, w: Math.max(4, Math.min((n.w || 8) * 0.15, 12)), h: Math.max(4, Math.min((n.h || 8) * 0.15, 12)) }; });
                 data.edges.forEach(e => this.EDGES.push([e.from, e.to]));
             }
+            this.draw();
         }).catch(() => {});
     }
 };
 
-// ==========================================
-// 3. 雷达与仪表盘模块
-// ==========================================
-let l = 0;
 const TelemetryView = {
-    canvas: document.getElementById('radarCanvas'),
-    ctx: null,
-    scale: 50,
-
-    init() {
-        this.ctx = this.canvas.getContext('2d');
-        this.resize();
-        window.addEventListener('resize', () => this.resize());
-    },
-
-    resize() {
-        this.canvas.width = this.canvas.clientWidth;
-        this.canvas.height = this.canvas.clientHeight;
-    },
-
+    canvas: null, ctx: null, scale: 50,
+    init(canvasEl) { this.canvas = canvasEl; this.ctx = this.canvas.getContext('2d'); this.resize(); },
+    resize() { if(!this.canvas || !this.canvas.parentElement) return; this.canvas.width = this.canvas.parentElement.clientWidth; this.canvas.height = this.canvas.parentElement.clientHeight; },
     draw(data) {
-        if (!data) return;
-        const ctx = this.ctx;
-        const w = this.canvas.width, h = this.canvas.height;
-        if (w === 0 || h === 0) return; // 防御性判断
-
-        const cx = w / 2, cy = h / 2;
-        ctx.clearRect(0, 0, w, h);
-        
-        ctx.strokeStyle = '#3c3c3c';
-        ctx.beginPath();
-        for(let i = 0; i < w; i += 50){ ctx.moveTo(i, 0); ctx.lineTo(i, h); }
-        for(let i = 0; i < h; i += 50){ ctx.moveTo(0, i); ctx.lineTo(w, i); }
-        ctx.stroke();
-
+        if (!data || !this.ctx || !this.canvas) return;
+        const ctx = this.ctx; const w = this.canvas.width, h = this.canvas.height; if (w === 0 || h === 0) return;
+        const cx = w / 2, cy = h / 2; ctx.clearRect(0, 0, w, h);
+        ctx.strokeStyle = '#3c3c3c'; ctx.beginPath();
+        for(let i = 0; i < w; i += 50){ ctx.moveTo(i, 0); ctx.lineTo(i, h); } for(let i = 0; i < h; i += 50){ ctx.moveTo(0, i); ctx.lineTo(w, i); } ctx.stroke();
         const yaw = data.robot.yaw;
-
-        ctx.fillStyle = '#89d185'; ctx.beginPath();
-        ctx.arc(cx + data.task.goal_x * this.scale, cy - data.task.goal_y * this.scale, 6, 0, Math.PI * 2);
-        ctx.fill();
-
+        ctx.fillStyle = '#89d185'; ctx.beginPath(); ctx.arc(cx + data.task.goal_x * this.scale, cy - data.task.goal_y * this.scale, 6, 0, Math.PI * 2); ctx.fill();
         ctx.save(); ctx.translate(cx, cy); ctx.rotate(-yaw);
-        const ranges = data.sensor.laser_ranges;
-        const inc = (2 * Math.PI) / ranges.length; // ✅ 修正：用 ranges.length 计算角度间隔
-        ctx.strokeStyle = '#ce9178'; ctx.lineWidth = 1;
-        
-        // ✅ 修改1：找到第一个有效点，作为路径起点
+        const ranges = data.sensor.laser_ranges; const inc = (2 * Math.PI) / ranges.length; ctx.strokeStyle = '#ce9178'; ctx.lineWidth = 1;
         let firstValidPoint = null;
-        for (let i = 0; i < ranges.length; i++) {
-            const r = ranges[i] * this.scale;
-            // ✅ 修改2：跳过无效点（r >= 10）
-            
-            const a = i * inc - Math.PI;
-            const x = Math.cos(a) * r;
-            const y = -Math.sin(a) * r;
-            
-            if (firstValidPoint === null) {
-                ctx.beginPath(); // 只在遇到第一个有效点时开始路径
-                ctx.moveTo(x, y); // ✅ 关键：起点移动到第一个有效点
-                firstValidPoint = {x, y};
-            } else {
-                ctx.lineTo(x, y);
-            }
-        }
-        // ✅ 修改3：如果找到了有效点，才 stroke，否则不画
-        if (firstValidPoint !== null) {
-            // ctx.moveTo(firstValidPoint[0],firstValidPoint[1])
-            ctx.closePath();
-            ctx.stroke();
-            // 填充：只填充有实际障碍物的区域
-            ctx.fillStyle = 'rgba(206, 145, 120, 0.1)';
-            ctx.fill();
-        }
-
-        // ctx.fillStyle = 'rgba(206, 145, 120, 0.1)'; ctx.fill();
-        ctx.restore();
-
-        ctx.fillStyle = '#007acc'; ctx.beginPath();
-        ctx.arc(cx, cy, 4, 0, Math.PI * 2);
-        ctx.fill();
-
+        for (let i = 0; i < ranges.length; i++) { const r = ranges[i] * this.scale; const a = i * inc - Math.PI; const x = Math.cos(a) * r; const y = -Math.sin(a) * r; if (firstValidPoint === null) { ctx.beginPath(); ctx.moveTo(x, y); firstValidPoint = {x, y}; } else { ctx.lineTo(x, y); } }
+        if (firstValidPoint !== null) { ctx.closePath(); ctx.stroke(); ctx.fillStyle = 'rgba(206, 145, 120, 0.1)'; ctx.fill(); }
+        ctx.restore(); ctx.fillStyle = '#007acc'; ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fill();
         this._updateDashboard(data);
     },
-
     _updateDashboard(data) {
         const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
         const setCls = (id, cls) => { const el = document.getElementById(id); if (el) el.className = "value " + cls; };
-
-        const perf = data?.perf || {};
-        const rl = data?.rl || {};
-        const robot = data?.robot || {};
-        const task = data?.task || {};
-        const sensor = data?.sensor || {};
-
-        setTxt('val-fps', (perf.step_fps || 0).toFixed(1));
-        setTxt('val-reward', (rl.reward || 0).toFixed(2));
+        const perf = data?.perf || {}, rl = data?.rl || {}, robot = data?.robot || {}, task = data?.task || {}, sensor = data?.sensor || {};
+        setTxt('val-fps', (perf.step_fps || 0).toFixed(1)); setTxt('val-reward', (rl.reward || 0).toFixed(2));
         setTxt('val-pose', `${(robot.x || 0).toFixed(2)}, ${(robot.y || 0).toFixed(2)}, ${((robot.yaw || 0) * 180 / Math.PI).toFixed(0)}°`);
-        setTxt('val-dist', (task.dist || 0).toFixed(2) + " m");
-        setTxt('val-laser', (sensor.min_laser || 0).toFixed(3) + " m");
-        
-        const isCol = rl.collision;
-        const isGoal = rl.goal_reached;
+        setTxt('val-dist', (task.dist || 0).toFixed(2) + " m"); setTxt('val-laser', (sensor.min_laser || 0).toFixed(3) + " m");
+        const isCol = rl.collision, isGoal = rl.goal_reached;
         setTxt('val-status', isCol ? "💥 COLLISION" : (isGoal ? "🏆 GOAL" : "🚀 RUNNING"));
-        setCls('val-status', isCol ? "warn" : (isGoal ? "good" : ""));
-        setCls('val-laser', (sensor.min_laser || 1) < 0.3 ? "warn" : "");
+        setCls('val-status', isCol ? "warn" : (isGoal ? "good" : "")); setCls('val-laser', (sensor.min_laser || 1) < 0.3 ? "warn" : "");
     }
 };
 
-// ==========================================
-// 4. 网络模块
-// ==========================================
 const NetworkModule = {
-    wsDrg: null,
-    wsTelemetry: null,
-    wsRgb: null,
-
+    wsDrg: null, wsTelemetry: null,
     init() {
         const host = window.location.host;
-        
         this.wsDrg = new WebSocket(`ws://${host}/ws/drg`);
-        this.wsDrg.onmessage = (e) => {
-            const data = JSON.parse(e.data);
-            if (data.type === 'path') TopoView.path = data.nodes;
-            else if (data.type === 'pose') { TopoView.bot.x = data.x; TopoView.bot.y = data.y; }
-            else if (data.type === 'done') { TopoView.path = []; ChatModule.append(data.msg, false); }
-        };
-
+        this.wsDrg.onmessage = (e) => { const data = JSON.parse(e.data); if (data.type === 'path') TopoView.path = data.nodes; else if (data.type === 'pose') { TopoView.bot.x = data.x; TopoView.bot.y = data.y; } else if (data.type === 'done') { TopoView.path = []; ChatModule.append(data.msg, false); } };
         this.wsTelemetry = new WebSocket(`ws://${host}/ws/telemetry`);
-        this.wsTelemetry.onmessage = (e) => {
-            try {
-                const data = JSON.parse(e.data);
-                // ✅ 修复：去掉无脑的 'ros' 判断，右侧面板无论中间是什么模式，都必须一直刷新！
-                TelemetryView.draw(data); 
-            } catch(err) {
-                console.error("Telemetry 解析错误:", err); // ✅ 修复：加上异常捕获，防静默死亡
-            }
-        };
-
-        this.wsRgb = new WebSocket(`ws://${host}/ws/rgb`);
-        // ❌ 错误：binaryType 只用于二进制数据（如 arraybuffer/blob）
-        // this.wsRgb.binaryType = "arraybuffer"; 
-
-        this.wsRgb = new WebSocket(`ws://${host}/ws/rgb`);
-
-        
-        // this.wsRgb.onmessage = (event) => {
-        //     const blob = new Blob([event.data], { type: 'image/jpeg' });
-        //     const url = URL.createObjectURL(blob);
-        //     const imgEl = document.getElementById('rgbView');
-        //     if (imgEl) {
-        //         imgEl.src = url;
-        //         imgEl.onload = () => URL.revokeObjectURL(imgEl.src); 
-        //     }
-        // };
-        this.wsRgb.onmessage = (event) => {
-            try {
-                const data = JSON.parse(event.data);  // 解析 JSON
-                if (data.frame) {
-                    // 🌟 关键：必须加上 data:image/jpeg;base64, 前缀
-                    document.getElementById('rgbView').src = "data:image/jpeg;base64," + data.frame;
-                }
-            } catch (e) {
-                console.error("WebSocket 数据解析失败:", e);
-            }
-        };
+        this.wsTelemetry.onmessage = (e) => { try { TelemetryView.draw(JSON.parse(e.data)); } catch(err) { console.error("Telemetry err", err); } };
     },
-
-    sendToDrg(payload) {
-        if (this.wsDrg && this.wsDrg.readyState === WebSocket.OPEN) {
-            this.wsDrg.send(JSON.stringify(payload));
-        }
-    }
+    sendToDrg(payload) { if (this.wsDrg && this.wsDrg.readyState === WebSocket.OPEN) this.wsDrg.send(JSON.stringify(payload)); }
 };
 
-// ==========================================
-// 5. 主控制器
-// ==========================================
-const App = {
-    currentMode: 'topo',
-
+const StreamManager = {
+    sockets: {},
     init() {
-        TopoView.init();
-        TelemetryView.init();
-        NetworkModule.init();
-        this.loop();
+        const host = window.location.host;
+        this.connect('rgbView', `ws://${host}/ws/rgb`, 'image/jpeg');
+        this.connect('depthView', `ws://${host}/ws/depth`, 'image/jpeg');
+        this.connect('mapView', `ws://${host}/ws/map`, 'image/png');
     },
-
-    switchMode(mode) {
-        this.currentMode = mode;
-        
-        // 1. 切换按钮高亮
-        document.getElementById('btn-topo').classList.toggle('active', mode === 'topo');
-        document.getElementById('btn-rgb').classList.toggle('active', mode === 'rgb');
-        
-        // 2. 拿到中间面板的两个元素
-        const topoCanvas = document.getElementById('topoCanvas');
-        const rgbView = document.getElementById('rgbView');
-        const radarCanvas = document.getElementById('radarCanvas'); // 右侧的雷达
-        
-        // 3. 执行显示/隐藏
-        if (mode === 'topo') {
-            topoCanvas.style.display = 'block'; 
-            rgbView.style.display = 'none';
-            radarCanvas.style.display = 'block'; // 确保右侧雷达一直在
-        } else if (mode === 'rgb') {
-            topoCanvas.style.display = 'none';  
-            rgbView.style.display = 'block';     // 中间显示 RGB
-            radarCanvas.style.display = 'block'; // 确保右侧雷达一直在
-        }
-        
-        // 4. 解决 Canvas 黑屏 (加上安全判断，防止报错阻断)
-        setTimeout(() => {
-            if (mode === 'topo' && typeof TopoView !== 'undefined') TopoView.resize();
-            if (typeof TelemetryView !== 'undefined') TelemetryView.resize(); // 右侧雷达也顺便刷新一下尺寸
-        }, 0);
-    },
-
-    loop() {
-        requestAnimationFrame(() => this.loop());
-        // 只有拓扑动画需要 60fps 刷新（机器人平滑移动）
-        if (this.currentMode === 'topo') {
-            TopoView.draw();
-        }
+    connect(domId, url, mimeType) {
+        const ws = new WebSocket(url); ws.binaryType = "arraybuffer"; this.sockets[domId] = ws;
+        ws.onmessage = (event) => {
+            const el = document.getElementById(domId); 
+            if (!el) return; 
+            const blob = new Blob([event.data], { type: mimeType });
+            const imgUrl = URL.createObjectURL(blob);
+            el.onload = () => URL.revokeObjectURL(imgUrl);
+            el.src = imgUrl;
+        };
+        ws.onclose = () => setTimeout(() => this.connect(domId, url, mimeType), 1000);
     }
 };
 
-App.init();
-</script>
-</body>
-</html>
-
-
-
-<!-- <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>具身智能中控台</title>
-    <style>
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #1e1e1e; color: #fff; display: flex; height: 100vh; overflow: hidden; }
+// ====================== 面板管理器 ======================
+const PanelManager = {
+    instances: new Map(),
+    layout: null,
+    buttons: new Map(),
+    
+    init(layoutInstance) {
+        this.layout = layoutInstance;
         
-        /* 左侧聊天面板 */
-        #left-panel { width: 35%; display: flex; flex-direction: column; border-right: 1px solid #333; background: #252526; }
-        .chat-header { padding: 15px; background: #007acc; font-weight: bold; }
-        .messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .msg { max-width: 90%; padding: 10px 12px; border-radius: 6px; line-height: 1.4; font-size: 13px; white-space: pre-wrap; }
-        .user-msg { background: #007acc; align-self: flex-end; color: white; }
-        .bot-msg { background: #333; align-self: flex-start; border: 1px solid #444; color: #d4d4d4; }
-        .input-area { display: flex; border-top: 1px solid #333; }
-        input { flex: 1; padding: 12px; background: #333; border: none; outline: none; color: white; }
-        button { padding: 12px 20px; background: #007acc; color: white; border: none; cursor: pointer; }
-
-        /* 右侧仿真面板 */
-        #right-panel { width: 65%; display: flex; flex-direction: column; background: #1e1e1e; }
-        .sim-header { padding: 10px 15px; background: #333; display: flex; justify-content: space-between; align-items: center; }
-        .mode-btn { padding: 5px 10px; background: #555; border: none; color: white; cursor: pointer; border-radius: 4px; }
-        .mode-btn.active { background: #007acc; }
-        canvas { flex: 1; background: #2d2d2d; }
-        #ros-placeholder { display: none; flex: 1; justify-content: center; align-items: center; color: #888; font-size: 18px; }
-    </style>
-</head>
-<body>
-    <div id="left-panel">
-        <div class="chat-header">🧠 决策大脑 LLM</div>
-        <div class="messages" id="msgContainer"></div>
-        <div class="input-area">
-            <input type="text" id="userInput" placeholder="输入指令：去厨房" onkeypress="if(event.key==='Enter')sendCmd()">
-            <button onclick="sendCmd()">发送</button>
-        </div>
-    </div>
-
-    <div id="right-panel">
-        <div class="sim-header">
-            <span>🤖 执行层仿真</span>
-            <div>
-                <button class="mode-btn active" onclick="switchMode('topo')">模式1: 拓扑动画</button>
-                <button class="mode-btn" onclick="switchMode('ros')">模式2: ROS2真机</button>
-            </div>
-        </div>
-        <canvas id="topoCanvas"></canvas>
-        <div id="ros-placeholder">等待 ROS2 宿主机端口接入...</div>
-    </div>
-
-</body>
-
-<script>
-// ================= 状态与数据 =================
-const container = document.getElementById('msgContainer');
-const input = document.getElementById('userInput');
-let currentMode = 'topo';
-let ws; 
-
-// 假拓扑图数据 (★ 改动1：给 baseline 加上默认的 w 和 h 属性，用来画小方块)
-let NODES = {
-    "N_0":{x:1,y:1, w:8, h:8}, "N_1":{x:3,y:1, w:8, h:8}, 
-    "N_2":{x:5,y:1, w:8, h:8}, "N_3":{x:5,y:3, w:8, h:8}, 
-    "N_4":{x:7,y:1, w:8, h:8}
-};
-let EDGES = [["N_0","N_1"],["N_1","N_2"],["N_2","N_3"],["N_2","N_4"]];
-
-let path = [];
-let bot = {x: 1, y: 1};
-const SCALE = 60;
-
-let clickState = 'start'; // 状态机：'start' -> 'end'
-let selectedStart = null;
-let selectedEnd = null;
-
-// ================= 聊天逻辑 (完全保留) =================
-function appendMsg(text, isUser) {
-    const div = document.createElement('div');
-    div.className = isUser ? 'msg user-msg' : 'msg bot-msg';
-    div.innerText = text;
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
-    return div;
-}
-
-async function sendCmd() {
-    const text = input.value.trim();
-    if (!text) return;
-    input.value = '';
-    appendMsg(text, true);
-    const botDiv = appendMsg("思考中...", false);
-
-    const response = await fetch('/api/chat', {
-        method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({msg: text})
-    });
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let fullText = "";
-
-    while (true) {
-        const {done, value} = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, {stream: true});
-        fullText += chunk;
-        if (fullText.includes("[DATA_JSON]:")) {
-            const parts = fullText.split("[DATA_JSON]:");
-            botDiv.innerText = parts[0];
-            const cmdData = JSON.parse(parts[1]);
-            console.log("下发执行:", cmdData);
-            if(ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({type: "execute", payload: cmdData}));
+        document.querySelectorAll('.window-btn[data-panel]').forEach(btn => {
+            const panelId = btn.dataset.panel;
+            this.buttons.set(panelId, btn);
+            btn.addEventListener('click', () => this.togglePanel(panelId));
+        });
+        
+        const resetBtn = document.getElementById('reset-all-btn');
+        if (resetBtn) resetBtn.addEventListener('click', () => this.resetAll());
+        
+        const closeAllBtn = document.getElementById('close-all-btn');
+        if (closeAllBtn) closeAllBtn.addEventListener('click', () => this.closeAll());
+        
+        const updateTime = () => {
+            const timeEl = document.getElementById('sys-time');
+            if (timeEl) timeEl.textContent = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+        };
+        updateTime();
+        setInterval(updateTime, 1000);
+        
+        this.layout.on('itemDestroyed', (item) => {
+            for (let [panelId, instance] of this.instances.entries()) {
+                if (instance === item) {
+                    this._onPanelDestroyed(panelId);
+                    break;
+                }
+            }
+        });
+    },
+    
+    syncInitialState() {
+        for (let [panelId, instance] of this.instances.entries()) {
+            if (instance && instance.parent) this._updateButtonState(panelId, true);
+        }
+    },
+    
+    togglePanel(panelId) {
+        const instance = this.instances.get(panelId);
+        if (instance) {
+            if (instance.parent) {
+                const parent = instance.parent;
+                if (parent && typeof parent.setActiveContentItem === 'function') parent.setActiveContentItem(instance);
+            } else {
+                this._restorePanel(panelId, instance);
             }
         } else {
-            botDiv.innerText = fullText;
+            this._createPanel(panelId);
         }
-        container.scrollTop = container.scrollHeight;
-    }
-}
-
-// ================= 画布逻辑 =================
-const canvas = document.getElementById("topoCanvas");
-const ctx = canvas.getContext("2d");
-
-function resizeCanvas() {
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
-}
-window.onresize = resizeCanvas;
-resizeCanvas();
-
-function toPixel(x, y) { return {px: 80 + x * SCALE, py: 80 + y * SCALE}; }
-
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // 画边
-    ctx.strokeStyle = '#555'; ctx.lineWidth = 2;
-    EDGES.forEach(e => {
-        let p1 = toPixel(NODES[e[0]].x, NODES[e[0]].y);
-        let p2 = toPixel(NODES[e[1]].x, NODES[e[1]].y);
-        ctx.beginPath(); ctx.moveTo(p1.px, p1.py); ctx.lineTo(p2.px, p2.py); ctx.stroke();
-    });
-    // 画路径
-    if (path.length > 1) {
-        ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 4;
-        ctx.beginPath();
-        let sp = toPixel(NODES[path[0]].x, NODES[path[0]].y);
-        ctx.moveTo(sp.px, sp.py);
-        for(let i=1; i<path.length; i++){
-            let p = toPixel(NODES[path[i]].x, NODES[path[i]].y);
-            ctx.lineTo(p.px, p.py);
-        }
-        ctx.stroke();
-    }
-    // 画节点 (★ 改动2：把原来的画圆 arc，改成画方块 fillRect)
-    Object.keys(NODES).forEach(id => {
-        let n = NODES[id]; 
-        let p = toPixel(n.x, n.y);
-        let w = n.w || 8; // 兼容没有 w 属性的情况
-        let h = n.h || 8;
-        
-        ctx.fillStyle = '#aaa'; 
-        ctx.fillRect(p.px - w/2, p.py - h/2, w, h); // 画方块
-        
-        ctx.fillStyle = '#fff'; ctx.font = '12px Arial'; ctx.fillText(id, p.px + w/2 + 4, p.py + 4);
-    });
-// 可选：在 draw() 函数里加点视觉效果，把选中的点画出来
-// 在 draw() 里面画小车的那一步前面加上：
-
-    if (selectedStart) {
-        let sp = toPixel(NODES[selectedStart].x, NODES[selectedStart].y);
-        ctx.fillStyle = '#3498db'; ctx.beginPath(); ctx.arc(sp.px, sp.py, 12, 0, Math.PI*2); ctx.fill();
-        ctx.fillStyle = '#fff'; ctx.font = '10px Arial'; ctx.fillText("起", sp.px-5, sp.py+4);
-    }
-    if (selectedEnd) {
-        let ep = toPixel(NODES[selectedEnd].x, NODES[selectedEnd].y);
-        ctx.fillStyle = '#f1c40f'; ctx.beginPath(); ctx.arc(ep.px, ep.py, 12, 0, Math.PI*2); ctx.fill();
-        ctx.fillStyle = '#000'; ctx.font = '10px Arial'; ctx.fillText("终", ep.px-5, ep.py+4);
-    }
-
-    // 画小车
-    let bp = toPixel(bot.x, bot.y);
-    ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.arc(bp.px, bp.py, 10, 0, Math.PI*2); ctx.fill();
+    },
     
-    requestAnimationFrame(draw);
-}
-draw();
-// ================= 鼠标点选起点/终点 =================
-// ❌ 删掉这几行
-// let clickState = 'start';
-// let selectedStart = null;
-// let selectedEnd = null;
-
-canvas.addEventListener('click', function(e) {
-    // 1. 获取鼠标在 Canvas 上的像素坐标
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    // 2. 找到离鼠标最近的节点
-    let closestNode = null;
-    let minDist = Infinity;
-
-    Object.keys(NODES).forEach(id => {
-        const n = NODES[id];
-        const p = toPixel(n.x, n.y);
-        // 计算两点距离
-        const dist = Math.hypot(mouseX - p.px, mouseY - p.py);
-        if (dist < minDist) {
-            minDist = dist;
-            closestNode = id;
+    registerInstance(panelId, contentItem) {
+        const old = this.instances.get(panelId);
+        if (old && old !== contentItem) this.instances.delete(panelId);
+        this.instances.set(panelId, contentItem);
+        this._updateButtonState(panelId, true);
+        console.log(`[PanelManager] 注册面板: ${panelId}`);
+    },
+    
+    _onPanelDestroyed(panelId) {
+        const instance = this.instances.get(panelId);
+        if (!instance) return;
+        this.instances.delete(panelId);
+        this._updateButtonState(panelId, false);
+        this._cleanupPanelResources(panelId);
+        console.log(`[PanelManager] 面板已关闭: ${panelId}`);
+    },
+    
+    _restorePanel(panelId, contentItem) {
+        let target = this._findTargetContainer();
+        if (!target) return;
+        target.addChild(contentItem);
+        this._updateButtonState(panelId, true);
+        console.log(`[PanelManager] 恢复面板: ${panelId}`);
+    },
+    
+    _createPanel(panelId) {
+        let target = this._findTargetContainer();
+        if (!target) return;
+        const titles = {
+            chat: '🧠 决策大脑', topo: '🗺️ 拓扑动画', rgb: '📷 RGB 视觉',
+            depth: '🔍 深度图', map: '🗺️ SLAM 地图', telemetry: '📡 遥测仪表盘'
+        };
+        target.addChild({ type: 'component', componentName: panelId, title: titles[panelId] || panelId });
+        console.log(`[PanelManager] 创建新面板: ${panelId}`);
+    },
+    
+    _findTargetContainer() {
+        const root = this.layout.root;
+        if (!root) return null;
+        if (root.contentItems && root.contentItems.length > 0) {
+            const first = root.contentItems[0];
+            if (first && (first.type === 'row' || first.type === 'column' || first.type === 'stack')) return first;
         }
-    });
-
-    // 3. 如果距离太远（没点到节点上），就不处理
-    if (minDist > 30) return; 
-
-    // 4. 状态机判定
-    if (clickState === 'start') {
-        selectedStart = closestNode;
-        clickState = 'end';
-        console.log(`选中起点: ${selectedStart}`);
-        // 可选：在左下角或某个 div 提示一下 "请点击选择终点"
-    } else if (clickState === 'end') {
-        selectedEnd = closestNode;
-        clickState = 'start';
-        console.log(`选中终点: ${selectedEnd}，准备发车！`);
-
-        // 5. 直接构造 JSON，通过 WS 发给后端跑！
-        if (ws && ws.readyState === WebSocket.OPEN) {
-            const cmdData = {
-                start: selectedStart,
-                end: selectedEnd
-            };
-            ws.send(JSON.stringify({type: "execute", payload: cmdData}));
-            // 在聊天框里留个记录，假装是大模型发的
-            appendMsg(`[系统] 触发导航：${selectedStart} -> ${selectedEnd}`, false);
+        return (root.type === 'row' || root.type === 'column' || root.type === 'stack') ? root : null;
+    },
+    
+    _updateButtonState(panelId, isActive) {
+        const btn = this.buttons.get(panelId);
+        if (btn) btn.classList.toggle('active', isActive);
+    },
+    
+    _cleanupPanelResources(panelId) {},
+    
+    resetAll() {
+        if (this.layout) this.layout.destroy();
+        this.instances.clear();
+        this.buttons.forEach((btn, panelId) => this._updateButtonState(panelId, true));
+        if (typeof window.createLayout === 'function') {
+            this.layout = window.createLayout();
+        } else {
+            console.error('[PanelManager] createLayout 未定义');
         }
+        console.log('[PanelManager] 布局已完全重置');
+    },
+    
+    closeAll() {
+        const panels = Array.from(this.instances.entries());
+        for (let [panelId, instance] of panels) {
+            try {
+                if (instance.parent) instance.parent.removeChild(instance, true);
+                else if (instance.destroy) instance.destroy();
+            } catch (e) {}
+            this.instances.delete(panelId);
+            this._updateButtonState(panelId, false);
+        }
+        console.log('[PanelManager] 所有面板已关闭');
     }
-});
+};
 
+// ====================== 布局创建函数 ======================
+function createLayout() {
+    const layout = new GoldenLayout({
+        settings: { showPopoutIcon: false, showMaximiseIcon: true, showCloseIcon: true, selectionEnabled: false },
+        dimensions: { borderWidth: 4, headerHeight: 28 },
+        content: [{
+            type: 'row',
+            content: [
+                { type: 'component', componentName: 'chat', title: '🧠 决策大脑' },
+                { 
+                    type: 'column', 
+                    content: [
+                        { type: 'component', componentName: 'topo', title: '🗺️ 拓扑动画' },
+                        { 
+                            type: 'stack', 
+                            content: [
+                                { type: 'component', componentName: 'rgb', title: '📷 RGB 视觉' },
+                                { type: 'component', componentName: 'depth', title: '🔍 深度图' },
+                                { type: 'component', componentName: 'map', title: '🗺️ SLAM 地图' }
+                            ]
+                        }
+                    ]
+                },
+                { type: 'component', componentName: 'telemetry', title: '📡 遥测仪表盘' }
+            ]
+        }]
+    }, '#layout-container');
 
-
-// ================= 模式切换 (完全保留) =================
-function switchMode(mode) {
-    currentMode = mode;
-    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
-    canvas.style.display = mode === 'topo' ? 'block' : 'none';
-    document.getElementById('ros-placeholder').style.display = mode === 'ros' ? 'flex' : 'none';
-}
-
-// ================= WebSocket 实时通信 (完全保留) =================
-function connectWS() {
-    ws = new WebSocket(`ws://${window.location.host}/ws`);
-    ws.onopen = () => console.log("WS 连接成功");
-    ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === 'path') { path = data.nodes; } 
-        else if (data.type === 'pose') { bot.x = data.x; bot.y = data.y; } 
-        else if (data.type === 'done') { path = []; appendMsg(data.msg, false); };
-        selectedStart = null; selectedEnd = null;
+    const registerImg = (name, id) => {
+        layout.registerComponent(name, function(container) {
+            container.getElement().html(`<div class="full-panel"><img id="${id}" src="" alt="${name}"></div>`);
+            PanelManager.registerInstance(name, container.parent);
+        });
     };
-}
-connectWS();
 
-// ================= 数据加载与静默替换 =================
-// ★ 改动3：增加这一段。尝试拉取真实数据，成功则覆盖全局 NODES 和 EDGES，失败则继续用上面的 baseline
-fetch('/api/topo')
-    .then(res => res.json())
-    .then(data => {
-        if (data.nodes && data.nodes.length > 0) {
-            // 1. 求出真实物理坐标的边界，用于归一化
-            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-            data.nodes.forEach(n => {
-                if(n.x < minX) minX = n.x; if(n.x > maxX) maxX = n.x;
-                if(n.y < minY) minY = n.y; if(n.y > maxY) maxY = n.y;
-            });
-            const rangeX = maxX - minX || 1;
-            const rangeY = maxY - minY || 1;
-
-            // 2. 清空旧数据，填入新数据
-            // 将真实坐标等比例缩放到 1~9 的范围内，完美适配你上面的 SCALE=60 和 80px偏移
-            const targetSize = 8; 
-            NODES = {}; 
-            EDGES = [];
-
-            data.nodes.forEach(n => {
-                const normX = ((n.x - minX) / rangeX) * targetSize + 1;
-                const normY = ((n.y - minY) / rangeY) * targetSize + 1;
-                
-                // 核心：把真实通道的 span 缩小！乘个系数(0.15)，并限制最大最小像素
-                const drawW = Math.max(4, Math.min((n.w || 8) * 0.15, 12));
-                const drawH = Math.max(4, Math.min((n.h || 8) * 0.15, 12));
-                
-                NODES[n.id] = { x: normX, y: normY, w: drawW, h: drawH };
-            });
-
-            data.edges.forEach(e => {
-                // 转换成你上面的 baseline 格式 ["N_0", "N_1"]
-                EDGES.push([e.from, e.to]); 
-            });
-            console.log("后端真实拓扑已加载并替换 Baseline");
-        }
-    })
-    .catch(err => {
-        console.log("未连接后端或加载失败，保持当前 Baseline 显示");
+    layout.registerComponent('chat', function(container) {
+        container.getElement().html(`
+            <div class="full-panel">
+                <div class="chat-body" id="msgContainer"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="userInput" placeholder="输入指令：去厨房">
+                    <button id="sendBtn">发送</button>
+                </div>
+            </div>
+        `);
+        const wrapper = container.getElement()[0];
+        wrapper.addEventListener('click', (e) => { if (e.target.id === 'sendBtn' || e.target.tagName === 'BUTTON') ChatModule.send(); });
+        const input = wrapper.querySelector('#userInput');
+        if (input) input.addEventListener('keypress', (e) => { if (e.key === 'Enter') ChatModule.send(); });
+        ChatModule.init(wrapper);
+        PanelManager.registerInstance('chat', container.parent);
     });
-</script>
 
+    layout.registerComponent('topo', function(container) {
+        container.getElement().html(`<div class="full-panel"><canvas id="topoCanvas"></canvas></div>`);
+        const canvas = container.getElement().find('#topoCanvas')[0];
+        if (canvas) {
+            TopoView.init(canvas);
+            container.on('resize', () => { TopoView.resize(); TopoView.draw(); });
+            setTimeout(() => { TopoView.resize(); TopoView.draw(); }, 20);
+        }
+        PanelManager.registerInstance('topo', container.parent);
+    });
+
+    layout.registerComponent('telemetry', function(container) {
+        container.getElement().html(`
+            <div class="full-panel">
+                <div class="dashboard-grid">
+                    <div class="dash-card"><h3>⏱ PERF (FPS)</h3><div class="value" id="val-fps">0.0</div></div>
+                    <div class="dash-card"><h3>🎯 REWARD</h3><div class="value" id="val-reward">0.0</div></div>
+                    <div class="dash-card"><h3>🤖 ROBOT (X,Y,YAW)</h3><div class="value" id="val-pose" style="font-size:14px">0,0,0</div></div>
+                    <div class="dash-card"><h3>📏 TASK (Dist)</h3><div class="value" id="val-dist">0.0</div></div>
+                    <div class="dash-card"><h3>🛡 STATUS</h3><div class="value" id="val-status" style="font-size:14px">RUNNING</div></div>
+                    <div class="dash-card"><h3>⚠️ MIN LASER</h3><div class="value" id="val-laser">0.0</div></div>
+                    <div class="dash-card radar-wrapper"><h3>📡 雷达</h3><canvas id="radarCanvas"></canvas></div>
+                </div>
+            </div>
+        `);
+        const canvas = container.getElement().find('#radarCanvas')[0];
+        if (canvas) {
+            TelemetryView.init(canvas);
+            container.on('resize', () => TelemetryView.resize());
+            setTimeout(() => TelemetryView.resize(), 20);
+        }
+        PanelManager.registerInstance('telemetry', container.parent);
+    });
+
+    registerImg('rgb', 'rgbView');
+    registerImg('depth', 'depthView');
+    registerImg('map', 'mapView');
+
+    layout.on('initialised', () => {
+        console.log('✅ Golden Layout 初始化完成');
+        layout.updateSize();
+        setTimeout(() => {
+            TopoView.resize(); TopoView.draw();
+            TelemetryView.resize();
+        }, 100);
+        PanelManager.syncInitialState();
+    });
+
+    layout.init();
+    PanelManager.init(layout);
+    setTimeout(() => PanelManager.syncInitialState(), 150);
+    return layout;
+}
+
+// ====================== 启动一切 ======================
+window.createLayout = createLayout;
+let currentLayout = createLayout();
+
+NetworkModule.init();
+StreamManager.init();
+
+(function loop() { 
+    requestAnimationFrame(loop); 
+    if (TopoView.canvas && TopoView.ctx) TopoView.draw(); 
+})();
+
+window.addEventListener('resize', () => {
+    if (currentLayout) currentLayout.updateSize();
+    TopoView.resize();
+    TelemetryView.resize();
+});
+</script>
+</body>
 </html> -->

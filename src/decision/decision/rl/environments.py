@@ -318,45 +318,12 @@ class TurtleBot3NaviEnv(gym.Env):
     def _get_laser_data(self) -> np.ndarray:
         """
         获取降维、归一化后的激光雷达状态。
-        这是 RL 环境中最容易炸裂的地方（NaN 传播、维度不匹配），这里的防御逻辑是保命符。
+        （委托给 RobotBridge 的语义化方法）
         """
-        beams_num = self.robot["laser_beams_num"]
-        max_range = self.robot["laser_range_max"]
-        
-        # ★ Bridge 直接丢一个纯净的 np.ndarray 过来
-        ranges = self.robot_bridge.get_laser_ranges()
-        
-        # 1. 防御性兜底：如果仿真器第一帧还没来得及发数据，用满量程填充（代表周围绝对安全）
-        if ranges is None:
-            return np.ones(beams_num, dtype=np.float32)
-            
-        # ======= 2. 数据清洗 (必做！Gazebo 的 Ray 传感器偶尔会抽风) =======
-        # 🛡️ 作用：把 NaN (非数字)、Inf (无穷大) 替换为合法值，防止它们进入神经网络导致梯度爆炸
-        ranges = np.nan_to_num(ranges, nan=max_range, posinf=max_range, neginf=0.0)
-        # 🛡️ 作用：硬性截断，防止物理引擎穿透时出现负数距离
-        ranges = np.clip(ranges, 0, max_range)
-        
-        # ======= 3. RL 状态空间适配 (核心逻辑) =======
-        # 💡 为什么下采样留在 Env？因为这是 RL 状态空间的定义（38维），
-        # 换成 Isaac Sim 可能底层传来的就是 24 维，不需要下采样。
-        # 把下采样放在这里，换仿真器时只需改这里，不用去动底层通信桥。
-        
-        n = len(ranges)
-        step = max(1, n // beams_num)
-        truncated_len = (n // step) * step
-        
-        # 🎯 算法解释：为什么用 .min(axis=1) 而不是 .mean()？
-        # 因为对于避障任务，漏掉一个近处障碍物是致命的。按区域取最小值，能最大程度保留危险特征。
-        sampled = ranges[:truncated_len].reshape(-1, step).min(axis=1)
-        
-        # 🛡️ 维度强一致性校验：无论底层雷达发了多少束光，出去的必须是 38 维
-        if len(sampled) > beams_num:
-            sampled = sampled[:beams_num]
-        elif len(sampled) < beams_num:
-            sampled = np.pad(sampled, (0, beams_num - len(sampled)), 'constant', constant_values=max_range)
-            
-        # 归一化到 [0, 1]，神经网络最喜欢的输入区间
-        return sampled / max_range
+        return self.robot_bridge.get_laser_normalized(
+            beams=self.robot["laser_beams_num"],
+            max_range=self.robot["laser_range_max"]
+        )
 
     def send_velocity(self, lin_x: float, ang_z: float):
         """
@@ -815,8 +782,10 @@ class TurtleBot3NaviEnv(gym.Env):
         基于激光雷达的碰撞检测。
         说明：直接拿 360 维原始数据算最小距离，和奖励函数的 _min_laser 保持同源。
         """
-        # 1. 获取当前最小距离
-        min_dist = self._min_laser()
+        # 1. 获取当前最小距离（委托给 Bridge）
+        min_dist = self.robot_bridge.get_laser_min_dist(
+            max_range=self.robot["laser_range_max"]
+        )
 
         # 2. 物理连续性校验（防自身死角瞬移）
         if self._last_min_dist is not None:
@@ -829,9 +798,11 @@ class TurtleBot3NaviEnv(gym.Env):
         # 3. 更新历史记录
         self._last_min_dist = min_dist
 
-        # 🧹 清理说明：去除了原代码中冗余的第二次 min_dist = self._min_laser() 调用
-        
-        if min_dist < self.robot["proximity_to_collision_threshold"]:
+        # 4. 碰撞判定（核心逻辑下沉至 Bridge）
+        if self.robot_bridge.is_collision(
+            threshold=self.robot["proximity_to_collision_threshold"],
+            max_range=self.robot["laser_range_max"]
+        ):
             logger.debug(f"Collision! Min dist: {min_dist:.3f}m")
             return True
         return False
@@ -872,16 +843,9 @@ class TurtleBot3NaviEnv(gym.Env):
     def _min_laser(self) -> float:
         """
         获取原始激光点中的最小距离。
-        用途：主要供给 Reward 函数计算接近障碍物的惩罚项。
+        （委托给 RobotBridge 的语义化方法）
         """
-        # 🔥 核心修改：数据源从 self.bridge 切换到 self.robot_bridge
-        ranges = self.robot_bridge.get_laser_ranges()
-        if ranges is None:
-            return self.robot["laser_range_max"]
-
-        # 必须过滤 NaN 和 Inf，否则 np.min 会抛出异常或返回异常值导致奖励崩溃
-        ranges = np.nan_to_num(ranges, nan=self.robot["laser_range_max"], posinf=self.robot["laser_range_max"])
-        return float(np.min(ranges))
+        return self.robot_bridge.get_laser_min_dist(self.robot["laser_range_max"])
 
     def _get_obs(self) -> np.ndarray:
         """
@@ -898,7 +862,7 @@ class TurtleBot3NaviEnv(gym.Env):
         """
         laser_norm = self._get_laser_data()
         odom = self._get_odom_data()
-        imu  = self._get_imu_data()
+        # imu  = self._get_imu_data()
 
         # 初始化零值占位符，防止传感器首帧未就绪时数组拼接报错
         imu_acc = np.zeros(3, dtype=np.float32)
@@ -907,29 +871,27 @@ class TurtleBot3NaviEnv(gym.Env):
         goal_angle, goal_dist = 0.0, 1.0
         odom_vel = np.zeros(2, dtype=np.float32)
 
-        if imu is not None:
-            imu_acc = np.clip(np.array(imu['acc']) / self.robot["lin_acc_physics_max"], -1.0, 1.0)
-            imu_gyro = np.clip(np.array(imu['gyro']) / self.robot["ang_vel_imu_physics_max"], -1.0, 1.0)
-            imu_rp = np.clip(np.array(imu['rpy'][:2]) / (math.pi/4), -1.0, 1.0)
+        # 委托给 RobotBridge 的语义化方法
+        imu_norm = self.robot_bridge.get_imu_normalized(
+            acc_max=self.robot["lin_acc_physics_max"],
+            gyro_max=self.robot["ang_vel_imu_physics_max"]
+        )
+        imu_acc = imu_norm["acc"]
+        imu_gyro = imu_norm["gyro"]
+        imu_rp = imu_norm["rpy"]
+
+        goal_rel = self.robot_bridge.get_goal_relative(self.state["goal_x"], self.state["goal_y"])
+        goal_angle = goal_rel["angle"] / math.pi
+        goal_dist = min(goal_rel["dist"] / self.world["dist_to_goal_clip_norm"], 1.0)
 
         if odom is not None:
-            # 坐标系转换：将世界坐标系下的目标偏移量，转换为机器人本体坐标系下的偏移量
-            dx = self.state["goal_x"] - odom['x']
-            dy = self.state["goal_y"] - odom['y']
-            yaw = odom['yaw']
-            # 旋转矩阵二维展开：[cos(yaw), sin(yaw); -sin(yaw), cos(yaw)] * [dx, dy]^T
-            local_x = dx * math.cos(yaw) + dy * math.sin(yaw)
-            local_y = -dx * math.sin(yaw) + dy * math.cos(yaw)
-
-            # 本体坐标系下的角度和距离
-            goal_angle = math.atan2(local_y, local_x) / math.pi
-            goal_dist = min(math.hypot(dx, dy) / self.world["dist_to_goal_clip_norm"], 1.0)
-
             # 当前线速度和角速度归一化
             odom_vel = np.clip(
                 np.array([odom['vx'], odom['wz']]) / np.array([self.robot["lin_vel_max"], self.robot["ang_vel_max"]]),
                 -1.0, 1.0
             )
+        else:
+            odom_vel = np.zeros(2, dtype=np.float32)
 
         # 历史动作归一化
         last_act_norm = np.clip(

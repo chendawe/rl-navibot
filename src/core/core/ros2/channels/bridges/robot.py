@@ -211,6 +211,99 @@ class RobotBridge(BaseBridge):
         msg.linear.x, msg.angular.z = float(lin_x), float(ang_z)
         self._publish(topic, msg)
 
+    # ==================== 新增：RL 语义化便利方法 ====================
+    # 注意：以下方法的内部逻辑完全复制自 Env 中的同名/同功能代码段，仅将数据源替换为 self
+
+    def get_laser_normalized(self, beams: int, max_range: float) -> np.ndarray:
+        """
+        获取降维、归一化后的激光雷达状态。
+        这是 RL 环境中最容易炸裂的地方（NaN 传播、维度不匹配），这里的防御逻辑是保命符。
+        （逻辑与 Env._get_laser_data() 完全一致）
+        """
+        ranges = self.get_laser_ranges()
+        # 1. 防御性兜底：如果仿真器第一帧还没来得及发数据，用满量程填充（代表周围绝对安全）
+        if ranges is None:
+            return np.ones(beams, dtype=np.float32)
+            
+        # ======= 2. 数据清洗 (必做！Gazebo 的 Ray 传感器偶尔会抽风) =======
+        # 🛡️ 作用：把 NaN (非数字)、Inf (无穷大) 替换为合法值，防止它们进入神经网络导致梯度爆炸
+        ranges = np.nan_to_num(ranges, nan=max_range, posinf=max_range, neginf=0.0)
+        # 🛡️ 作用：硬性截断，防止物理引擎穿透时出现负数距离
+        ranges = np.clip(ranges, 0, max_range)
+        
+        # ======= 3. RL 状态空间适配 (核心逻辑) =======
+        n = len(ranges)
+        step = max(1, n // beams)
+        truncated_len = (n // step) * step
+        
+        # 🎯 算法解释：为什么用 .min(axis=1) 而不是 .mean()？
+        # 因为对于避障任务，漏掉一个近处障碍物是致命的。按区域取最小值，能最大程度保留危险特征。
+        sampled = ranges[:truncated_len].reshape(-1, step).min(axis=1)
+        
+        # 🛡️ 维度强一致性校验：无论底层雷达发了多少束光，出去的必须是 beams 维
+        if len(sampled) > beams:
+            sampled = sampled[:beams]
+        elif len(sampled) < beams:
+            sampled = np.pad(sampled, (0, beams - len(sampled)), 'constant', constant_values=max_range)
+            
+        # 归一化到 [0, 1]，神经网络最喜欢的输入区间
+        return sampled / max_range
+
+    def get_laser_min_dist(self, max_range: float) -> float:
+        """
+        获取原始激光点中的最小距离。
+        用途：主要供给 Reward 函数计算接近障碍物的惩罚项。
+        （逻辑与 Env._min_laser() 完全一致）
+        """
+        ranges = self.get_laser_ranges()
+        if ranges is None:
+            return max_range
+
+        # 必须过滤 NaN 和 Inf，否则 np.min 会抛出异常或返回异常值导致奖励崩溃
+        ranges = np.nan_to_num(ranges, nan=max_range, posinf=max_range, neginf=0.0)
+        return float(np.min(ranges))
+
+    def get_goal_relative(self, goal_x: float, goal_y: float) -> dict:
+        """
+        计算目标点相对于机器人当前位姿的本体坐标、距离和偏航角。
+        （逻辑与 Env._get_obs() 中目标处理部分完全一致）
+        """
+        odom = self.get_odom_data()
+        if not odom:
+            return {"local_x": 0.0, "local_y": 0.0, "angle": 0.0, "dist": 1.0}
+        
+        # 坐标系转换：将世界坐标系下的目标偏移量，转换为机器人本体坐标系下的偏移量
+        dx = goal_x - odom['x']
+        dy = goal_y - odom['y']
+        yaw = odom['yaw']
+        # 旋转矩阵二维展开：[cos(yaw), sin(yaw); -sin(yaw), cos(yaw)] * [dx, dy]^T
+        local_x = dx * math.cos(yaw) + dy * math.sin(yaw)
+        local_y = -dx * math.sin(yaw) + dy * math.cos(yaw)
+        dist = math.hypot(dx, dy)
+        angle = math.atan2(local_y, local_x)
+        return {"local_x": local_x, "local_y": local_y, "angle": angle, "dist": dist}
+
+    def get_imu_normalized(self, acc_max: float, gyro_max: float) -> dict:
+        """
+        返回归一化到 [-1,1] 的 IMU 数据。
+        （逻辑与 Env._get_obs() 中 IMU 处理部分完全一致）
+        """
+        imu = self.get_imu_data()
+        if not imu:
+            return {
+                "acc": np.zeros(3, dtype=np.float32),
+                "gyro": np.zeros(3, dtype=np.float32),
+                "rpy": np.zeros(2, dtype=np.float32)
+            }
+        acc = np.clip(np.array(imu['acc']) / acc_max, -1.0, 1.0)
+        gyro = np.clip(np.array(imu['gyro']) / gyro_max, -1.0, 1.0)
+        rpy = np.clip(np.array(imu['rpy'][:2]) / (math.pi/4), -1.0, 1.0)
+        return {"acc": acc, "gyro": gyro, "rpy": rpy}
+    
+    def is_collision(self, threshold: float, max_range: float) -> bool:
+        """判断当前激光最小距离是否小于碰撞阈值。"""
+        min_dist = self.get_laser_min_dist(max_range)
+        return min_dist < threshold
 
 ### 上面主要是改了不用ATS实现，
 # 这样改完之后，不管激光雷达是 10Hz 还是 5Hz，不管 Gazebo 掉不掉帧，get_laser_ranges() 永远是 0 延迟返回当前最新值，彻底告别 50ms 容差带来的假死隐患。

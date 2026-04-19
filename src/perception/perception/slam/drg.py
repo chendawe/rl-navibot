@@ -19,28 +19,47 @@ class PathNotFoundError(TopologyError):
     pass
 
 class DRG:
-    """Distance Routing Graph based on skeletonization"""
-    
-    def __init__(self, grid: np.ndarray, resolution: float = 0.05):
+    ROBOT_DIAMETERS = {
+        'burger': 0.28,
+        'waffle': 0.34,
+        'waffle_pi': 0.34
+    }
+
+    def __init__(self, grid: np.ndarray, resolution: float = 0.05,
+                 robot_name: str = None, merge_threshold: int = None,
+                 target_ratio: float = 0.75):
         """
-        :param grid: 二值化栅格图 (0=障碍物, 255=自由空间)
+        :param grid: 二值化栅格图
         :param resolution: 米/像素
+        :param robot_name: 机器人名称，用于自动计算合并阈值（如 'burger'）
+        :param merge_threshold: 手动指定合并阈值（像素），优先级高于 robot_name
+        :param target_ratio: 自动计算时，目标节点间距占机器人直径的比例（0~1）
         """
         self.grid = grid
         self.res = resolution
         self.H, self.W = grid.shape
-        
-        # 内部状态
+
+        # 计算合并阈值
+        if merge_threshold is not None:
+            self.merge_threshold = merge_threshold
+        elif robot_name is not None:
+            diameter = self.ROBOT_DIAMETERS.get(robot_name.lower())
+            if diameter is None:
+                raise ValueError(f"未知机器人名称 '{robot_name}'，支持: {list(self.ROBOT_DIAMETERS.keys())}")
+            target_spacing = diameter * target_ratio
+            self.merge_threshold = max(1, int(target_spacing / self.res))
+        else:
+            self.merge_threshold = 5  # 默认值
+
+        # 内部状态初始化（不变）
         self._skel_set = set()
-        self._px_graph = None      # 像素级图
+        self._px_graph = None
         self._degrees = None
         self._coord_to_idx = {}
         self._node_xy_coords = []
-        
-        # 最终产物
         self.nodes = []
         self.edges = []
-        self._nav_graph = {}       # 节点级寻路图
+        self._nav_graph = {}
         self._node_pos = {}
 
     def extract(self, merge_threshold: int = 5):

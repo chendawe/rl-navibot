@@ -45,6 +45,7 @@ class RGBStreamer(BaseStreamer):
         #             self._latest_frame = jpeg_bytes.tobytes()  # 存的是真 JPEG 了！
         # except Exception as e:
         #     print(f"[RGBStreamer] 图像处理失败: {e}")
+        self._record_frame(msg)   # ← 新增
         try:
             if isinstance(msg, CompressedImage):
                 # 压缩图：直接拿 JPEG 字节

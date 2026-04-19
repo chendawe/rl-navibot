@@ -40,6 +40,7 @@ class MapProvider(BaseStreamer):
         logger.info(f"[MapProvider] 已寄生 {topic}")
 
     def _process_msg(self, msg: OccupancyGrid):
+        self._record_frame(msg)   # ← 新增
         try:
             logger.debug(f"[MapProvider] 收到 /map 消息，分辨率: {msg.info.resolution}")
             grid = np.frombuffer(msg.data, dtype=np.int8).reshape(msg.info.height, msg.info.width)

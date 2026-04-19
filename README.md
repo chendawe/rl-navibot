@@ -1,35 +1,60 @@
-# BUILD and RUN
-
-## Build Python ROS2 environment
-1. 设置语言环境：
-```sh
-sudo apt update && sudo apt install locales
-sudo locale-gen en_US en_US.UTF-8
-sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-export LANG=en_US.UTF-8
-```
-2. 添加ROS2 apt仓库：
-```sh
-sudo apt install software-properties-common
-sudo add-apt-repository universe
-sudo apt update && sudo apt install curl -y
-sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
-```
-3. 安装ROS2包：
-```sh
-sudo apt update
-sudo apt install ros-humble-desktop  # 根据您的需求选择desktop或base
-```
-
-4. 环境变量配置（每次使用前需要执行）：
-```sh
-source /opt/ros/humble/setup.bash
-# source ~/.bashrc
-```
+# -2. Tech Stack
 
 
-### 设置jupyter kernel的ros2的python和C库路径，让notebook能用到对应文件夹下的python库和c库
+## Notes
+- Tech note see
+- Debug note see
+
+# -1. Project Structure
+
+
+# 0. Environment Building
+
+## `Linux` and `Ros2` :
+- `Ubuntu` version :
+```sh
+lsb_release -a
+# No LSB modules are available.
+# Distributor ID: Ubuntu
+# Description:    Ubuntu 22.04.5 LTS
+# Release:        22.04
+# Codename:       jammy
+```
+
+- Corresponding Ros2 version :
+```sh
+echo $ROS_DISTRO
+# humble
+```
+
+## Pull from Github
+```sh
+cd /path/to/workspace
+git clone git@github.com:chendawe/rl-navibot.git
+```
+
+## Build `conda` :
+
+- 创建conda环境+安装依赖：
+```sh
+# 1. 创建环境，名字=ros2，python=3.10
+conda create -n ros2 python=3.10.20 -y
+
+# 2. 激活环境
+conda activate ros2
+
+cd ~/workspace/rl-navibot
+# 3. 用 environment.yml 安装 conda 依赖
+conda env update -f environment.yml
+
+# 4. 用 requirements.txt 安装 pip 依赖
+pip install -r requirements.txt
+```
+---
+- 在当前的`ros2`conda环境中绑定`Ros`包环境：
+<!-- 
+在 Jupyter 中手动添加一个名为 "ROS2 Humble" 的 Python 内核，使得你可以在 Jupyter Notebook / JupyterLab 中直接运行带有 ROS 2 环境的 Python 代码。 -->
+
 1. 先确认你当前用的是哪个 kernel：
 ```sh
 jupyter kernelspec list
@@ -61,21 +86,22 @@ EOF
 3. 运行 `jupyter kernelspec install --replace --user ~/.local/share/jupyter/kernels/ros2` → 把内核注册进 Jupyter
 
 4. 重启 VSCode → 刷新内核列表
-
-## Pull from Github
-
+---
+build `rl-navibot` 的包：
 ```sh
-git clone git@github.com:chendawe/rl-navibot.git
-# 工作目录应当映射到docker的~/workspace/rl-navibot
+cd ~/rl-navibot
+colcon build
 ```
-
-## Build `ros2my` docker for my Gazebo simulation
-
+---
+---
+## Build `Docker` :
+- build ros2-gazebo docker
 ```sh
+# 从华为云拉ros2-humble的docker镜像
 docker pull swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/osrf/ros:humble-desktop
 docker tag swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/osrf/ros:humble-desktop ros2
 
-docker builder prune -y
+# ros2镜像基础上build必要的包库依赖（gazebo为主）
 docker build --no-cache -t ros2_my -f ~/workspace/rl-navibot/docker/Dockerfile .
 docker run -it \
     --gpus all \
@@ -89,140 +115,125 @@ docker run -it \
     --name=ros2my  \
     -v /home/chendawww/workspace:/root/workspace \
     ros2_my
-
+```
+```
 # --network host -e ROS_DOMAIN_ID=0，让wsl和docker的频道能够贯通
-
 # --user $(id -u):$(id -g)
 # = 强制让 Docker 里面的用户，和你宿主机完全一样（1000:1000）
 # 效果：
 # Docker 里创建文件 → 宿主机直接能改
 # 宿主机修改 → Docker 里也能读
 # 两边完全一致，永远不报错！
-
 # 或者宿主机：sudo chown -R 1000:1000 ~/workspace/rl-navibot
-
 ```
 
-## 启动robot_world节点（容器内）
+docker内build turtlebot3的包see：https://github.com/ROBOTIS-GIT/turtlebot3
+
+
+## env vars :
+- 宿主机：
+```sh
+# 加载rl-navibot包的环境变量
+cd ~/workspace/rl-navibot && \
+source install/setup.sh && \
+
+# 创建 FastDDS 配置文件，ros2通信方式由SHM替换为UDP，让宿主机可以监听到容器ros2发布的频道（要求容器启动时设置为host）
+cat > ~/fastdds_no_shm.xml << 'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<profiles xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles">
+    <transport_descriptors>
+        <transport_descriptor>
+            <transport_id>udp_transport</transport_id>
+            <type>UDPv4</type>
+        </transport_descriptor>
+    </transport_descriptors>
+    <participant profile_name="disable_shm_participant" is_default_profile="true">
+        <rtps>
+            <userTransports>
+                <transport_id>udp_transport</transport_id>
+            </userTransports>
+            <useBuiltinTransports>false</useBuiltinTransports>
+        </rtps>
+    </participant>
+</profiles>
+EOF
+export FASTRTPS_DEFAULT_PROFILES_FILE=~/fastdds_no_shm.xml
+export RMW_FASTRTPS_USE_QOS_FROM_XML=0
+```
+
+- `ros2my`docker内：
 
 ```sh
-# source /opt/ros/humble/setup.sh && \
-# cd ~/workspace/rl-navibot && \
-# source install/setup.sh && \
-# cd ~/workspace/turtlebot3_ws && \
-# source install/setup.sh && \
-# cd ~/workspace/nitrobot_ws && \
-# source install/setup.sh && \
-# source ~/.bashrc
-
-# export FASTRTPS_DEFAULT_PROFILES_FILE=~/fastdds_no_shm.xml
-# export RMW_FASTRTPS_USE_QOS_FROM_XML=0
-
-# 窗口1
-ros2 launch robot_world robot_world_sim.launch.py
-
-# 测试频道状态
-# 窗口2
-ros2 topic echo /cmd_vel
-# 窗口3
-ros2 topic pub /rl_cmd geometry_msgs/msg/Twist "{linear: {x: 0.5}, angular: {z: 0.1}}" --once
+# 加载turtlebot3包的环境变量
+source /opt/ros/humble/setup.sh && \
+cd ~/workspace/turtlebot3_ws && \
+source install/setup.sh && \
+source ~/.bashrc
 ```
 
-## 启动 Gazebo 和 TurtleBot3
-
-1. 为`turtlebot3`的`House`世界增加`gazebo_ros` 功能包里的 `gazebo_ros_state`服务插件：
-
-在`turtlebot3_ws/install/turtlebot3_gazebo/share/turtlebot3_gazebo/worlds/turtlebot3_house.world`文件中添加这一项：
-```xml
-    <!-- 就是加上下面这段！！！ -->
-    <plugin name="gaz1ebo_ros_state" filename="libgazebo_ros_state.so">
-      <ros>
-        <namespace>/</namespace>
-      </ros>
-    </plugin>
-```
-2. launch 仿真
+# 1. Boost
+## boost Linux
 ```sh
-# 共享内存报错，process died的话：
-# df -h /dev/shm
-# mount -o remount,size=2G /dev/shm
-# apt update && apt install ros-humble-rmw-cyclonedds-cpp -y
-# export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-# 通过设置环境变量，强制 ROS2 使用网络传输而不是共享内存，虽然效率稍微低一点点，但能绕过内存大小限制。
+wsl
+```
 
-# 临时强制软件渲染
-export LIBGL_ALWAYS_SOFTWARE=1
-# unset LIBGL_ALWAYS_SOFTWARE
+## boost conda
+```sh
+conda activate ros2
+export FASTRTPS_DEFAULT_PROFILES_FILE=~/fastdds_no_shm.xml
+export RMW_FASTRTPS_USE_QOS_FROM_XML=0
+# 忘了这两行会reset_world失败
+```
 
-# 设置型号为 burger
-export TURTLEBOT3_MODEL=burger
+## boost Docker
+
+- start `gazebo` cmd :
+
+启动容器：
+```sh
+docker exec -it ros2my bash
+```
+```sh
+# 容器内配置环境变量：
+source /opt/ros/humble/setup.sh && \
+cd ~/workspace/turtlebot3_ws && \
+source install/setup.sh && \
+source ~/.bashrc
+```
+
+启动`waffle`in`house`gazebo仿真节点：
+```sh
 # export TURTLEBOT3_MODEL=burger
-# 启动 Gazebo house世界 (或者用其他世界也可以)
+# ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+export TURTLEBOT3_MODEL=waffle
 ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py
 ```
 
-
-
-## 启动网页app界面
-
-### `Fastpi+Uvicorn` docker
-
-
+- strat `map` ndoe cmd :
+新开一个容器命令行：
 ```sh
-gzserver --verbose
-ps aux | grep gz
-pkill -f gz
-pkill -f gazebo
-
-# 2. 杀死所有 gazebo 相关父进程（清理僵尸）
-pkill -9 -f "gzserver|gzclient|gazebo"
-
-# 3. 再检查一遍（现在一定干净了）
-ps aux | grep gz
+docker exec -it ros2my bash
+```
+```sh
+# 容器内配置环境变量：
+source /opt/ros/humble/setup.sh && \
+cd ~/workspace/turtlebot3_ws && \
+source install/setup.sh && \
+source ~/.bashrc
+```
+启动`slam`建图的节点：
+```sh
+ros2 launch nav2_bringup slam_launch.py use_sim_time:=True
+```
+## boost web monitor via `uvicorn`
+```sh
+~/workspace/rl-navibot/app/start.sh
 ```
 
+# 2. Train, Eval and Play
+## RL strategy
 
 
-# 项目设计
+# 3. Monitor on the Web
 
-- 分三段
-    - 点到点避障导航；
-        - SAC训练
-        - 基础MPC
-        - 深度图 -> 24维障碍矢量；or 代价地图+CNN -> 特征矢量
-    - 已知图，给定任务，基于完整结构化图，LLM规划路线行驶；
-        - SLAM图 -> 结构化图
-    - 临时建图，给定任务，基于即时结构图碎片，LLM规划路线行驶。
-        - SLAM图，GroundingDINO -> 结构化图
-
-r_distance：接近目标奖励。
-r_collision：碰撞大惩罚。
-r_smooth：动作平滑奖励（避免疯狂抖动）。
-
-
-- Embedding Intelligent
-    - Perception
-    - Planning
-    - Decision
-    - Execution
-
-- RL Agent
-    - Body
-        - Turtlebot3
-    - Environment
-        - Turtlebot3 house simulation
-
-    - Reward
-    - Algorithm
-        - SAC
-        - MPC
-            - Asynchronous, Low-frequency
-            - weighted
-    - 
-
-- Sim to Real
-    - Ros2 + Gazebo
-    - Domain Randomization
-
-
-
+# 4. useful comand lines

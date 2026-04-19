@@ -6,6 +6,7 @@ import rclpy
 from rclpy.node import Node
 # from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup 
+from collections import deque
 
 class BaseStreamer(Node, ABC):
     """
@@ -38,6 +39,35 @@ class BaseStreamer(Node, ABC):
         # 效果：如果上一张图片的 cv2.imencode 还没处理完，新来的图片会在队列里等待
         # 配合 ROS 2 的 QoS depth=1，新图片甚至会直接覆盖旧图片，永远只处理最新帧
         self.cg = MutuallyExclusiveCallbackGroup()
+        
+        self._msg_times = deque(maxlen=30)  # 最近30帧到达时间戳
+        self._last_latency = 0.0
+
+    # ----------------------------------------
+    # 计算fps和延迟用
+    # ----------------------------------------
+    def _record_frame(self, msg):
+        """子类在 _process_msg 中调用，记录到达时间并计算延迟"""
+        now = time.time()
+        self._msg_times.append(now)
+        # 计算延迟：若消息包含时间戳（如 sensor_msgs/Image 的 header.stamp），使用它
+        if hasattr(msg, 'header') and hasattr(msg.header, 'stamp'):
+            msg_time = msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9
+            self._last_latency = (now - msg_time) * 1000.0  # 毫秒
+        else:
+            self._last_latency = 0.0
+
+    def get_fps(self) -> float:
+        """计算最近30帧的平均接收帧率"""
+        if len(self._msg_times) < 2:
+            return 0.0
+        duration = self._msg_times[-1] - self._msg_times[0]
+        if duration <= 0:
+            return 0.0
+        return (len(self._msg_times) - 1) / duration
+
+    def get_latency_ms(self) -> float:
+        return self._last_latency
 
     # ----------------------------------------
     # 对外暴露的统一接口 (供 FastAPI 调用)

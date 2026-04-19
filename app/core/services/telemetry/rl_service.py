@@ -9,32 +9,48 @@ class RLService:
     def __init__(self, env=None):
         self.env = env
 
-    def get_state(self) -> Dict[str, Any]:
-        """
-        只读获取 RL 状态，绝不调用 step() 推演。
-        前提：建议在你的 TurtleBot3NaviEnv 的 step() 末尾加上缓存：
-              self.last_reward = reward
-              self.last_info = info
-        """
+    def get_state(self) -> Optional[Dict[str, Any]]:
+        """只读获取 RL 状态，若不可用则返回 None"""
         if self.env:
             try:
-                # 尝试读取 Env 缓存的上一步状态
-                reward = getattr(self.env, 'last_reward', 0.0)
+                reward = getattr(self.env, 'last_reward', None)
                 info = getattr(self.env, 'last_info', {})
-                return {
-                    "reward": float(reward),
-                    "collision": info.get("collision", False),
-                    "goal_reached": info.get("goal_reached", False)
-                }
+                if reward is not None:
+                    return {
+                        "reward": float(reward),
+                        "collision": info.get("collision", False),
+                        "goal_reached": info.get("goal_reached", False)
+                    }
             except Exception as e:
-                logger.warning(f"[RLService] 读取 Env 状态失败，启用 Mock: {e}")
+                logger.warning(f"[RLService] 读取 Env 状态失败: {e}")
+        return None
+    
+    # def get_state(self) -> Dict[str, Any]:
+    #     """
+    #     只读获取 RL 状态，绝不调用 step() 推演。
+    #     前提：建议在你的 TurtleBot3NaviEnv 的 step() 末尾加上缓存：
+    #           self.last_reward = reward
+    #           self.last_info = info
+    #     """
+    #     if self.env:
+    #         try:
+    #             # 尝试读取 Env 缓存的上一步状态
+    #             reward = getattr(self.env, 'last_reward', 0.0)
+    #             info = getattr(self.env, 'last_info', {})
+    #             return {
+    #                 "reward": float(reward),
+    #                 "collision": info.get("collision", False),
+    #                 "goal_reached": info.get("goal_reached", False)
+    #             }
+    #         except Exception as e:
+    #             logger.warning(f"[RLService] 读取 Env 状态失败，启用 Mock: {e}")
 
-        # 兜底 Mock
-        return {
-            "reward": round(random.uniform(-1.0, 5.0), 2),
-            "collision": random.random() < 0.05,
-            "goal_reached": random.random() < 0.01
-        }
+    #     # 兜底 Mock
+    #     return {
+    #         "reward": round(random.uniform(-1.0, 5.0), 2),
+    #         "collision": random.random() < 0.05,
+    #         "goal_reached": random.random() < 0.01
+    #     }
 
     def step_action(self, action) -> Dict[str, Any]:
         """仅供给 /ws/rl 专用，接收前端下发的动作进行推演"""

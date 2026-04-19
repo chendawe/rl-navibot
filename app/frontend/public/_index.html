@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>具身智能中控台 v2.0</title>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', monospace; background: #1e1e1e; color: #fff; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* 左侧聊天面板 (25%) */
+        #left-panel { width: 25%; display: flex; flex-direction: column; border-right: 1px solid #333; background: #252526; }
+        .chat-header { padding: 15px; background: #007acc; font-weight: bold; }
+        .messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 90%; padding: 10px 12px; border-radius: 6px; line-height: 1.4; font-size: 13px; white-space: pre-wrap; }
+        .user-msg { background: #007acc; align-self: flex-end; color: white; }
+        .bot-msg { background: #333; align-self: flex-start; border: 1px solid #444; color: #d4d4d4; }
+        .input-area { display: flex; border-top: 1px solid #333; }
+        input { flex: 1; padding: 12px; background: #333; border: none; outline: none; color: white; }
+        button { padding: 12px 20px; background: #007acc; color: white; border: none; cursor: pointer; }
+
+        /* 中间仿真面板 (45%) */
+        #center-panel { width: 45%; display: flex; flex-direction: column; background: #1e1e1e; }
+        .sim-header { padding: 10px 15px; background: #333; display: flex; justify-content: space-between; align-items: center; }
+        .mode-btn { padding: 5px 10px; background: #555; border: none; color: white; cursor: pointer; border-radius: 4px; margin-left: 5px;}
+        .mode-btn.active { background: #007acc; }
+        .canvas-container { flex: 1; position: relative; }
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #2d2d2d; }
+        
+        /* 🌟 新增：中间面板的 RGB 图像，复用 canvas 的绝对定位铺满容器 */
+        #center-panel #rgbView {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            object-fit: contain; 
+            background: #2d2d2d;
+        }
+
+        /* 右侧仪表盘 (30%) */
+        #right-panel { width: 30%; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #252526; border-left: 1px solid #333; overflow-y: auto;}
+        .card { background: #2d2d2d; padding: 15px; border-radius: 8px; border-left: 4px solid #007acc; }
+        .card h3 { margin: 0 0 10px 0; color: #9cdcfe; font-size: 14px; }
+        .value { font-size: 24px; font-weight: bold; color: #4ec9b0; }
+        .warn { color: #f48771; }
+        .good { color: #89d185; }
+        
+        /* 🌟 修改：雷达卡片样式，占满两列（原本是 rgb-card） */
+        .radar-card { 
+            grid-column: span 2; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 200px; 
+        }
+        /* 🌟 关键：必须覆盖全局的 canvas 绝对定位，否则右侧雷达会飞出屏幕 */
+        .radar-card canvas { 
+            position: relative; 
+            top: auto; 
+            left: auto; 
+            width: 100%; 
+            height: 200px; 
+            flex: 1; 
+            border-radius: 4px; 
+            background: #000; 
+            margin-top: 10px;
+            border: 1px solid #3c3c3c;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 左侧：聊天 -->
+    <div id="left-panel">
+        <div class="chat-header">🧠 决策大脑 LLM</div>
+        <div class="messages" id="msgContainer"></div>
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="输入指令：去厨房" onkeypress="if(event.key==='Enter')ChatModule.send()">
+            <button onclick="ChatModule.send()">发送</button>
+        </div>
+    </div>
+
+    <!-- 中间：画布 (现在放拓扑 和 RGB) -->
+    <div id="center-panel">
+        <div class="sim-header">
+            <span>🤖 执行层视图</span>
+            <div>
+                <button class="mode-btn active" id="btn-topo" onclick="App.switchMode('topo')">拓扑动画</button>
+                <!-- 🌟 按钮改为 RGB 视觉 -->
+                <button class="mode-btn" id="btn-rgb" onclick="App.switchMode('rgb')">RGB 视觉</button>
+            </div>
+        </div>
+        <div class="canvas-container">
+            <canvas id="topoCanvas"></canvas>
+            <!-- 🌟 RGB 放这里，默认隐藏 -->
+            <img id="rgbView" src="" alt="RGB Camera Feed" style="display: none;">
+        </div>
+    </div>
+
+    <!-- 右侧：仪表盘 + 🌟 雷达 -->
+    <div id="right-panel">
+        <div class="card"><h3>⏱ PERF (Step FPS)</h3><div class="value" id="val-fps">0.0</div></div>
+        <div class="card"><h3>🎯 REWARD</h3><div class="value" id="val-reward">0.0</div></div>
+        <div class="card"><h3>🤖 ROBOT (X, Y, YAW)</h3><div class="value" id="val-pose" style="font-size: 16px;">0, 0, 0</div></div>
+        <div class="card"><h3>📏 TASK (Dist to Goal)</h3><div class="value" id="val-dist">0.0</div></div>
+        <div class="card"><h3>🛡 STATUS</h3><div class="value" id="val-status" style="font-size: 16px;">RUNNING</div></div>
+        <div class="card"><h3>⚠️ MIN LASER</h3><div class="value" id="val-laser">0.0</div></div>
+        
+        <!-- 🌟 雷达移到这里，常驻显示 -->
+        <div class="card radar-card">
+            <h3>📡雷达</h3>
+            <canvas id="radarCanvas"></canvas>
+        </div>
+    </div>
+<script>
+// ==========================================
+// 1. 聊天模块
+// ==========================================
+const ChatModule = {
+    el: document.getElementById('msgContainer'),
+    input: document.getElementById('userInput'),
+    
+    append(text, isUser) {
+        const div = document.createElement('div');
+        div.className = isUser ? 'msg user-msg' : 'msg bot-msg';
+        div.innerText = text;
+        this.el.appendChild(div);
+        this.el.scrollTop = this.el.scrollHeight;
+        return div;
+    },
+
+    async send() {
+        const text = this.input.value.trim();
+        if (!text) return;
+        this.input.value = '';
+        this.append(text, true);
+        const botDiv = this.append("思考中...", false);
+
+        try {
+            const res = await fetch('/api/chat', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({msg: text})
+            });
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let fullText = "";
+
+            while (true) {
+                const {done, value} = await reader.read();
+                if (done) break;
+                fullText += decoder.decode(value, {stream: true});
+                
+                if (fullText.includes("[DATA_JSON]:")) {
+                    const parts = fullText.split("[DATA_JSON]:");
+                    botDiv.innerText = parts[0];
+                    NetworkModule.sendToDrg({type: "execute", payload: JSON.parse(parts[1])});
+                } else {
+                    botDiv.innerText = fullText;
+                }
+                this.el.scrollTop = this.el.scrollHeight;
+            }
+        } catch (e) {
+            botDiv.innerText = "网络错误";
+        }
+    }
+};
+
+// ==========================================
+// 2. 拓扑图模块
+// ==========================================
+const TopoView = {
+    canvas: document.getElementById('topoCanvas'),
+    ctx: null,
+    NODES: { "N_0":{x:1,y:1,w:8,h:8}, "N_1":{x:3,y:1,w:8,h:8}, "N_2":{x:5,y:1,w:8,h:8}, "N_3":{x:5,y:3,w:8,h:8}, "N_4":{x:7,y:1,w:8,h:8} },
+    EDGES: [["N_0","N_1"],["N_1","N_2"],["N_2","N_3"],["N_2","N_4"]],
+    path: [],
+    bot: {x: 1, y: 1},
+    clickState: 'start',
+    selectedStart: null,
+    selectedEnd: null,
+    SCALE: 60,
+
+    init() {
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        this.canvas.addEventListener('click', (e) => this.onClick(e));
+        this.loadRealData();
+    },
+
+    resize() {
+        this.canvas.width = this.canvas.clientWidth;
+        this.canvas.height = this.canvas.clientHeight;
+    },
+
+    toPixel(x, y) { return { px: 80 + x * this.SCALE, py: 80 + y * this.SCALE }; },
+
+    onClick(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+        let closest = null, minD = Infinity;
+        
+        Object.keys(this.NODES).forEach(id => {
+            const p = this.toPixel(this.NODES[id].x, this.NODES[id].y);
+            const d = Math.hypot(mx - p.px, my - p.py);
+            if (d < minD) { minD = d; closest = id; }
+        });
+
+        if (minD > 30) return;
+
+        if (this.clickState === 'start') {
+            this.selectedStart = closest;
+            this.clickState = 'end';
+        } else {
+            this.selectedEnd = closest;
+            this.clickState = 'start';
+            NetworkModule.sendToDrg({ type: "execute", payload: { start: this.selectedStart, end: this.selectedEnd }});
+            ChatModule.append(`[系统] 触发导航：${this.selectedStart} -> ${this.selectedEnd}`, false);
+            this.selectedStart = null;
+            this.selectedEnd = null;
+        }
+    },
+
+    draw() {
+        const ctx = this.ctx;
+        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        ctx.strokeStyle = '#555'; ctx.lineWidth = 2;
+        this.EDGES.forEach(e => {
+            let p1 = this.toPixel(this.NODES[e[0]].x, this.NODES[e[0]].y);
+            let p2 = this.toPixel(this.NODES[e[1]].x, this.NODES[e[1]].y);
+            ctx.beginPath(); ctx.moveTo(p1.px, p1.py); ctx.lineTo(p2.px, p2.py); ctx.stroke();
+        });
+        
+        if (this.path.length > 1) {
+            ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 4; ctx.beginPath();
+            let sp = this.toPixel(this.NODES[this.path[0]].x, this.NODES[this.path[0]].y);
+            ctx.moveTo(sp.px, sp.py);
+            for(let i=1; i<this.path.length; i++){
+                let p = this.toPixel(this.NODES[this.path[i]].x, this.NODES[this.path[i]].y);
+                ctx.lineTo(p.px, p.py);
+            }
+            ctx.stroke();
+        }
+        
+        Object.keys(this.NODES).forEach(id => {
+            let n = this.NODES[id]; let p = this.toPixel(n.x, n.y);
+            ctx.fillStyle = '#aaa'; ctx.fillRect(p.px - n.w/2, p.py - n.h/2, n.w, n.h);
+            ctx.fillStyle = '#fff'; ctx.font = '12px Arial'; ctx.fillText(id, p.px + n.w/2 + 4, p.py + 4);
+        });
+
+        let bp = this.toPixel(this.bot.x, this.bot.y);
+        ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.arc(bp.px, bp.py, 10, 0, Math.PI*2); ctx.fill();
+    },
+
+    loadRealData() {
+        fetch('/api/topo').then(r => r.json()).then(data => {
+            if (data.nodes && data.nodes.length > 0) {
+                let minX=Infinity, maxX=-Infinity, minY=Infinity, maxY=-Infinity;
+                data.nodes.forEach(n => { minX=Math.min(minX,n.x); maxX=Math.max(maxX,n.x); minY=Math.min(minY,n.y); maxY=Math.max(maxY,n.y); });
+                const rX = maxX - minX || 1, rY = maxY - minY || 1;
+                this.NODES = {}; this.EDGES = [];
+                data.nodes.forEach(n => {
+                    this.NODES[n.id] = { x: ((n.x - minX) / rX) * 8 + 1, y: ((n.y - minY) / rY) * 8 + 1, w: Math.max(4, Math.min((n.w || 8) * 0.15, 12)), h: Math.max(4, Math.min((n.h || 8) * 0.15, 12)) };
+                });
+                data.edges.forEach(e => this.EDGES.push([e.from, e.to]));
+            }
+        }).catch(() => {});
+    }
+};
+
+// ==========================================
+// 3. 雷达与仪表盘模块
+// ==========================================
+let l = 0;
+const TelemetryView = {
+    canvas: document.getElementById('radarCanvas'),
+    ctx: null,
+    scale: 50,
+
+    init() {
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+    },
+
+    resize() {
+        this.canvas.width = this.canvas.clientWidth;
+        this.canvas.height = this.canvas.clientHeight;
+    },
+
+    draw(data) {
+        if (!data) return;
+        const ctx = this.ctx;
+        const w = this.canvas.width, h = this.canvas.height;
+        if (w === 0 || h === 0) return; // 防御性判断
+
+        const cx = w / 2, cy = h / 2;
+        ctx.clearRect(0, 0, w, h);
+        
+        ctx.strokeStyle = '#3c3c3c';
+        ctx.beginPath();
+        for(let i = 0; i < w; i += 50){ ctx.moveTo(i, 0); ctx.lineTo(i, h); }
+        for(let i = 0; i < h; i += 50){ ctx.moveTo(0, i); ctx.lineTo(w, i); }
+        ctx.stroke();
+
+        const yaw = data.robot.yaw;
+
+        ctx.fillStyle = '#89d185'; ctx.beginPath();
+        ctx.arc(cx + data.task.goal_x * this.scale, cy - data.task.goal_y * this.scale, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.save(); ctx.translate(cx, cy); ctx.rotate(-yaw);
+        const ranges = data.sensor.laser_ranges;
+        const inc = (2 * Math.PI) / ranges.length; // ✅ 修正：用 ranges.length 计算角度间隔
+        ctx.strokeStyle = '#ce9178'; ctx.lineWidth = 1;
+        
+        // ✅ 修改1：找到第一个有效点，作为路径起点
+        let firstValidPoint = null;
+        for (let i = 0; i < ranges.length; i++) {
+            const r = ranges[i] * this.scale;
+            // ✅ 修改2：跳过无效点（r >= 10）
+            
+            const a = i * inc - Math.PI;
+            const x = Math.cos(a) * r;
+            const y = -Math.sin(a) * r;
+            
+            if (firstValidPoint === null) {
+                ctx.beginPath(); // 只在遇到第一个有效点时开始路径
+                ctx.moveTo(x, y); // ✅ 关键：起点移动到第一个有效点
+                firstValidPoint = {x, y};
+            } else {
+                ctx.lineTo(x, y);
+            }
+        }
+        // ✅ 修改3：如果找到了有效点，才 stroke，否则不画
+        if (firstValidPoint !== null) {
+            // ctx.moveTo(firstValidPoint[0],firstValidPoint[1])
+            ctx.closePath();
+            ctx.stroke();
+            // 填充：只填充有实际障碍物的区域
+            ctx.fillStyle = 'rgba(206, 145, 120, 0.1)';
+            ctx.fill();
+        }
+
+        // ctx.fillStyle = 'rgba(206, 145, 120, 0.1)'; ctx.fill();
+        ctx.restore();
+
+        ctx.fillStyle = '#007acc'; ctx.beginPath();
+        ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        this._updateDashboard(data);
+    },
+
+    _updateDashboard(data) {
+        const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+        const setCls = (id, cls) => { const el = document.getElementById(id); if (el) el.className = "value " + cls; };
+
+        const perf = data?.perf || {};
+        const rl = data?.rl || {};
+        const robot = data?.robot || {};
+        const task = data?.task || {};
+        const sensor = data?.sensor || {};
+
+        setTxt('val-fps', (perf.step_fps || 0).toFixed(1));
+        setTxt('val-reward', (rl.reward || 0).toFixed(2));
+        setTxt('val-pose', `${(robot.x || 0).toFixed(2)}, ${(robot.y || 0).toFixed(2)}, ${((robot.yaw || 0) * 180 / Math.PI).toFixed(0)}°`);
+        setTxt('val-dist', (task.dist || 0).toFixed(2) + " m");
+        setTxt('val-laser', (sensor.min_laser || 0).toFixed(3) + " m");
+        
+        const isCol = rl.collision;
+        const isGoal = rl.goal_reached;
+        setTxt('val-status', isCol ? "💥 COLLISION" : (isGoal ? "🏆 GOAL" : "🚀 RUNNING"));
+        setCls('val-status', isCol ? "warn" : (isGoal ? "good" : ""));
+        setCls('val-laser', (sensor.min_laser || 1) < 0.3 ? "warn" : "");
+    }
+};
+
+// ==========================================
+// 4. 网络模块
+// ==========================================
+const NetworkModule = {
+    wsDrg: null,
+    wsTelemetry: null,
+    wsRgb: null,
+
+    init() {
+        const host = window.location.host;
+        
+        this.wsDrg = new WebSocket(`ws://${host}/ws/drg`);
+        this.wsDrg.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+            if (data.type === 'path') TopoView.path = data.nodes;
+            else if (data.type === 'pose') { TopoView.bot.x = data.x; TopoView.bot.y = data.y; }
+            else if (data.type === 'done') { TopoView.path = []; ChatModule.append(data.msg, false); }
+        };
+
+        this.wsTelemetry = new WebSocket(`ws://${host}/ws/telemetry`);
+        this.wsTelemetry.onmessage = (e) => {
+            try {
+                const data = JSON.parse(e.data);
+                // ✅ 修复：去掉无脑的 'ros' 判断，右侧面板无论中间是什么模式，都必须一直刷新！
+                TelemetryView.draw(data); 
+            } catch(err) {
+                console.error("Telemetry 解析错误:", err); // ✅ 修复：加上异常捕获，防静默死亡
+            }
+        };
+
+        this.wsRgb = new WebSocket(`ws://${host}/ws/rgb`);
+        // ❌ 错误：binaryType 只用于二进制数据（如 arraybuffer/blob）
+        // this.wsRgb.binaryType = "arraybuffer"; 
+
+        this.wsRgb = new WebSocket(`ws://${host}/ws/rgb`);
+
+        
+        // this.wsRgb.onmessage = (event) => {
+        //     const blob = new Blob([event.data], { type: 'image/jpeg' });
+        //     const url = URL.createObjectURL(blob);
+        //     const imgEl = document.getElementById('rgbView');
+        //     if (imgEl) {
+        //         imgEl.src = url;
+        //         imgEl.onload = () => URL.revokeObjectURL(imgEl.src); 
+        //     }
+        // };
+        this.wsRgb.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);  // 解析 JSON
+                if (data.frame) {
+                    // 🌟 关键：必须加上 data:image/jpeg;base64, 前缀
+                    document.getElementById('rgbView').src = "data:image/jpeg;base64," + data.frame;
+                }
+            } catch (e) {
+                console.error("WebSocket 数据解析失败:", e);
+            }
+        };
+    },
+
+    sendToDrg(payload) {
+        if (this.wsDrg && this.wsDrg.readyState === WebSocket.OPEN) {
+            this.wsDrg.send(JSON.stringify(payload));
+        }
+    }
+};
+
+// ==========================================
+// 5. 主控制器
+// ==========================================
+const App = {
+    currentMode: 'topo',
+
+    init() {
+        TopoView.init();
+        TelemetryView.init();
+        NetworkModule.init();
+        this.loop();
+    },
+
+    switchMode(mode) {
+        this.currentMode = mode;
+        
+        // 1. 切换按钮高亮
+        document.getElementById('btn-topo').classList.toggle('active', mode === 'topo');
+        document.getElementById('btn-rgb').classList.toggle('active', mode === 'rgb');
+        
+        // 2. 拿到中间面板的两个元素
+        const topoCanvas = document.getElementById('topoCanvas');
+        const rgbView = document.getElementById('rgbView');
+        const radarCanvas = document.getElementById('radarCanvas'); // 右侧的雷达
+        
+        // 3. 执行显示/隐藏
+        if (mode === 'topo') {
+            topoCanvas.style.display = 'block'; 
+            rgbView.style.display = 'none';
+            radarCanvas.style.display = 'block'; // 确保右侧雷达一直在
+        } else if (mode === 'rgb') {
+            topoCanvas.style.display = 'none';  
+            rgbView.style.display = 'block';     // 中间显示 RGB
+            radarCanvas.style.display = 'block'; // 确保右侧雷达一直在
+        }
+        
+        // 4. 解决 Canvas 黑屏 (加上安全判断，防止报错阻断)
+        setTimeout(() => {
+            if (mode === 'topo' && typeof TopoView !== 'undefined') TopoView.resize();
+            if (typeof TelemetryView !== 'undefined') TelemetryView.resize(); // 右侧雷达也顺便刷新一下尺寸
+        }, 0);
+    },
+
+    loop() {
+        requestAnimationFrame(() => this.loop());
+        // 只有拓扑动画需要 60fps 刷新（机器人平滑移动）
+        if (this.currentMode === 'topo') {
+            TopoView.draw();
+        }
+    }
+};
+
+App.init();
+</script>
+</body>
+</html>
+
+
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>具身智能中控台</title>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #1e1e1e; color: #fff; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* 左侧聊天面板 */
+        #left-panel { width: 35%; display: flex; flex-direction: column; border-right: 1px solid #333; background: #252526; }
+        .chat-header { padding: 15px; background: #007acc; font-weight: bold; }
+        .messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 90%; padding: 10px 12px; border-radius: 6px; line-height: 1.4; font-size: 13px; white-space: pre-wrap; }
+        .user-msg { background: #007acc; align-self: flex-end; color: white; }
+        .bot-msg { background: #333; align-self: flex-start; border: 1px solid #444; color: #d4d4d4; }
+        .input-area { display: flex; border-top: 1px solid #333; }
+        input { flex: 1; padding: 12px; background: #333; border: none; outline: none; color: white; }
+        button { padding: 12px 20px; background: #007acc; color: white; border: none; cursor: pointer; }
+
+        /* 右侧仿真面板 */
+        #right-panel { width: 65%; display: flex; flex-direction: column; background: #1e1e1e; }
+        .sim-header { padding: 10px 15px; background: #333; display: flex; justify-content: space-between; align-items: center; }
+        .mode-btn { padding: 5px 10px; background: #555; border: none; color: white; cursor: pointer; border-radius: 4px; }
+        .mode-btn.active { background: #007acc; }
+        canvas { flex: 1; background: #2d2d2d; }
+        #ros-placeholder { display: none; flex: 1; justify-content: center; align-items: center; color: #888; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <div id="left-panel">
+        <div class="chat-header">🧠 决策大脑 LLM</div>
+        <div class="messages" id="msgContainer"></div>
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="输入指令：去厨房" onkeypress="if(event.key==='Enter')sendCmd()">
+            <button onclick="sendCmd()">发送</button>
+        </div>
+    </div>
+
+    <div id="right-panel">
+        <div class="sim-header">
+            <span>🤖 执行层仿真</span>
+            <div>
+                <button class="mode-btn active" onclick="switchMode('topo')">模式1: 拓扑动画</button>
+                <button class="mode-btn" onclick="switchMode('ros')">模式2: ROS2真机</button>
+            </div>
+        </div>
+        <canvas id="topoCanvas"></canvas>
+        <div id="ros-placeholder">等待 ROS2 宿主机端口接入...</div>
+    </div>
+
+</body>
+
+<script>
+// ================= 状态与数据 =================
+const container = document.getElementById('msgContainer');
+const input = document.getElementById('userInput');
+let currentMode = 'topo';
+let ws; 
+
+// 假拓扑图数据 (★ 改动1：给 baseline 加上默认的 w 和 h 属性，用来画小方块)
+let NODES = {
+    "N_0":{x:1,y:1, w:8, h:8}, "N_1":{x:3,y:1, w:8, h:8}, 
+    "N_2":{x:5,y:1, w:8, h:8}, "N_3":{x:5,y:3, w:8, h:8}, 
+    "N_4":{x:7,y:1, w:8, h:8}
+};
+let EDGES = [["N_0","N_1"],["N_1","N_2"],["N_2","N_3"],["N_2","N_4"]];
+
+let path = [];
+let bot = {x: 1, y: 1};
+const SCALE = 60;
+
+let clickState = 'start'; // 状态机：'start' -> 'end'
+let selectedStart = null;
+let selectedEnd = null;
+
+// ================= 聊天逻辑 (完全保留) =================
+function appendMsg(text, isUser) {
+    const div = document.createElement('div');
+    div.className = isUser ? 'msg user-msg' : 'msg bot-msg';
+    div.innerText = text;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+    return div;
+}
+
+async function sendCmd() {
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    appendMsg(text, true);
+    const botDiv = appendMsg("思考中...", false);
+
+    const response = await fetch('/api/chat', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({msg: text})
+    });
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let fullText = "";
+
+    while (true) {
+        const {done, value} = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, {stream: true});
+        fullText += chunk;
+        if (fullText.includes("[DATA_JSON]:")) {
+            const parts = fullText.split("[DATA_JSON]:");
+            botDiv.innerText = parts[0];
+            const cmdData = JSON.parse(parts[1]);
+            console.log("下发执行:", cmdData);
+            if(ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({type: "execute", payload: cmdData}));
+            }
+        } else {
+            botDiv.innerText = fullText;
+        }
+        container.scrollTop = container.scrollHeight;
+    }
+}
+
+// ================= 画布逻辑 =================
+const canvas = document.getElementById("topoCanvas");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+}
+window.onresize = resizeCanvas;
+resizeCanvas();
+
+function toPixel(x, y) { return {px: 80 + x * SCALE, py: 80 + y * SCALE}; }
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // 画边
+    ctx.strokeStyle = '#555'; ctx.lineWidth = 2;
+    EDGES.forEach(e => {
+        let p1 = toPixel(NODES[e[0]].x, NODES[e[0]].y);
+        let p2 = toPixel(NODES[e[1]].x, NODES[e[1]].y);
+        ctx.beginPath(); ctx.moveTo(p1.px, p1.py); ctx.lineTo(p2.px, p2.py); ctx.stroke();
+    });
+    // 画路径
+    if (path.length > 1) {
+        ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 4;
+        ctx.beginPath();
+        let sp = toPixel(NODES[path[0]].x, NODES[path[0]].y);
+        ctx.moveTo(sp.px, sp.py);
+        for(let i=1; i<path.length; i++){
+            let p = toPixel(NODES[path[i]].x, NODES[path[i]].y);
+            ctx.lineTo(p.px, p.py);
+        }
+        ctx.stroke();
+    }
+    // 画节点 (★ 改动2：把原来的画圆 arc，改成画方块 fillRect)
+    Object.keys(NODES).forEach(id => {
+        let n = NODES[id]; 
+        let p = toPixel(n.x, n.y);
+        let w = n.w || 8; // 兼容没有 w 属性的情况
+        let h = n.h || 8;
+        
+        ctx.fillStyle = '#aaa'; 
+        ctx.fillRect(p.px - w/2, p.py - h/2, w, h); // 画方块
+        
+        ctx.fillStyle = '#fff'; ctx.font = '12px Arial'; ctx.fillText(id, p.px + w/2 + 4, p.py + 4);
+    });
+// 可选：在 draw() 函数里加点视觉效果，把选中的点画出来
+// 在 draw() 里面画小车的那一步前面加上：
+
+    if (selectedStart) {
+        let sp = toPixel(NODES[selectedStart].x, NODES[selectedStart].y);
+        ctx.fillStyle = '#3498db'; ctx.beginPath(); ctx.arc(sp.px, sp.py, 12, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.font = '10px Arial'; ctx.fillText("起", sp.px-5, sp.py+4);
+    }
+    if (selectedEnd) {
+        let ep = toPixel(NODES[selectedEnd].x, NODES[selectedEnd].y);
+        ctx.fillStyle = '#f1c40f'; ctx.beginPath(); ctx.arc(ep.px, ep.py, 12, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#000'; ctx.font = '10px Arial'; ctx.fillText("终", ep.px-5, ep.py+4);
+    }
+
+    // 画小车
+    let bp = toPixel(bot.x, bot.y);
+    ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.arc(bp.px, bp.py, 10, 0, Math.PI*2); ctx.fill();
+    
+    requestAnimationFrame(draw);
+}
+draw();
+// ================= 鼠标点选起点/终点 =================
+// ❌ 删掉这几行
+// let clickState = 'start';
+// let selectedStart = null;
+// let selectedEnd = null;
+
+canvas.addEventListener('click', function(e) {
+    // 1. 获取鼠标在 Canvas 上的像素坐标
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    // 2. 找到离鼠标最近的节点
+    let closestNode = null;
+    let minDist = Infinity;
+
+    Object.keys(NODES).forEach(id => {
+        const n = NODES[id];
+        const p = toPixel(n.x, n.y);
+        // 计算两点距离
+        const dist = Math.hypot(mouseX - p.px, mouseY - p.py);
+        if (dist < minDist) {
+            minDist = dist;
+            closestNode = id;
+        }
+    });
+
+    // 3. 如果距离太远（没点到节点上），就不处理
+    if (minDist > 30) return; 
+
+    // 4. 状态机判定
+    if (clickState === 'start') {
+        selectedStart = closestNode;
+        clickState = 'end';
+        console.log(`选中起点: ${selectedStart}`);
+        // 可选：在左下角或某个 div 提示一下 "请点击选择终点"
+    } else if (clickState === 'end') {
+        selectedEnd = closestNode;
+        clickState = 'start';
+        console.log(`选中终点: ${selectedEnd}，准备发车！`);
+
+        // 5. 直接构造 JSON，通过 WS 发给后端跑！
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            const cmdData = {
+                start: selectedStart,
+                end: selectedEnd
+            };
+            ws.send(JSON.stringify({type: "execute", payload: cmdData}));
+            // 在聊天框里留个记录，假装是大模型发的
+            appendMsg(`[系统] 触发导航：${selectedStart} -> ${selectedEnd}`, false);
+        }
+    }
+});
+
+
+
+// ================= 模式切换 (完全保留) =================
+function switchMode(mode) {
+    currentMode = mode;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    canvas.style.display = mode === 'topo' ? 'block' : 'none';
+    document.getElementById('ros-placeholder').style.display = mode === 'ros' ? 'flex' : 'none';
+}
+
+// ================= WebSocket 实时通信 (完全保留) =================
+function connectWS() {
+    ws = new WebSocket(`ws://${window.location.host}/ws`);
+    ws.onopen = () => console.log("WS 连接成功");
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'path') { path = data.nodes; } 
+        else if (data.type === 'pose') { bot.x = data.x; bot.y = data.y; } 
+        else if (data.type === 'done') { path = []; appendMsg(data.msg, false); };
+        selectedStart = null; selectedEnd = null;
+    };
+}
+connectWS();
+
+// ================= 数据加载与静默替换 =================
+// ★ 改动3：增加这一段。尝试拉取真实数据，成功则覆盖全局 NODES 和 EDGES，失败则继续用上面的 baseline
+fetch('/api/topo')
+    .then(res => res.json())
+    .then(data => {
+        if (data.nodes && data.nodes.length > 0) {
+            // 1. 求出真实物理坐标的边界，用于归一化
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            data.nodes.forEach(n => {
+                if(n.x < minX) minX = n.x; if(n.x > maxX) maxX = n.x;
+                if(n.y < minY) minY = n.y; if(n.y > maxY) maxY = n.y;
+            });
+            const rangeX = maxX - minX || 1;
+            const rangeY = maxY - minY || 1;
+
+            // 2. 清空旧数据，填入新数据
+            // 将真实坐标等比例缩放到 1~9 的范围内，完美适配你上面的 SCALE=60 和 80px偏移
+            const targetSize = 8; 
+            NODES = {}; 
+            EDGES = [];
+
+            data.nodes.forEach(n => {
+                const normX = ((n.x - minX) / rangeX) * targetSize + 1;
+                const normY = ((n.y - minY) / rangeY) * targetSize + 1;
+                
+                // 核心：把真实通道的 span 缩小！乘个系数(0.15)，并限制最大最小像素
+                const drawW = Math.max(4, Math.min((n.w || 8) * 0.15, 12));
+                const drawH = Math.max(4, Math.min((n.h || 8) * 0.15, 12));
+                
+                NODES[n.id] = { x: normX, y: normY, w: drawW, h: drawH };
+            });
+
+            data.edges.forEach(e => {
+                // 转换成你上面的 baseline 格式 ["N_0", "N_1"]
+                EDGES.push([e.from, e.to]); 
+            });
+            console.log("后端真实拓扑已加载并替换 Baseline");
+        }
+    })
+    .catch(err => {
+        console.log("未连接后端或加载失败，保持当前 Baseline 显示");
+    });
+</script>
+
+</html> -->
