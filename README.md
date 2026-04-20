@@ -171,13 +171,18 @@ source install/setup.sh && \
 source ~/.bashrc
 ```
 
-# 1. Boost
-## boost Linux
+## Required library and modules
+- Nav2
+```sh
+sudo apt install ros-humble-navigation2 ros-humble-nav2-bringup ros-humble-cartographer ros-humble-cartographer-ros
+```
+# 1. Boot
+## boot Linux
 ```sh
 wsl
 ```
 
-## boost conda
+## boot conda
 ```sh
 conda activate ros2
 export FASTRTPS_DEFAULT_PROFILES_FILE=~/fastdds_no_shm.xml
@@ -185,7 +190,7 @@ export RMW_FASTRTPS_USE_QOS_FROM_XML=0
 # 忘了这两行会reset_world失败
 ```
 
-## boost Docker
+## boot Docker
 
 - start `gazebo` cmd :
 
@@ -225,7 +230,7 @@ source ~/.bashrc
 ```sh
 ros2 launch nav2_bringup slam_launch.py use_sim_time:=True
 ```
-## boost web monitor via `uvicorn`
+## boot web monitor via `uvicorn`
 ```sh
 ~/workspace/rl-navibot/app/start.sh
 ```
