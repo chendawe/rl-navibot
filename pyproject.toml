@@ -1,0 +1,22 @@
+# ~/workspace/rl-navibot/pyproject.toml
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rl-navibot"
+version = "0.1.0"
+description = "Robot Navigation Bot"
+requires-python = ">=3.9"
+
+[tool.setuptools.packages.find]
+where = ["."]          # 从项目根目录开始找包
+include = ["app*"]     # 找到 app 及其所有子包
+
+# cd ~/workspace/rl-navibot
+# pip install -e .
+
+# -e 的意思是 editable（开发模式）。
+# 它不会复制你的代码，而是在 Python 的 site-packages 里创建一个软链接，
+# 指向你的 app/ 文件夹。
