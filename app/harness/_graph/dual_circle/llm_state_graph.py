@@ -188,3 +188,66 @@ if __name__ == "__main__":
             continue
 
         app.invoke(Command(resume=user_msg), config=config)
+
+
+
+"""
+====================================================================================================
+🔥 HARNESS 架构拆解指南 (解耦规范)
+====================================================================================================
+
+当前的单文件属于 MVP 阶段的 "上帝文件"（God Object），随着业务增加（比如接入真实 ROS2 导航、
+多模态视觉、更复杂的 block 重试），必须按职责拆解。
+
+以下是基于 Harness 思想的严格拆解映射表，请按此结构将代码迁移到对应目录：
+
+📁 app/harness/graph/dual_circle/
+│
+├── 📁 schemas/                     # 【纯数据结构层】绝对不依赖任何业务逻辑或外部库
+│   └── brain_schema.py
+│       ├── class BlockPlan(BaseModel)      # 从这里搬
+│       ├── class BrainParsedResult(...)    # 从这里搬
+│       └── class BrainState(TypedDict)     # 从这里搬
+│
+├── 📁 prompts/                     # 【纯文本规范层】管理所有 Prompt，方便做 A/B 测试和版本控制
+│   └── brain_prompts.py
+│       └── SYSTEM_PROMPT = "..."           # 从这里搬
+│
+├── 📁 clients/                     # 【外部通信层】封装所有与大模型、API 的网络交互
+│   └── llm_client.py
+│       └── def get_structured_llm():       # 从这里搬 (返回 structured_llm 实例)
+│
+├── 📁 nodes/                       # 【纯行为逻辑层】每个文件是一个节点，只做状态计算，不关心图怎么连
+│   ├── input_node.py
+│   │   └── def node_user_input(...)       # 从这里搬
+│   │
+│   ├── planner_node.py
+│   │   └── def node_planner(...)          # 从这里搬 (包含 try-except 兜底)
+│   │
+│   └── action_nodes.py
+│       ├── def node_chat(...)             # 从这里搬
+│       ├── def node_mission(...)          # 从这里搬 (内部调用 mission 子图的入口)
+│       └── def node_shutdown(...)         # 从这里搬
+│
+├── 📁 subgraphs/                   # 【子图层】复杂的独立状态机 (如 mission 执行链)
+│   └── mission_executor.py
+│       ├── class MissionState(...)        # 子图自己的状态
+│       └── def build_mission_graph(...)   # 子图的组装逻辑
+│
+├── 📁 graph/                       # 【拓扑组装层】只负责 "把节点连起来"，不写任何业务代码
+│   └── brain_graph.py
+│       ├── def route_task(...)            # 从这里搬
+│       └── def build_brain_graph(...)     # 从这里搬 (只剩下 add_node 和 add_edge)
+│
+└── 📁 entrypoints/                 # 【驱动层】系统的启动入口，负责实例化图和跑 while 循环
+    └── cli_main.py
+        └── if __name__ == "__main__":     # 从这里搬 (MemorySaver 实例化、invoke、while True)
+
+====================================================================================================
+💡 核心心法（拆解原则）：
+1. schemas/ 里的类：可以跨节点、跨子图复用，改了这里全系统报警。
+2. nodes/ 里的函数：输入是 State，输出是 dict，实现类似纯函数，方便写单元测试。
+3. graph/ 里：绝对不放 if/else 业务逻辑，只放 add_conditional_edges 的路由映射。
+4. clients/ 里：如果以后把 GPT 换成本地 Qwen，只改这一个文件，nodes 和 graph 完全不动。
+====================================================================================================
+"""

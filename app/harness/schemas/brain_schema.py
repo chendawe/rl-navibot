@@ -17,6 +17,9 @@ class BrainState(TypedDict):
     mission_type: str
     reasoning: str
     response: str
-    mission_blocks: list
-    mission_result: str  # 新增：用于接收子图执行后的解耦结果
+    # ---- 任务执行相关 ----
+    mission_blocks: list           # 规划出来的完整 block 列表
+    current_block_idx: int         # 当前执行到第几个 block（核心！）
+    block_results: list            # 每个 block 的执行结果记录
+    # ---- 系统控制 ----
     is_running: bool
