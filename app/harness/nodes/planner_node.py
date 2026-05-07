@@ -16,10 +16,13 @@ def node_planner(state: dict) -> dict:
         ])
         result_dict = parsed.model_dump()
         logger.info(f"[Planner] 解析成功 -> 类型: {result_dict['mission_type']}")
+        
         # ---- 关键：如果是 mission，补上循环变量 ----
         if result_dict["mission_type"] == "mission":
             result_dict["current_block_idx"] = 0
             result_dict["block_results"] = []
+            result_dict["block_retry_counts"] = {}  # 🆕 初始化重试计数器字典
+            
         return result_dict
     except Exception as e:
         logger.error(f"[Planner] 兜底触发: {e}")

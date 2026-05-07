@@ -1,0 +1,170 @@
+(ros2) chendawww@cdws:~/workspace/rl-navibot$ python /home/chendawww/workspace/rl-navibot/app/harness/entrypoints/brain_main.py
+🚀 Replan 架构可行性测试
+18:24:53 | BrainNode.Input      | 系统挂起，等待用户输入...
+
+👤 你 (试试: 去厨房拿水 / 闲聊 / 关机): nih 
+18:24:54 | BrainNode.Input      | 系统挂起，等待用户输入...
+18:24:54 | BrainNode.Input      | 收到用户输入: nih
+18:24:54 | BrainNode.Planner    | [Planner] 开始解析: nih
+18:24:54 | MockLLM              | [PlannerLLM] 解析意图: nih
+18:24:54 | BrainNode.Planner    | [Planner] 解析成功 -> 类型: chat
+18:24:54 | BrainNode.Input      | 系统挂起，等待用户输入...
+
+🤖 宏观回复：nih
+
+👤 你 (试试: 去厨房拿水 / 闲聊 / 关机): 拿
+18:24:56 | BrainNode.Input      | 系统挂起，等待用户输入...
+18:24:56 | BrainNode.Input      | 收到用户输入: 拿
+18:24:56 | BrainNode.Planner    | [Planner] 开始解析: 拿
+18:24:56 | MockLLM              | [PlannerLLM] 解析意图: 拿
+18:24:56 | BrainNode.Planner    | [Planner] 解析成功 -> 类型: mission
+18:24:56 | BrainNode.Action     | [ExecuteBlock] ▶ 准备执行 [1/2] {'block_type': 'navi', 'description': '导航', 'target': '桌子'}
+18:24:56 | BrainNode.Action     | [ExecuteBlock] 调用底层 -> type=navi, target=桌子
+18:24:56 | MockLLM              | [ExecutorLLM] 📦 调用底层工具 -> type=navi, target=桌子
+18:24:57 | MockLLM              | [ExecutorLLM] ✅ 工具返回成功
+18:24:57 | BrainNode.Action     | [ExecuteBlock] ✅ Block[0] 结果: 已到达 桌子
+18:24:57 | BrainNode.Action     | [CheckBlock] ✅ Block[0] 成功，游标推进: 0 -> 1
+18:24:57 | buildBrainGraph      | [Route] Block[0] 成功 -> 继续执行 Block[1]
+18:24:57 | BrainNode.Action     | [ExecuteBlock] ▶ 准备执行 [2/2] {'block_type': 'observe', 'description': '观察', 'target': '水杯'}
+18:24:57 | BrainNode.Action     | [ExecuteBlock] 调用底层 -> type=observe, target=水杯
+18:24:57 | MockLLM              | [ExecutorLLM] 📦 调用底层工具 -> type=observe, target=水杯
+18:24:57 | MockLLM              | [ExecutorLLM] ✅ 工具返回成功
+18:24:57 | BrainNode.Action     | [ExecuteBlock] ✅ Block[1] 结果: 已识别 水杯
+18:24:57 | BrainNode.Action     | [CheckBlock] ✅ Block[1] 成功，游标推进: 1 -> 2
+18:24:57 | buildBrainGraph      | [Route] 所有 2 个 block 完成 -> user_input
+18:24:57 | BrainNode.Input      | 系统挂起，等待用户输入...
+
+👤 你 (试试: 去厨房拿水 / 闲聊 / 关机): 拿
+18:24:59 | BrainNode.Input      | 系统挂起，等待用户输入...
+18:24:59 | BrainNode.Input      | 收到用户输入: 拿
+18:24:59 | BrainNode.Planner    | [Planner] 开始解析: 拿
+18:24:59 | MockLLM              | [PlannerLLM] 解析意图: 拿
+18:24:59 | BrainNode.Planner    | [Planner] 解析成功 -> 类型: mission
+18:24:59 | BrainNode.Action     | [ExecuteBlock] ▶ 准备执行 [1/2] {'block_type': 'navi', 'description': '导航', 'target': '桌子'}
+18:24:59 | BrainNode.Action     | [ExecuteBlock] 调用底层 -> type=navi, target=桌子
+18:24:59 | MockLLM              | [ExecutorLLM] 📦 调用底层工具 -> type=navi, target=桌子
+18:24:59 | MockLLM              | [ExecutorLLM] ✅ 工具返回成功
+18:24:59 | BrainNode.Action     | [ExecuteBlock] ✅ Block[0] 结果: 已到达 桌子
+18:24:59 | BrainNode.Action     | [CheckBlock] ✅ Block[0] 成功，游标推进: 0 -> 1
+18:24:59 | buildBrainGraph      | [Route] Block[0] 成功 -> 继续执行 Block[1]
+18:24:59 | BrainNode.Action     | [ExecuteBlock] ▶ 准备执行 [2/2] {'block_type': 'observe', 'description': '观察', 'target': '水杯'}
+18:24:59 | BrainNode.Action     | [ExecuteBlock] 调用底层 -> type=observe, target=水杯
+18:24:59 | MockLLM              | [ExecutorLLM] 📦 调用底层工具 -> type=observe, target=水杯
+18:25:00 | MockLLM              | [ExecutorLLM] ✅ 工具返回成功
+18:25:00 | BrainNode.Action     | [ExecuteBlock] ✅ Block[1] 结果: 已识别 水杯
+18:25:00 | BrainNode.Action     | [CheckBlock] ✅ Block[1] 成功，游标推进: 1 -> 2
+18:25:00 | buildBrainGraph      | [Route] 所有 2 个 block 完成 -> user_input
+18:25:00 | BrainNode.Input      | 系统挂起，等待用户输入...
+
+👤 你 (试试: 去厨房拿水 / 闲聊 / 关机): 拿
+18:25:01 | BrainNode.Input      | 系统挂起，等待用户输入...
+18:25:01 | BrainNode.Input      | 收到用户输入: 拿
+18:25:01 | BrainNode.Planner    | [Planner] 开始解析: 拿
+18:25:01 | MockLLM              | [PlannerLLM] 解析意图: 拿
+18:25:01 | BrainNode.Planner    | [Planner] 解析成功 -> 类型: mission
+18:25:01 | BrainNode.Action     | [ExecuteBlock] ▶ 准备执行 [1/2] {'block_type': 'navi', 'description': '导航', 'target': '桌子'}
+18:25:01 | BrainNode.Action     | [ExecuteBlock] 调用底层 -> type=navi, target=桌子
+18:25:01 | MockLLM              | [ExecutorLLM] 📦 调用底层工具 -> type=navi, target=桌子
+18:25:01 | MockLLM              | [ExecutorLLM] ✅ 工具返回成功
+18:25:01 | BrainNode.Action     | [ExecuteBlock] ✅ Block[0] 结果: 已到达 桌子
+18:25:01 | BrainNode.Action     | [CheckBlock] ✅ Block[0] 成功，游标推进: 0 -> 1
+18:25:01 | buildBrainGraph      | [Route] Block[0] 成功 -> 继续执行 Block[1]
+18:25:01 | BrainNode.Action     | [ExecuteBlock] ▶ 准备执行 [2/2] {'block_type': 'observe', 'description': '观察', 'target': '水杯'}
+18:25:01 | BrainNode.Action     | [ExecuteBlock] 调用底层 -> type=observe, target=水杯
+18:25:01 | MockLLM              | [ExecutorLLM] 📦 调用底层工具 -> type=observe, target=水杯
+18:25:02 | MockLLM              | [ExecutorLLM] ⏱️ 工具返回超时 -> 等待 水杯 超时
+18:25:02 | BrainNode.Action     | [ExecuteBlock] ⏱️ Block[1] 结果: 等待 水杯 超时
+18:25:02 | BrainNode.Action     | [CheckBlock] ❌ Block[1] 状态[timeout]，重试计数: 1/3
+18:25:02 | buildBrainGraph      | [Route] Block[1] 失败(重试 1/3) -> replan
+18:25:02 | BrainNode.Action     | [Replan] 🔄 从 Block[1] 开始重新规划（原方案失败: 等待 水杯 超时）
+18:25:02 | BrainNode.Action     | [Replan] 📋 保留前 1 个 | 替换后共 3 个 | 原始目标: 拿到水杯
+18:25:02 | BrainNode.Action     | [ExecuteBlock] ▶ 准备执行 [2/3] {'block_type': 'navi', 'description': 'Replan: 绕行到替代路线', 'target': '备用入口-1'}
+18:25:02 | BrainNode.Action     | [ExecuteBlock] 调用底层 -> type=navi, target=备用入口-1
+18:25:02 | MockLLM              | [ExecutorLLM] 📦 调用底层工具 -> type=navi, target=备用入口-1
+18:25:02 | MockLLM              | [ExecutorLLM] ✅ 工具返回成功
+18:25:02 | BrainNode.Action     | [ExecuteBlock] ✅ Block[1] 结果: 已到达 备用入口-1
+18:25:02 | BrainNode.Action     | [CheckBlock] ✅ Block[1] 成功，游标推进: 1 -> 2
+18:25:02 | buildBrainGraph      | [Route] Block[1] 成功 -> 继续执行 Block[2]
+18:25:02 | BrainNode.Action     | [ExecuteBlock] ▶ 准备执行 [3/3] {'block_type': 'observe', 'description': 'Replan: 重新尝试完成[拿到水杯]', 'target': '拿到水杯'}
+18:25:02 | BrainNode.Action     | [ExecuteBlock] 调用底层 -> type=observe, target=拿到水杯
+18:25:02 | MockLLM              | [ExecutorLLM] 📦 调用底层工具 -> type=observe, target=拿到水杯
+18:25:03 | MockLLM              | [ExecutorLLM] ⏱️ 工具返回超时 -> 等待 拿到水杯 超时
+18:25:03 | BrainNode.Action     | [ExecuteBlock] ⏱️ Block[2] 结果: 等待 拿到水杯 超时
+18:25:03 | BrainNode.Action     | [CheckBlock] ❌ Block[2] 状态[timeout]，重试计数: 1/3
+18:25:03 | buildBrainGraph      | [Route] Block[2] 失败(重试 1/3) -> replan
+18:25:03 | BrainNode.Action     | [Replan] 🔄 从 Block[2] 开始重新规划（原方案失败: 等待 拿到水杯 超时）
+18:25:03 | BrainNode.Action     | [Replan] 📋 保留前 2 个 | 替换后共 4 个 | 原始目标: 拿到水杯
+18:25:03 | BrainNode.Action     | [ExecuteBlock] ▶ 准备执行 [3/4] {'block_type': 'navi', 'description': 'Replan: 绕行到替代路线', 'target': '备用入口-2'}
+18:25:03 | BrainNode.Action     | [ExecuteBlock] 调用底层 -> type=navi, target=备用入口-2
+18:25:03 | MockLLM              | [ExecutorLLM] 📦 调用底层工具 -> type=navi, target=备用入口-2
+18:25:03 | MockLLM              | [ExecutorLLM] ❌ 工具返回失败 -> 备用入口-2 不可达
+18:25:03 | BrainNode.Action     | [ExecuteBlock] ❌ Block[2] 结果: 备用入口-2 不可达
+18:25:03 | BrainNode.Action     | [CheckBlock] ❌ Block[2] 状态[failed]，重试计数: 2/3
+18:25:03 | buildBrainGraph      | [Route] Block[2] 失败(重试 2/3) -> replan
+18:25:03 | BrainNode.Action     | [Replan] 🔄 从 Block[2] 开始重新规划（原方案失败: 备用入口-2 不可达）
+18:25:03 | BrainNode.Action     | [Replan] 📋 保留前 2 个 | 替换后共 4 个 | 原始目标: 拿到水杯
+18:25:03 | BrainNode.Action     | [ExecuteBlock] ▶ 准备执行 [3/4] {'block_type': 'navi', 'description': 'Replan: 绕行到替代路线', 'target': '备用入口-2'}
+18:25:03 | BrainNode.Action     | [ExecuteBlock] 调用底层 -> type=navi, target=备用入口-2
+18:25:03 | MockLLM              | [ExecutorLLM] 📦 调用底层工具 -> type=navi, target=备用入口-2
+18:25:04 | MockLLM              | [ExecutorLLM] ❌ 工具返回失败 -> 备用入口-2 不可达
+18:25:04 | BrainNode.Action     | [ExecuteBlock] ❌ Block[2] 结果: 备用入口-2 不可达
+18:25:04 | BrainNode.Action     | [CheckBlock] ❌ Block[2] 状态[failed]，重试计数: 3/3
+18:25:04 | buildBrainGraph      | [Route] Block[2] 重试达 3 次上限 -> abort_block
+18:25:04 | BrainNode.Action     | [AbortBlock] 🛑 Block[2] 已达 3 次上限，放弃剩余任务！目标: 备用入口-2
+18:25:04 | BrainNode.Input      | 系统挂起，等待用户输入...
+
+🤖 任务 Replan: 绕行到替代路线 多次失败已放弃，整个任务终止。
+📋 执行记录:
+   ✅ Block[0] 导航: 已到达 桌子
+   ❌ Block[1] 观察: 等待 水杯 超时
+   ✅ Block[1] Replan: 绕行到替代路线: 已到达 备用入口-1
+   ❌ Block[2] Replan: 重新尝试完成[拿到水杯]: 等待 拿到水杯 超时
+   ❌ Block[2] Replan: 绕行到替代路线: 备用入口-2 不可达
+   ❌ Block[2] Replan: 绕行到替代路线: 备用入口-2 不可达
+
+👤 你 (试试: 去厨房拿水 / 闲聊 / 关机): 拿
+18:25:10 | BrainNode.Input      | 系统挂起，等待用户输入...
+18:25:10 | BrainNode.Input      | 收到用户输入: 拿
+18:25:10 | BrainNode.Planner    | [Planner] 开始解析: 拿
+18:25:10 | MockLLM              | [PlannerLLM] 解析意图: 拿
+18:25:10 | BrainNode.Planner    | [Planner] 解析成功 -> 类型: mission
+18:25:10 | BrainNode.Action     | [ExecuteBlock] ▶ 准备执行 [1/2] {'block_type': 'navi', 'description': '导航', 'target': '桌子'}
+18:25:10 | BrainNode.Action     | [ExecuteBlock] 调用底层 -> type=navi, target=桌子
+18:25:10 | MockLLM              | [ExecutorLLM] 📦 调用底层工具 -> type=navi, target=桌子
+18:25:10 | MockLLM              | [ExecutorLLM] ❌ 工具返回失败 -> 桌子 不可达
+18:25:10 | BrainNode.Action     | [ExecuteBlock] ❌ Block[0] 结果: 桌子 不可达
+18:25:10 | BrainNode.Action     | [CheckBlock] ❌ Block[0] 状态[failed]，重试计数: 1/3
+18:25:10 | buildBrainGraph      | [Route] Block[0] 失败(重试 1/3) -> replan
+18:25:10 | BrainNode.Action     | [Replan] 🔄 从 Block[0] 开始重新规划（原方案失败: 桌子 不可达）
+18:25:10 | BrainNode.Action     | [Replan] 📋 保留前 0 个 | 替换后共 2 个 | 原始目标: 拿到水杯
+18:25:10 | BrainNode.Action     | [ExecuteBlock] ▶ 准备执行 [1/2] {'block_type': 'navi', 'description': 'Replan: 绕行到替代路线', 'target': '备用入口-0'}
+18:25:10 | BrainNode.Action     | [ExecuteBlock] 调用底层 -> type=navi, target=备用入口-0
+18:25:10 | MockLLM              | [ExecutorLLM] 📦 调用底层工具 -> type=navi, target=备用入口-0
+18:25:11 | MockLLM              | [ExecutorLLM] ✅ 工具返回成功
+18:25:11 | BrainNode.Action     | [ExecuteBlock] ✅ Block[0] 结果: 已到达 备用入口-0
+18:25:11 | BrainNode.Action     | [CheckBlock] ✅ Block[0] 成功，游标推进: 0 -> 1
+18:25:11 | buildBrainGraph      | [Route] Block[0] 成功 -> 继续执行 Block[1]
+18:25:11 | BrainNode.Action     | [ExecuteBlock] ▶ 准备执行 [2/2] {'block_type': 'observe', 'description': 'Replan: 重新尝试完成[拿到水杯]', 'target': '拿到水杯'}
+18:25:11 | BrainNode.Action     | [ExecuteBlock] 调用底层 -> type=observe, target=拿到水杯
+18:25:11 | MockLLM              | [ExecutorLLM] 📦 调用底层工具 -> type=observe, target=拿到水杯
+18:25:11 | MockLLM              | [ExecutorLLM] ✅ 工具返回成功
+18:25:11 | BrainNode.Action     | [ExecuteBlock] ✅ Block[1] 结果: 已识别 拿到水杯
+18:25:11 | BrainNode.Action     | [CheckBlock] ✅ Block[1] 成功，游标推进: 1 -> 2
+18:25:11 | buildBrainGraph      | [Route] 所有 2 个 block 完成 -> user_input
+18:25:11 | BrainNode.Input      | 系统挂起，等待用户输入...
+
+🤖 Block[0] 失败，已从断点重新规划后续 2 个步骤。
+📋 执行记录:
+   ❌ Block[0] 导航: 桌子 不可达
+   ✅ Block[0] Replan: 绕行到替代路线: 已到达 备用入口-0
+   ✅ Block[1] Replan: 重新尝试完成[拿到水杯]: 已识别 拿到水杯
+
+👤 你 (试试: 去厨房拿水 / 闲聊 / 关机): 关机
+18:25:13 | BrainNode.Input      | 系统挂起，等待用户输入...
+18:25:13 | BrainNode.Input      | 收到用户输入: 关机
+18:25:13 | BrainNode.Planner    | [Planner] 开始解析: 关机
+18:25:13 | MockLLM              | [PlannerLLM] 解析意图: 关机
+18:25:13 | BrainNode.Planner    | [Planner] 解析成功 -> 类型: shutdown
+18:25:13 | BrainNode.Input      | 系统挂起，等待用户输入...
+
+系统已安全关机，主循环退出。

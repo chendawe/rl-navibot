@@ -2,7 +2,9 @@ from langgraph.graph import StateGraph, END, START
 from app.harness.schemas.brain_schema import BrainState
 from app.harness.nodes.input_node import node_user_input
 from app.harness.nodes.planner_node import node_planner
-from app.harness.nodes.action_node import node_chat, node_execute_block, node_check_block, node_replan, node_shutdown
+
+# 👇 改成模块级导入，不把具体函数散落出来
+import app.harness.nodes.action_node as action_node
 
 import logging
 logger = logging.getLogger("buildBrainGraph")
@@ -10,52 +12,27 @@ logger = logging.getLogger("buildBrainGraph")
 def route_task(state: BrainState) -> str:
     return state.get("mission_type", "chat")
 
-# def build_brain_graph(checkpointer=None):
-#     workflow = StateGraph(BrainState)
-
-#     workflow.add_node("user_input", node_user_input)
-#     workflow.add_node("planner",    node_planner)
-#     workflow.add_node("chat",       node_chat)
-#     workflow.add_node("mission",    node_mission)
-#     workflow.add_node("shutdown",   node_shutdown)
-
-#     workflow.add_edge(START, "user_input")
-#     workflow.add_edge("user_input", "planner")
-    
-#     workflow.add_conditional_edges(
-#         "planner", route_task,
-#         {"chat": "chat", "mission": "mission", "shutdown": "shutdown"}
-#     )
-    
-#     workflow.add_edge("chat",     "user_input")
-#     workflow.add_edge("mission",  "user_input")
-#     # workflow.add_edge("shutdown", END)
-#     workflow.add_edge("shutdown", "user_input")
-
-#     return workflow.compile(checkpointer=checkpointer)
-
-# ============================================================
-# 路由 2：Block 执行后分派（核心路由）
-# ============================================================
 def route_after_check(state: BrainState) -> str:
     idx = state["current_block_idx"]
     total = len(state["mission_blocks"])
 
-    # 情况 A：所有 block 跑完了
     if idx >= total:
         logger.info(f"[Route] 所有 {total} 个 block 完成 -> user_input")
         return "all_done"
 
-    # 情况 B：检查最后一个 block 的结果
     last_result = state["block_results"][-1]
 
-    # 情况 C：成功 -> 继续执行下一个
     if last_result["status"] == "success":
         logger.info(f"[Route] Block[{idx-1}] 成功 -> 继续执行 Block[{idx}]")
         return "continue"
 
-    # 情况 D：失败 -> 去 replan
-    logger.info(f"[Route] Block[{idx-1}] 失败 -> replan")
+    # 判断是否达到熔断阈值
+    retry_count = state.get("block_retry_counts", {}).get(idx, 0)
+    if retry_count >= action_node.MAX_RETRIES:  # 👈 常量也跟着加前缀
+        logger.error(f"[Route] Block[{idx}] 重试达 {retry_count} 次上限 -> abort_block")
+        return "abort"
+
+    logger.warning(f"[Route] Block[{idx}] 失败(重试 {retry_count}/{action_node.MAX_RETRIES}) -> replan")
     return "replan"
 
 
@@ -65,11 +42,14 @@ def build_brain_graph(checkpointer=None):
     # ---- 注册所有节点 ----
     workflow.add_node("user_input",     node_user_input)
     workflow.add_node("planner",        node_planner)
-    workflow.add_node("chat",           node_chat)
-    workflow.add_node("shutdown",       node_shutdown)
-    workflow.add_node("execute_block",  node_execute_block)
-    workflow.add_node("check_block",    node_check_block)
-    workflow.add_node("replan",         node_replan)
+    
+    # 👇 全部加上 action_node. 前缀
+    workflow.add_node("chat",           action_node.node_chat)
+    workflow.add_node("shutdown",       action_node.node_shutdown)
+    workflow.add_node("execute_block",  action_node.node_execute_block)
+    workflow.add_node("check_block",    action_node.node_check_block)
+    workflow.add_node("replan",         action_node.node_replan)
+    workflow.add_node("abort_block",    action_node.node_abort_block)
 
     # ---- 入口 ----
     workflow.add_edge(START, "user_input")
@@ -80,25 +60,27 @@ def build_brain_graph(checkpointer=None):
         "planner", route_task,
         {
             "chat":     "chat",
-            "mission":  "execute_block",   # 直接进入第一个 block 的执行
+            "mission":  "execute_block",   
             "shutdown": "shutdown"
         }
     )
 
-    # ---- Block 执行循环（核心！） ----
+    # ---- Block 执行循环 ----
     workflow.add_edge("execute_block", "check_block")
 
     workflow.add_conditional_edges(
         "check_block", route_after_check,
         {
-            "continue":  "execute_block",  # 成功：继续下一个 block
-            "replan":    "replan",          # 失败：去 replan
-            "all_done":  "user_input"       # 全部完成：回用户输入
+            "continue":  "execute_block",  
+            "replan":    "replan",          
+            "abort":     "abort_block",     
+            "all_done":  "user_input"       
         }
     )
 
-    # ---- Replan 后重新执行当前 block ----
+    # ---- Replan / Abort 后重新执行 ----
     workflow.add_edge("replan", "execute_block")
+    workflow.add_edge("abort_block", "user_input")
 
     # ---- 闭环 ----
     workflow.add_edge("chat",     "user_input")

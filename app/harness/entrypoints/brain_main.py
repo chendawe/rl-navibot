@@ -53,19 +53,22 @@ if __name__ == "__main__":
     while True:
         current_state = app.get_state(config)
 
+        if not current_state.values.get("is_running", True):
+            print("\n系统已安全关机，主循环退出。")
+            break
+
         response = current_state.values.get("response", "")
         if response:
             print(f"\n🤖 {response}")
+            # 打印执行记录
+            results = current_state.values.get("block_results", [])
+            if results:
+                print("📋 执行记录:")
+                for r in results:
+                    icon = "✅" if r["status"] == "success" else "❌"
+                    print(f"   {icon} Block[{r['idx']}] {r['block']['description']}: {r['detail']}")
 
-        # 打印当前 block 执行进度（新增）
-        results = current_state.values.get("block_results", [])
-        if results:
-            print("📋 执行记录:")
-            for r in results:
-                icon = "✅" if r["status"] == "success" else "❌"
-                print(f"   {icon} Block[{r['idx']}] {r['block']['description']}: {r['detail']}")
-
-        user_msg = input("\n👤 你 (试试: 去厨房拿水 / 关机): ").strip()
+        user_msg = input("\n👤 你 (试试: 去厨房拿水 / 闲聊 / 关机): ").strip()
         if not user_msg:
             continue
 
