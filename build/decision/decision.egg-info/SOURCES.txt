@@ -12,5 +12,6 @@ decision.egg-info/zip-safe
 decision/rl/__init__.py
 decision/rl/_v1_environments.py
 decision/rl/algorithms.py
+decision/rl/environments.py
 decision/rl/rewards.py
 resource/decision

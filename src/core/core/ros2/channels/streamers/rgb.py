@@ -78,3 +78,6 @@ class RGBStreamer(BaseStreamer):
         except Exception as e:
             print(f"[RGBStreamer] 图像处理失败: {e}")
 
+    def get_latest_frame(self) -> Optional[bytes]:
+        """获取最新的 JPEG 帧（公开 API）"""
+        return self._latest_frame

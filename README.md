@@ -1,12 +1,29 @@
-# -2. Tech Stack
+# -4. Tech Stack
 
 
 ## Notes
-- Tech note see
-- Debug note see
+- Tech note see [TBD](https://MMM.TBD.cow).
+- Debug note see [TBD](https://MMM.TBD.cow).
 
-# -1. Project Structure
+# -3. Project Structure
 
+- Presentation Videos
+[TBD](https://MMM.TBD.cow).
+
+
+# -2. Baseline Presentations
+- Web Monitor
+
+- Brain Graph of Harness
+
+- Yolo and GroundingDINO
+
+- Turtlebot3 Burger Walking in the Arena
+
+# -1. Real-world Presentations
+- Web Monitor with Brain
+
+- Turtlebot3 Waffle Walking in the House
 
 # 0. Environment Building
 
@@ -91,6 +108,9 @@ build `rl-navibot` 的包：
 ```sh
 cd ~/rl-navibot
 colcon build
+# colcon build --symlink-install
+# colcon build --symlink-install --packages-skip robot_world
+# colcon build --symlink-install --packages-select core perception planning decision execution
 ```
 ---
 ---

@@ -1,0 +1,4 @@
+[0mCMake Error: The current CMakeCache.txt directory /home/chendawww/workspace/rl-navibot/build/robot_world/CMakeCache.txt is different than the directory /root/workspace/rl-navibot/build/robot_world where CMakeCache.txt was created. This may result in binaries being created in the wrong place. If you are not sure, reedit the CMakeCache.txt[0m
+[0mCMake Error: The source directory "/root/workspace/rl-navibot/src/simulation/robot_world" does not exist.
+Specify --help for usage, or press the help button on the CMake GUI.[0m
+gmake: *** [Makefile:486: cmake_check_build_system] Error 1

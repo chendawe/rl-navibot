@@ -4,3 +4,6 @@ source;share/rl_agent/hook/pythonpath.sh
 source;share/rl_agent/hook/ament_prefix_path.ps1
 source;share/rl_agent/hook/ament_prefix_path.dsv
 source;share/rl_agent/hook/ament_prefix_path.sh
+source;../../build/rl_agent/share/rl_agent/hook/pythonpath_develop.ps1
+source;../../build/rl_agent/share/rl_agent/hook/pythonpath_develop.dsv
+source;../../build/rl_agent/share/rl_agent/hook/pythonpath_develop.sh

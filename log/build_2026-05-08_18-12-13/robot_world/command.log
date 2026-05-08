@@ -1,0 +1,2 @@
+Invoking command in '/home/chendawww/workspace/rl-navibot/build/robot_world': CMAKE_PREFIX_PATH=/opt/ros/humble CONDA_PROMPT_MODIFIER=(ros2) _=/usr/bin/env /usr/bin/cmake --build /home/chendawww/workspace/rl-navibot/build/robot_world -- -j16 -l16
+Invoked command in '/home/chendawww/workspace/rl-navibot/build/robot_world' returned '2': CMAKE_PREFIX_PATH=/opt/ros/humble CONDA_PROMPT_MODIFIER=(ros2) _=/usr/bin/env /usr/bin/cmake --build /home/chendawww/workspace/rl-navibot/build/robot_world -- -j16 -l16

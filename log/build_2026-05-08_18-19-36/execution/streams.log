@@ -1,0 +1,25 @@
+[1.639s] Invoking command in '/home/chendawww/workspace/rl-navibot/build/execution': CONDA_PROMPT_MODIFIER=(ros2) PYTHONPATH=/home/chendawww/workspace/rl-navibot/build/execution/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/chendawww/workspace/rl-navibot/install/execution/lib/python3.10/site-packages:${PYTHONPATH} _=/usr/bin/env /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/chendawww/workspace/rl-navibot/build/execution/build --no-deps symlink_data
+[1.872s] running develop
+[1.924s] /usr/lib/python3/dist-packages/pkg_resources/__init__.py:116: PkgResourcesDeprecationWarning: 2.22.1ubuntu1 is an invalid version and will not be supported in a future release
+[1.924s]   warnings.warn(
+[2.045s] running egg_info
+[2.045s] creating execution.egg-info
+[2.046s] writing execution.egg-info/PKG-INFO
+[2.046s] writing dependency_links to execution.egg-info/dependency_links.txt
+[2.046s] writing entry points to execution.egg-info/entry_points.txt
+[2.047s] writing requirements to execution.egg-info/requires.txt
+[2.048s] writing top-level names to execution.egg-info/top_level.txt
+[2.049s] writing manifest file 'execution.egg-info/SOURCES.txt'
+[2.050s] reading manifest file 'execution.egg-info/SOURCES.txt'
+[2.051s] writing manifest file 'execution.egg-info/SOURCES.txt'
+[2.090s] running build_ext
+[2.090s] Creating /home/chendawww/workspace/rl-navibot/install/execution/lib/python3.10/site-packages/execution.egg-link (link to .)
+[2.091s] 
+[2.091s] Installed /home/chendawww/workspace/rl-navibot/build/execution
+[2.091s] running symlink_data
+[2.091s] creating /home/chendawww/workspace/rl-navibot/install/execution/share/ament_index
+[2.092s] creating /home/chendawww/workspace/rl-navibot/install/execution/share/ament_index/resource_index
+[2.092s] creating /home/chendawww/workspace/rl-navibot/install/execution/share/ament_index/resource_index/packages
+[2.092s] symbolically linking /home/chendawww/workspace/rl-navibot/build/execution/resource/execution -> /home/chendawww/workspace/rl-navibot/install/execution/share/ament_index/resource_index/packages
+[2.093s] symbolically linking /home/chendawww/workspace/rl-navibot/build/execution/package.xml -> /home/chendawww/workspace/rl-navibot/install/execution/share/execution
+[2.158s] Invoked command in '/home/chendawww/workspace/rl-navibot/build/execution' returned '0': CONDA_PROMPT_MODIFIER=(ros2) PYTHONPATH=/home/chendawww/workspace/rl-navibot/build/execution/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/chendawww/workspace/rl-navibot/install/execution/lib/python3.10/site-packages:${PYTHONPATH} _=/usr/bin/env /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/chendawww/workspace/rl-navibot/build/execution/build --no-deps symlink_data

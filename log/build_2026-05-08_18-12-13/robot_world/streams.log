@@ -1,0 +1,6 @@
+[1.101s] Invoking command in '/home/chendawww/workspace/rl-navibot/build/robot_world': CMAKE_PREFIX_PATH=/opt/ros/humble CONDA_PROMPT_MODIFIER=(ros2) _=/usr/bin/env /usr/bin/cmake --build /home/chendawww/workspace/rl-navibot/build/robot_world -- -j16 -l16
+[1.142s] [0mCMake Error: The current CMakeCache.txt directory /home/chendawww/workspace/rl-navibot/build/robot_world/CMakeCache.txt is different than the directory /root/workspace/rl-navibot/build/robot_world where CMakeCache.txt was created. This may result in binaries being created in the wrong place. If you are not sure, reedit the CMakeCache.txt[0m
+[1.169s] [0mCMake Error: The source directory "/root/workspace/rl-navibot/src/simulation/robot_world" does not exist.
+[1.170s] Specify --help for usage, or press the help button on the CMake GUI.[0m
+[1.176s] gmake: *** [Makefile:486: cmake_check_build_system] Error 1
+[1.180s] Invoked command in '/home/chendawww/workspace/rl-navibot/build/robot_world' returned '2': CMAKE_PREFIX_PATH=/opt/ros/humble CONDA_PROMPT_MODIFIER=(ros2) _=/usr/bin/env /usr/bin/cmake --build /home/chendawww/workspace/rl-navibot/build/robot_world -- -j16 -l16
