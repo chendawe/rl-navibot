@@ -66,7 +66,10 @@ if __name__ == "__main__":
                 print("📋 执行记录:")
                 for r in results:
                     icon = "✅" if r["status"] == "success" else "❌"
-                    print(f"   {icon} Block[{r['idx']}] {r['block']['description']}: {r['detail']}")
+                    # 👉 取嵌套里的 target
+                    action_desc = f"{r['plan']['block_type']}({r['plan']['target']})"
+                    retry_info = f" [重试 {r['retry_count']}次]" if r['retry_count'] > 0 else ""
+                    print(f"   {icon} Block[{r['idx']}] {action_desc}: {r['detail']}{retry_info}")
 
         user_msg = input("\n👤 你 (试试: 去厨房拿水 / 闲聊 / 关机): ").strip()
         if not user_msg:

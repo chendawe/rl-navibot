@@ -27,13 +27,21 @@ def route_after_check(state: BrainState) -> str:
         return "continue"
 
     # 判断是否达到熔断阈值
-    retry_count = state.get("block_retry_counts", {}).get(idx, 0)
-    if retry_count >= action_node.MAX_RETRIES:  # 👈 常量也跟着加前缀
-        logger.error(f"[Route] Block[{idx}] 重试达 {retry_count} 次上限 -> abort_block")
+    # 🔄 改动点：从 block_results 统计同一目标的累计失败次数，不依赖任何外部字典
+    block_key = f"{last_result['plan']['block_type']}:{last_result['plan']['target']}"
+    fail_count = sum(
+        1 for r in state["block_results"]
+        if f"{r['plan']['block_type']}:{r['plan']['target']}" == block_key
+        and r["status"] in ("failed", "timeout")
+    )
+
+    if fail_count >= action_node.MAX_RETRIES:  
+        logger.error(f"[Route] Block[{idx}] 目标[{block_key}]累计失败 {fail_count} 次达上限 -> abort_block")
         return "abort"
 
-    logger.warning(f"[Route] Block[{idx}] 失败(重试 {retry_count}/{action_node.MAX_RETRIES}) -> replan")
+    logger.warning(f"[Route] Block[{idx}] 目标[{block_key}]失败(累计 {fail_count}/{action_node.MAX_RETRIES}) -> replan")
     return "replan"
+
 
 
 def build_brain_graph(checkpointer=None):
