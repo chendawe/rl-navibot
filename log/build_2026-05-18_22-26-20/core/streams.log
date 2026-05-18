@@ -1,0 +1,18 @@
+[1.522s] Invoking command in '/home/chendawww/workspace/rl-navibot/build/core': CONDA_PROMPT_MODIFIER=(ros2) PYTHONPATH=/home/chendawww/workspace/rl-navibot/build/core/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/chendawww/workspace/rl-navibot/install/core/lib/python3.10/site-packages:${PYTHONPATH} _=/usr/bin/env /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/chendawww/workspace/rl-navibot/build/core/build --no-deps symlink_data
+[1.711s] running develop
+[1.758s] /usr/lib/python3/dist-packages/pkg_resources/__init__.py:116: PkgResourcesDeprecationWarning: 2.22.1ubuntu1 is an invalid version and will not be supported in a future release
+[1.758s]   warnings.warn(
+[1.852s] running egg_info
+[1.852s] writing core.egg-info/PKG-INFO
+[1.852s] writing dependency_links to core.egg-info/dependency_links.txt
+[1.853s] writing entry points to core.egg-info/entry_points.txt
+[1.853s] writing requirements to core.egg-info/requires.txt
+[1.853s] writing top-level names to core.egg-info/top_level.txt
+[1.854s] reading manifest file 'core.egg-info/SOURCES.txt'
+[1.854s] writing manifest file 'core.egg-info/SOURCES.txt'
+[1.884s] running build_ext
+[1.884s] Creating /home/chendawww/workspace/rl-navibot/install/core/lib/python3.10/site-packages/core.egg-link (link to .)
+[1.885s] 
+[1.885s] Installed /home/chendawww/workspace/rl-navibot/build/core
+[1.885s] running symlink_data
+[1.932s] Invoked command in '/home/chendawww/workspace/rl-navibot/build/core' returned '0': CONDA_PROMPT_MODIFIER=(ros2) PYTHONPATH=/home/chendawww/workspace/rl-navibot/build/core/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/chendawww/workspace/rl-navibot/install/core/lib/python3.10/site-packages:${PYTHONPATH} _=/usr/bin/env /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/chendawww/workspace/rl-navibot/build/core/build --no-deps symlink_data

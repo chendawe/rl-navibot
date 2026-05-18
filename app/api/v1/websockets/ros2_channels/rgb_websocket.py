@@ -3,7 +3,9 @@ from fastapi import WebSocket, WebSocketDisconnect
 import base64
 
 async def ws_handler(websocket: WebSocket):
+    print("[rgb_ws] 🔥 有新连接尝试！")
     await websocket.accept()
+    print("[rgb_ws] client connected")
     rgb_svc = websocket.app.state.services.rgb_service
     try:
         while True:

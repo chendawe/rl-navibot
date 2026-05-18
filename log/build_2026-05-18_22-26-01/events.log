@@ -1,0 +1,24 @@
+[0.000000] (-) TimerEvent: {}
+[0.000479] (core) JobQueued: {'identifier': 'core', 'dependencies': OrderedDict()}
+[0.000538] (decision) JobQueued: {'identifier': 'decision', 'dependencies': OrderedDict()}
+[0.000687] (execution) JobQueued: {'identifier': 'execution', 'dependencies': OrderedDict()}
+[0.000714] (perception) JobQueued: {'identifier': 'perception', 'dependencies': OrderedDict()}
+[0.000738] (planning) JobQueued: {'identifier': 'planning', 'dependencies': OrderedDict()}
+[0.000764] (rl_agent) JobQueued: {'identifier': 'rl_agent', 'dependencies': OrderedDict()}
+[0.001022] (robot_world) JobQueued: {'identifier': 'robot_world', 'dependencies': OrderedDict()}
+[0.001048] (core) JobStarted: {'identifier': 'core'}
+[0.011251] (decision) JobStarted: {'identifier': 'decision'}
+[0.014745] (execution) JobStarted: {'identifier': 'execution'}
+[0.018106] (perception) JobStarted: {'identifier': 'perception'}
+[0.021754] (planning) JobStarted: {'identifier': 'planning'}
+[0.026213] (rl_agent) JobStarted: {'identifier': 'rl_agent'}
+[0.030119] (robot_world) JobStarted: {'identifier': 'robot_world'}
+[0.099647] (-) TimerEvent: {}
+[0.199931] (-) TimerEvent: {}
+[0.300206] (-) TimerEvent: {}
+[0.400525] (-) TimerEvent: {}
+[0.500822] (-) TimerEvent: {}
+[0.601155] (-) TimerEvent: {}
+[0.701455] (-) TimerEvent: {}
+[0.801762] (-) TimerEvent: {}
+[0.902032] (-) TimerEvent: {}

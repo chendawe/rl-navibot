@@ -6,10 +6,12 @@
 *.pth
 *.pkl.gz
 
+.env
+
 # # 忽略 日志、输出文件
 # *.log
 # *.out
-# *.csv
+# *.csv2
 # *.json
 
 # # Python 自动生成的文件

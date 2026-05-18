@@ -87,6 +87,19 @@
         .lm_stack .lm_header { background: #2d2d2d !important; }
         .lm_stack .lm_tab { background: #3c3c3c !important; color: #ccc !important; }
         .lm_stack .lm_tab.lm_active { background: #1e1e1e !important; color: white !important; }
+    
+        /* 让 Golden Layout 的拖拽手柄仅在标签栏生效，不覆盖内容区 */
+        .lm_header .lm_tab {
+            pointer-events: auto;       /* 标签可点击 */
+        }
+        .lm_content {
+            pointer-events: auto;       /* 内容区允许点击 */
+        }
+        /* 关键：移除内容区上方的拖拽手柄高度占用 */
+        .lm_item_container > .lm_header {
+            /* 该拖拽手柄我们不需要，直接隐藏 */
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -176,6 +189,19 @@ const TopoView = {
 
     // 网格参数
     gridSpacing: 1.0,     // 1米
+    nodeSizeScale: 0.15,   // 显示尺寸系数，越大节点越大，可调
+
+    // 获取某个节点在当前视图下的半宽和半高（已包含容差）
+    getNodeHitArea(node) {
+        const baseW = node.w * this.view.scale * this.nodeSizeScale;
+        const baseH = node.h * this.view.scale * this.nodeSizeScale;
+        // 最小保证8px，以免太小点不到
+        // const w = Math.max(16, baseW);
+        // const h = Math.max(16, baseH);
+        const w = baseW;
+        const h = baseH;
+        return { w, h, halfW: w / 2, halfH: h / 2 };
+    },
 
     init(canvasEl) {
         if (!canvasEl) return;
@@ -183,6 +209,12 @@ const TopoView = {
         this.ctx = canvasEl.getContext('2d');
         this.resize();
 
+        // 新增：阻止 Golden Layout 在画布上的拖拽行为
+        this.canvas.addEventListener('mousedown', (e) => {
+            e.stopPropagation();   // 阻止事件冒泡到 Golden Layout 的拖拽手柄
+        });
+
+        this.canvas.addEventListener('mousemove', (e) => this.onCanvasMouseMove(e));
         this.canvas.addEventListener('click', (e) => this.onClick(e));
         this.canvas.addEventListener('wheel', (e) => this.onWheel(e));
         this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e));
@@ -221,33 +253,69 @@ const TopoView = {
         }
     },
 
-    fitToView() {
-        if (this.nodes.length === 0) return;
-        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-        this.nodes.forEach(n => {
-            minX = Math.min(minX, n.x - n.w/2);
-            maxX = Math.max(maxX, n.x + n.w/2);
-            minY = Math.min(minY, n.y - n.h/2);
-            maxY = Math.max(maxY, n.y + n.h/2);
-        });
-        const pad = 0.5; // 米
-        minX -= pad; maxX += pad;
-        minY -= pad; maxY += pad;
+    // fitToView() {
+    //     if (this.nodes.length === 0) return;
+    //     let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    //     this.nodes.forEach(n => {
+    //         minX = Math.min(minX, n.x - n.w/2);
+    //         maxX = Math.max(maxX, n.x + n.w/2);
+    //         minY = Math.min(minY, n.y - n.h/2);
+    //         maxY = Math.max(maxY, n.y + n.h/2);
+    //     });
+    //     const pad = 0.5; // 米
+    //     minX -= pad; maxX += pad;
+    //     minY -= pad; maxY += pad;
 
-        const canvasW = this.canvas.width;
-        const canvasH = this.canvas.height;
-        const scaleX = canvasW / (maxX - minX);
-        const scaleY = canvasH / (maxY - minY);
-        this.view.scale = Math.min(scaleX, scaleY) * 0.9;
+    //     const canvasW = this.canvas.width;
+    //     const canvasH = this.canvas.height;
+    //     const scaleX = canvasW / (maxX - minX);
+    //     const scaleY = canvasH / (maxY - minY);
+    //     this.view.scale = Math.min(scaleX, scaleY) * 0.9;
 
-        const centerX = (minX + maxX) / 2;
-        const centerY = (minY + maxY) / 2;
-        this.view.offsetX = canvasW / 2 - centerX * this.view.scale;
-        this.view.offsetY = canvasH / 2 - centerY * this.view.scale;
+    //     const centerX = (minX + maxX) / 2;
+    //     const centerY = (minY + maxY) / 2;
+    //     this.view.offsetX = canvasW / 2 - centerX * this.view.scale;
+    //     this.view.offsetY = canvasH / 2 - centerY * this.view.scale;
 
-        this.draw();
-    },
+    //     this.draw();
+    // },
+fitToView() {
+    if (this.nodes.length === 0) return;
 
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    this.nodes.forEach(n => {
+        if (n.x < minX) minX = n.x;
+        if (n.x > maxX) maxX = n.x;
+        if (n.y < minY) minY = n.y;
+        if (n.y > maxY) maxY = n.y;
+    });
+
+    const pad = 0.5;
+    minX -= pad; maxX += pad;
+    minY -= pad; maxY += pad;
+
+    const canvasW = this.canvas.width || 400;
+    const canvasH = this.canvas.height || 300;
+    const scaleX = canvasW / (maxX - minX || 1);
+    const scaleY = canvasH / (maxY - minY || 1);
+    this.view.scale = Math.min(scaleX, scaleY) * 0.9;
+
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+    this.view.offsetX = canvasW / 2 - centerX * this.view.scale;
+    this.view.offsetY = canvasH / 2 - centerY * this.view.scale;
+
+    // // 放在 fitToView 最后，this.draw() 之前
+    // const avgW = this.nodes.reduce((sum, n) => sum + (n.w || 0), 0) / (this.nodes.length || 1);
+    // // 希望节点的平均像素宽度约为画布宽度的 3%
+    // const targetPixelWidth = this.canvas.width * 0.03;
+    // // 反推系数：avgW * scale * nodeSizeScale ≈ targetPixelWidth
+    // if (avgW > 0) {
+    //     this.nodeSizeScale = targetPixelWidth / (avgW * this.view.scale);
+    // }
+
+    this.draw();
+},
     // ---------- 交互事件 ----------
     onWheel(e) {
         e.preventDefault();
@@ -282,33 +350,102 @@ const TopoView = {
         this.lastMouseY = e.clientY;
         this.draw();
     },
-
+    onCanvasMouseMove(e) {
+        if (this.isDragging) return;
+        const rect = this.canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        let isOverNode = false;
+        const TOLERANCE = 4; // 与 onClick 保持一致
+        for (const node of this.nodes) {
+            const c = this.worldToCanvas(node.x, node.y);
+            const area = this.getNodeHitArea(node);
+            if (mx >= c.px - area.halfW - TOLERANCE && mx <= c.px + area.halfW + TOLERANCE &&
+                my >= c.py - area.halfH - TOLERANCE && my <= c.py + area.halfH + TOLERANCE) {
+                isOverNode = true;
+                break;
+            }
+        }
+        this.canvas.style.cursor = isOverNode ? 'pointer' : 'default';
+    },
     onMouseUp() {
         this.isDragging = false;
-        this.canvas.style.cursor = 'default';
+        // 释放鼠标后，立即根据当前鼠标位置更新光标
+        const rect = this.canvas.getBoundingClientRect();
+        const mx = this.lastMouseX - rect.left;
+        const my = this.lastMouseY - rect.top;
+        let isOverNode = false;
+        for (const node of this.nodes) {
+            const c = this.worldToCanvas(node.x, node.y);
+            const halfW = (node.w * this.view.scale / 10) / 2;
+            const halfH = (node.h * this.view.scale / 10) / 2;
+            if (mx >= c.px - halfW && mx <= c.px + halfW &&
+                my >= c.py - halfH && my <= c.py + halfH) {
+                isOverNode = true;
+                break;
+            }
+        }
+        this.canvas.style.cursor = isOverNode ? 'pointer' : 'default';
     },
 
     // ---------- 点击选点 ----------
+    // onClick(e) {
+    //     const rect = this.canvas.getBoundingClientRect();
+    //     const mx = e.clientX - rect.left;
+    //     const my = e.clientY - rect.top;
+    //     const world = this.canvasToWorld(mx, my);
+
+    //     let closest = null;
+    //     let minDist = Infinity;
+    //     this.nodes.forEach(node => {
+    //         const dx = node.x - world.x;
+    //         const dy = node.y - world.y;
+    //         const dist = Math.hypot(dx, dy);
+    //         if (dist < minDist) {
+    //             minDist = dist;
+    //             closest = node.id;
+    //         }
+    //     });
+
+    //     const threshold = 0.5; // 米
+    //     if (minDist > threshold) return;
+
+    //     if (this.clickState === 'start') {
+    //         this.selectedStart = closest;
+    //         this.clickState = 'end';
+    //     } else {
+    //         this.selectedEnd = closest;
+    //         this.clickState = 'start';
+    //         NetworkModule.sendToDrg({
+    //             type: "execute",
+    //             payload: { start: this.selectedStart, end: this.selectedEnd }
+    //         });
+    //         ChatModule.append(`[系统] 触发导航：${this.selectedStart} -> ${this.selectedEnd}`, false);
+    //         this.selectedStart = null;
+    //         this.selectedEnd = null;
+    //     }
+    //     this.draw();
+    // }
+    // 改成矩形选点
     onClick(e) {
         const rect = this.canvas.getBoundingClientRect();
         const mx = e.clientX - rect.left;
         const my = e.clientY - rect.top;
-        const world = this.canvasToWorld(mx, my);
 
+        // 使用与绘制一致的计算，并额外增加 6px 容差，让点击更轻松
+        const TOLERANCE = 4; // 像素
         let closest = null;
-        let minDist = Infinity;
-        this.nodes.forEach(node => {
-            const dx = node.x - world.x;
-            const dy = node.y - world.y;
-            const dist = Math.hypot(dx, dy);
-            if (dist < minDist) {
-                minDist = dist;
+        for (let i = this.nodes.length - 1; i >= 0; i--) {
+            const node = this.nodes[i];
+            const c = this.worldToCanvas(node.x, node.y);
+            const area = this.getNodeHitArea(node);
+            if (mx >= c.px - area.halfW - TOLERANCE && mx <= c.px + area.halfW + TOLERANCE &&
+                my >= c.py - area.halfH - TOLERANCE && my <= c.py + area.halfH + TOLERANCE) {
                 closest = node.id;
+                break;
             }
-        });
-
-        const threshold = 0.5; // 米
-        if (minDist > threshold) return;
+        }
+        if (!closest) return;
 
         if (this.clickState === 'start') {
             this.selectedStart = closest;
@@ -325,74 +462,123 @@ const TopoView = {
             this.selectedEnd = null;
         }
         this.draw();
-    },
+    }
+    ,
 
-    // ---------- 绘制 ----------
-    draw() {
-        if (!this.ctx || !this.canvas) return;
-        const ctx = this.ctx;
-        const w = this.canvas.width, h = this.canvas.height;
+draw() {
+    // console.log('节点坐标范围：', 
+    //     Math.min(...this.nodes.map(n => n.x)), Math.max(...this.nodes.map(n => n.x)), 
+    //     Math.min(...this.nodes.map(n => n.y)), Math.max(...this.nodes.map(n => n.y))
+    // );
+    // console.log('红点坐标：', this.bot.x, this.bot.y);
+    if (!this.ctx || !this.canvas) return;
+    const ctx = this.ctx;
+    const w = this.canvas.width, h = this.canvas.height;
 
-        // 1. 白色背景 + 黑色边框
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, w, h);
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(0, 0, w, h);
+    // 1. 深色背景
+    ctx.fillStyle = '#1e1e1e';
+    ctx.fillRect(0, 0, w, h);
 
-        // 2. 绘制网格与坐标轴
-        this._drawGrid(ctx);
-
-        // 3. 绘制边
-        ctx.strokeStyle = '#555';
+    // 2. 绘制节点矩形（最底层，蓝色背景 + 浅青色边框）
+    this.nodes.forEach(node => {
+        const c = this.worldToCanvas(node.x, node.y);
+        const area = this.getNodeHitArea(node);
+        ctx.fillStyle = '#007acc';
+        ctx.fillRect(c.px - area.halfW, c.py - area.halfH, area.w, area.h);
+        ctx.strokeStyle = '#4ec9b0';   // 浅青色边框
         ctx.lineWidth = 2;
-        this.edges.forEach(edge => {
-            const from = this.nodes.find(n => n.id === edge.from);
-            const to = this.nodes.find(n => n.id === edge.to);
-            if (!from || !to) return;
-            const p1 = this.worldToCanvas(from.x, from.y);
-            const p2 = this.worldToCanvas(to.x, to.y);
-            ctx.beginPath();
-            ctx.moveTo(p1.px, p1.py);
-            ctx.lineTo(p2.px, p2.py);
-            ctx.stroke();
+        ctx.strokeRect(c.px - area.halfW, c.py - area.halfH, area.w, area.h);
+    });
+
+    // 3. 绘制边（双线实现白色+深灰边框：先粗后细）
+    this.edges.forEach(edge => {
+        const from = this.nodes.find(n => n.id === edge.from);
+        const to = this.nodes.find(n => n.id === edge.to);
+        if (!from || !to) return;
+        const p1 = this.worldToCanvas(from.x, from.y);
+        const p2 = this.worldToCanvas(to.x, to.y);
+        // 底层：深灰粗线（边框效果）
+        ctx.beginPath();
+        ctx.moveTo(p1.px, p1.py);
+        ctx.lineTo(p2.px, p2.py);
+        ctx.strokeStyle = '#555';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        // 上层：白色细线
+        ctx.beginPath();
+        ctx.moveTo(p1.px, p1.py);
+        ctx.lineTo(p2.px, p2.py);
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+    });
+
+    // 4. 绘制路径（绿色高亮，单线即可）
+    if (this.path.length > 1) {
+        ctx.strokeStyle = '#2ecc71';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        let first = true;
+        this.path.forEach(id => {
+            const node = this.nodes.find(n => n.id === id);
+            if (!node) return;
+            const p = this.worldToCanvas(node.x, node.y);
+            if (first) { ctx.moveTo(p.px, p.py); first = false; }
+            else ctx.lineTo(p.px, p.py);
         });
+        ctx.stroke();
+    }
 
-        // 4. 绘制路径（高亮）
-        if (this.path.length > 1) {
-            ctx.strokeStyle = '#2ecc71';
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            let first = true;
-            this.path.forEach(id => {
-                const node = this.nodes.find(n => n.id === id);
-                if (!node) return;
-                const p = this.worldToCanvas(node.x, node.y);
-                if (first) { ctx.moveTo(p.px, p.py); first = false; }
-                else ctx.lineTo(p.px, p.py);
-            });
-            ctx.stroke();
-        }
+    // 5. 绘制节点标记点（白点 + 深灰边框，在路径之上）
+    this.nodes.forEach(node => {
+        const c = this.worldToCanvas(node.x, node.y);
+        // 白点主体
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(c.px, c.py, 4, 0, 2 * Math.PI);
+        ctx.fill();
+        // 边框（与边的深灰一致）
+        ctx.strokeStyle = '#555';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        // 文字标签
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `${Math.max(10, this.getNodeHitArea(node).h * 0.6)}px Arial`;
+        ctx.fillText(node.id, c.px + 8, c.py + 4);
+    });
 
-        // 5. 绘制节点
-        this.nodes.forEach(node => {
-            const c = this.worldToCanvas(node.x, node.y);
-            const nodeW = node.w * this.view.scale;
-            const nodeH = node.h * this.view.scale;
-            ctx.fillStyle = '#aaa';
-            ctx.fillRect(c.px - nodeW/2, c.py - nodeH/2, nodeW, nodeH);
-            ctx.fillStyle = '#fff';
-            ctx.font = '12px Arial';
-            ctx.fillText(node.id, c.px + nodeW/2 + 4, c.py + 4);
-        });
-
-        // 6. 绘制机器人
+    // 5. 绘制红点
+    if (this.bot && typeof this.bot.x === 'number') {
         const botPos = this.worldToCanvas(this.bot.x, this.bot.y);
         ctx.fillStyle = '#e74c3c';
         ctx.beginPath();
-        ctx.arc(botPos.px, botPos.py, 10, 0, 2 * Math.PI);
+        ctx.arc(botPos.px, botPos.py, 8, 0, 2 * Math.PI);
         ctx.fill();
-    },
+    }
+
+    // 6. 绘制选中标记
+    if (this.selectedStart) {
+        const sp = this.worldToCanvas(
+            this.nodes.find(n => n.id === this.selectedStart)?.x || 0,
+            this.nodes.find(n => n.id === this.selectedStart)?.y || 0
+        );
+        ctx.fillStyle = '#3498db';
+        ctx.beginPath(); ctx.arc(sp.px, sp.py, 14, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Arial';
+        ctx.fillText('起', sp.px - 8, sp.py + 5);
+    }
+    if (this.selectedEnd) {
+        const ep = this.worldToCanvas(
+            this.nodes.find(n => n.id === this.selectedEnd)?.x || 0,
+            this.nodes.find(n => n.id === this.selectedEnd)?.y || 0
+        );
+        ctx.fillStyle = '#f1c40f';
+        ctx.beginPath(); ctx.arc(ep.px, ep.py, 14, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#000'; ctx.font = 'bold 12px Arial';
+        ctx.fillText('终', ep.px - 8, ep.py + 5);
+    }
+}
+    ,
 
     // 绘制网格、坐标轴、原点
     _drawGrid(ctx) {
@@ -451,16 +637,49 @@ const TopoView = {
     },
 
     // ---------- 数据加载 ----------
-    loadRealData() {
-        fetch('/api/topo').then(r => r.json()).then(data => {
-            if (data.nodes && data.nodes.length > 0) {
-                this.nodes = data.nodes;
-                this.edges = data.edges.map(e => ({ from: e.from, to: e.to })) || [];
-                this.fitToView();
-            }
-            this.draw();
-        }).catch(() => {});
-    }
+    // loadRealData() {
+    //     fetch('/api/topo').then(r => r.json()).then(data => {
+    //         if (data.nodes && data.nodes.length > 0) {
+    //             this.nodes = data.nodes;
+    //             this.edges = data.edges.map(e => ({ from: e.from, to: e.to })) || [];
+    //             this.fitToView();
+    //         }
+    //         this.draw();
+    //     }).catch(() => {});
+    // }
+loadRealData() {
+    fetch('/api/topo').then(r => r.json()).then(data => {
+        if (data.nodes && data.nodes.length > 0) {
+            // 1. 找到物理坐标的边界（假设后端返回的是像素/物理大值）
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            data.nodes.forEach(n => {
+                if (n.x < minX) minX = n.x;
+                if (n.x > maxX) maxX = n.x;
+                if (n.y < minY) minY = n.y;
+                if (n.y > maxY) maxY = n.y;
+            });
+            const rangeX = maxX - minX || 1;
+            const rangeY = maxY - minY || 1;
+
+            // 2. 归一化到 1~9 范围（与后端 canvas_coords 一致）
+            this.nodes = data.nodes.map(n => ({
+                id: n.id,
+                x: ((n.x - minX) / rangeX) * 8 + 1,
+                y: ((n.y - minY) / rangeY) * 8 + 1,
+                // 将 w 和 h 也归一化到与坐标相同的尺度
+                w: (n.w || 8) / rangeX * 8,
+                h: (n.h || 8) / rangeY * 8
+            }));
+
+            // 3. 边保持不变
+            this.edges = (data.edges || []).map(e => ({ from: e.from, to: e.to }));
+
+            // 4. 自适应视图
+            this.fitToView();
+        }
+        this.draw();
+    }).catch(() => {});
+}
 };
 
 const TelemetryView = {
@@ -537,17 +756,19 @@ const NetworkModule = {
     init() {
         const host = window.location.host;
         this.wsDrg = new WebSocket(`ws://${host}/ws/drg`);
-        this.wsDrg.onmessage = (e) => { 
-            const data = JSON.parse(e.data); 
+        this.wsDrg.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+            console.log('📡 DRG 消息:', data);          // ← 加这行
             ConnectionMonitor.reportData('topo');
-            if (data.type === 'path') TopoView.path = data.nodes; 
-            else if (data.type === 'pose') { TopoView.bot.x = data.x; TopoView.bot.y = data.y; } 
-            else if (data.type === 'done') { TopoView.path = []; ChatModule.append(data.msg, false); } 
-        };
-        this.wsTelemetry = new WebSocket(`ws://${host}/ws/telemetry`);
-        this.wsTelemetry.onmessage = (e) => { 
-            ConnectionMonitor.reportData('telemetry');
-            try { TelemetryView.draw(JSON.parse(e.data)); } catch(err) {} 
+            if (data.type === 'path') TopoView.path = data.nodes;
+            else if (data.type === 'pose') {
+                TopoView.bot.x = data.x;
+                TopoView.bot.y = data.y;
+                console.log('机器人移动到:', data.x, data.y); // ← 加这行
+            } else if (data.type === 'done') {
+                TopoView.path = [];
+                ChatModule.append(data.msg, false);
+            }
         };
     },
     sendToDrg(payload) { if (this.wsDrg && this.wsDrg.readyState === WebSocket.OPEN) this.wsDrg.send(JSON.stringify(payload)); }
@@ -555,47 +776,74 @@ const NetworkModule = {
 
 const StreamManager = {
     sockets: {},
-    mapMeta: null,  // 存储元数据
+    mapMeta: null,
 
     async init() {
         const host = window.location.host;
-        // 获取地图元数据
-        const res = await fetch('/api/map_meta');
-        const mapMeta = await res.json();
-        this.mapMeta = mapMeta;
-        
-        const widthMeters = mapMeta.width_px * mapMeta.resolution;
-        const heightMeters = mapMeta.height_px * mapMeta.resolution;
-        const origin = { x: mapMeta.origin_x || 0, y: mapMeta.origin_y || 0 };
-        
-        // 创建默认 Mock 地图
-        // TopoView.createDefaultMap(widthMeters, heightMeters, mapMeta.resolution, origin);
-        
-        // 连接各 WebSocket
-        this.connect('rgb', `ws://${host}/ws/rgb`, 'image/jpeg');
-        this.connect('depth', `ws://${host}/ws/depth`, 'image/jpeg');
-        this.connectMap('map', `ws://${host}/ws/map`);
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+
+        // 1. 获取地图元数据（失败时给个默认值）
+        try {
+            const res = await fetch('/api/map_meta');
+            const mapMeta = await res.json();   // ← 这一行不能丢
+            this.mapMeta = mapMeta;
+        } catch (e) {
+            console.warn('获取地图元数据失败，使用默认值');
+            this.mapMeta = { width_px: 100, height_px: 100, resolution: 0.05, origin_x: 0, origin_y: 0 };
+        }
+
+        // 2. 连接图像 WebSocket（注意 ID 要和 img 元素的 id 一致）
+        this.connect('rgbView', `${protocol}//${host}/ws/rgb`, 'image/jpeg');
+        this.connect('depthView', `${protocol}//${host}/ws/depth`, 'image/jpeg');
+
+        // 3. 连接地图 WebSocket
+        this.connectMap('map', `${protocol}//${host}/ws/map`);
+    },
+
+    connect(domId, url, mimeType) {
+        const ws = new WebSocket(url);
+        ws.binaryType = "arraybuffer";
+        this.sockets[domId] = ws;
+
+        ws.onmessage = (event) => {
+            ConnectionMonitor.reportData(domId);   // ★ 加上这行，状态点才会变绿
+            const el = document.getElementById(domId);
+            if (!el) return;
+            const blob = new Blob([event.data], { type: mimeType });
+            const imgUrl = URL.createObjectURL(blob);
+            el.onload = () => URL.revokeObjectURL(imgUrl);
+            el.src = imgUrl;
+        };
+
+        ws.onerror = (err) => console.error(`❌ WebSocket 错误 (${domId}):`, err);
+        ws.onclose = () => setTimeout(() => this.connect(domId, url, mimeType), 1000);
     },
 
     connectMap(panelId, url) {
         const ws = new WebSocket(url);
         ws.binaryType = "arraybuffer";
         this.sockets[panelId] = ws;
+
         ws.onmessage = async (event) => {
             ConnectionMonitor.reportData(panelId);
             try {
                 const blob = new Blob([event.data], { type: 'image/png' });
                 const bitmap = await createImageBitmap(blob);
-                const meta = this.mapMeta;
-                const widthMeters = meta.width_px * meta.resolution;
-                const heightMeters = meta.height_px * meta.resolution;
-                const origin = { x: meta.origin_x || 0, y: meta.origin_y || 0 };
-                TopoView.setMapImage(bitmap, widthMeters, heightMeters, meta.resolution, origin);
+                // 如果你还没实现 TopoView.setMapImage，可以暂时注释掉下面这行
+                // TopoView.setMapImage(bitmap, ...);
+                // 或者简单地把图片显示在 mapView 里：
+                const img = document.getElementById('mapView');
+                if (img) {
+                    URL.revokeObjectURL(img.src);
+                    img.src = URL.createObjectURL(blob);
+                }
             } catch (e) {
                 console.error('地图图像解码失败', e);
             }
         };
-        ws.onclose = () => setTimeout(() => this.connectMap(panelId, url), 1000);
+
+        ws.onerror = (err) => console.error(`❌ WebSocket 错误 (${panelId}):`, err);
+        ws.onclose = () => setTimeout(() => this.connectMap(panelId, url), 1000); // 这里直接用 connectMap
     }
 };
 
@@ -871,6 +1119,9 @@ window.addEventListener('resize', () => {
 </script>
 </body>
 </html>
+
+
+
 
 <!-- <!DOCTYPE html>
 <html lang="zh">
