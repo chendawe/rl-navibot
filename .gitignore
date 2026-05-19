@@ -8,6 +8,8 @@
 
 .env
 
+README_imgs/RL/RL_enjoy_SAC.mp4
+
 # # 忽略 日志、输出文件
 # *.log
 # *.out

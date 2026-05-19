@@ -96,8 +96,8 @@
             pointer-events: auto;       /* 内容区允许点击 */
         }
         /* 关键：移除内容区上方的拖拽手柄高度占用 */
-        .lm_item_container > .lm_header {
-            /* 该拖拽手柄我们不需要，直接隐藏 */
+        /* 只隐藏内容面板上多余的独立 header，保留 stack 的标签栏 */
+        .lm_item:not(.lm_stack) > .lm_item_container > .lm_header {
             display: none !important;
         }
     </style>
@@ -210,9 +210,9 @@ const TopoView = {
         this.resize();
 
         // 新增：阻止 Golden Layout 在画布上的拖拽行为
-        this.canvas.addEventListener('mousedown', (e) => {
-            e.stopPropagation();   // 阻止事件冒泡到 Golden Layout 的拖拽手柄
-        });
+        // this.canvas.addEventListener('mousedown', (e) => {
+        //     e.stopPropagation();   // 阻止事件冒泡到 Golden Layout 的拖拽手柄
+        // });
 
         this.canvas.addEventListener('mousemove', (e) => this.onCanvasMouseMove(e));
         this.canvas.addEventListener('click', (e) => this.onClick(e));
@@ -734,7 +734,7 @@ const TelemetryView = {
     // 帧率+延迟相关
     _updateStreamOverlays(streams) {
         for (const [name, stats] of Object.entries(streams || {})) {
-            const el = document.getElementById(name + 'View');
+            const el = document.getElementById(name);
             if (!el) continue;
             let overlay = el.parentElement.querySelector('.stream-overlay');
             if (!overlay) {
@@ -770,6 +770,17 @@ const NetworkModule = {
                 ChatModule.append(data.msg, false);
             }
         };
+
+    // 2. 遥测 WebSocket（缺失，必须补上）
+        this.wsTelemetry = new WebSocket(`ws://${host}/ws/telemetry`);
+        this.wsTelemetry.onmessage = (e) => {
+            ConnectionMonitor.reportData('telemetry');
+            try {
+                TelemetryView.draw(JSON.parse(e.data));
+            } catch(err) {
+                console.error('遥测数据解析错误:', err);
+            }
+        };
     },
     sendToDrg(payload) { if (this.wsDrg && this.wsDrg.readyState === WebSocket.OPEN) this.wsDrg.send(JSON.stringify(payload)); }
 };
@@ -793,8 +804,8 @@ const StreamManager = {
         }
 
         // 2. 连接图像 WebSocket（注意 ID 要和 img 元素的 id 一致）
-        this.connect('rgbView', `${protocol}//${host}/ws/rgb`, 'image/jpeg');
-        this.connect('depthView', `${protocol}//${host}/ws/depth`, 'image/jpeg');
+        this.connect('rgb', `${protocol}//${host}/ws/rgb`, 'image/jpeg');
+        this.connect('depth', `${protocol}//${host}/ws/depth`, 'image/jpeg');
 
         // 3. 连接地图 WebSocket
         this.connectMap('map', `${protocol}//${host}/ws/map`);
@@ -831,8 +842,8 @@ const StreamManager = {
                 const bitmap = await createImageBitmap(blob);
                 // 如果你还没实现 TopoView.setMapImage，可以暂时注释掉下面这行
                 // TopoView.setMapImage(bitmap, ...);
-                // 或者简单地把图片显示在 mapView 里：
-                const img = document.getElementById('mapView');
+                // 或者简单地把图片显示在 map 里：
+                const img = document.getElementById('map');
                 if (img) {
                     URL.revokeObjectURL(img.src);
                     img.src = URL.createObjectURL(blob);
@@ -1078,9 +1089,9 @@ function createLayout() {
         PanelManager.registerInstance('telemetry', container.parent);
     });
 
-    registerImg('rgb', 'rgbView');
-    registerImg('depth', 'depthView');
-    registerImg('map', 'mapView');
+    registerImg('rgb', 'rgb');
+    registerImg('depth', 'depth');
+    registerImg('map', 'map');
 
     layout.on('initialised', () => {
         layout.updateSize();
@@ -1363,9 +1374,9 @@ const StreamManager = {
     sockets: {},
     init() {
         const host = window.location.host;
-        this.connect('rgbView', `ws://${host}/ws/rgb`, 'image/jpeg');
-        this.connect('depthView', `ws://${host}/ws/depth`, 'image/jpeg');
-        this.connect('mapView', `ws://${host}/ws/map`, 'image/png');
+        this.connect('rgb', `ws://${host}/ws/rgb`, 'image/jpeg');
+        this.connect('depth', `ws://${host}/ws/depth`, 'image/jpeg');
+        this.connect('map', `ws://${host}/ws/map`, 'image/png');
     },
     connect(domId, url, mimeType) {
         const ws = new WebSocket(url); ws.binaryType = "arraybuffer"; this.sockets[domId] = ws;
@@ -1605,9 +1616,9 @@ function createLayout() {
         PanelManager.registerInstance('telemetry', container.parent);
     });
 
-    registerImg('rgb', 'rgbView');
-    registerImg('depth', 'depthView');
-    registerImg('map', 'mapView');
+    registerImg('rgb', 'rgb');
+    registerImg('depth', 'depth');
+    registerImg('map', 'map');
 
     layout.on('initialised', () => {
         console.log('✅ Golden Layout 初始化完成');

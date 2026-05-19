@@ -92,45 +92,73 @@
 # -2. Baseline Presentations
 - Web Monitor
     - 启动仿真环境
-```sh
-# WSL Ubuntu：
-# export FASTRTPS_DEFAULT_PROFILES_FILE=~/fastdds_no_shm.xml
-# export RMW_FASTRTPS_USE_QOS_FROM_XML=0
+        ```sh
+        # WSL Ubuntu：
+        # export FASTRTPS_DEFAULT_PROFILES_FILE=~/fastdds_no_shm.xml
+        # export RMW_FASTRTPS_USE_QOS_FROM_XML=0
 
 
-# WSL Ubuntu：
-# cd /home/chendawww/workspace/rl-navibot
-# source install/setup.sh
+        # WSL Ubuntu：
+        # cd /home/chendawww/workspace/rl-navibot
+        # source install/setup.sh
 
-# docker start -i ros2my
+        # docker start -i ros2my
 
-# docker ros2_my：
-source /opt/ros/humble/setup.sh && \
-cd ~/workspace/turtlebot3_ws && \
-source install/setup.sh
+        # docker ros2_my：
+        source /opt/ros/humble/setup.sh && \
+        cd ~/workspace/turtlebot3_ws && \
+        source install/setup.sh
 
-export TURTLEBOT3_MODEL=waffle
-ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py
-```
+        export TURTLEBOT3_MODEL=waffle
+        ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py
+        ```
 
-```sh
-(ros2) chendawww@cdws:~/workspace/rl-navibot$ ~/workspace/rl-navibot/app/start.sh
-INFO:     Will watch for changes in these directories: ['/home/chendawww/workspace/rl-navibot']
-INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [729824] using StatReload
-INFO:     Started server process [729826]
-INFO:     Waiting for application startup.
-🌐 检测到 Web 独立启动，主动初始化 Ros2Runtime...
-✅ Ros2Runtime 自主初始化完成
-✅ 成功实例化并注册 RobotBridge
-✅ 成功实例化并注册 RGBStreamer
-✅ 成功实例化并注册 DepthStreamer
-✅ 成功实例化并注册 MapProvider & MapUpdateTrigger
-⚠️ 未检测到 RL Env
-🚀 所有 Service 组装完毕
-INFO:     Application startup complete.
-```
+        ```sh
+        (ros2) chendawww@cdws:~/workspace/rl-navibot$ ~/workspace/rl-navibot/app/start.sh
+        INFO:     Will watch for changes in these directories: ['/home/chendawww/workspace/rl-navibot']
+        INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+        INFO:     Started reloader process [729824] using StatReload
+        INFO:     Started server process [729826]
+        INFO:     Waiting for application startup.
+        🌐 检测到 Web 独立启动，主动初始化 Ros2Runtime...
+        ✅ Ros2Runtime 自主初始化完成
+        ✅ 成功实例化并注册 RobotBridge
+        ✅ 成功实例化并注册 RGBStreamer
+        ✅ 成功实例化并注册 DepthStreamer
+        ✅ 成功实例化并注册 MapProvider & MapUpdateTrigger
+        ⚠️ 未检测到 RL Env
+        🚀 所有 Service 组装完毕
+        INFO:     Application startup complete.
+        ```
+        - 仿真状态
+        ![README_imgs/EI_console/EI_sim_state.png](README_imgs/EI_console/EI_sim_state.png)
+        - monitor追踪状态
+        ![README_imgs/EI_console/EI_console_state.png](README_imgs/EI_console/EI_console_state.png)
+        - web monitor 演示：
+        <video width="640" height="360" controls>
+        <source src="./README_imgs/EI_console/EI_console_manipulation.mp4" type="video/mp4">
+        您的浏览器不支持视频标签。
+        </video>
 
+        - 拓扑图路径硬规划 baseline 演示：
+        - web monitor 演示：
+        <video width="640" height="360" controls>
+        <source src="./README_imgs/EI_console/EI_topo_pathing_baseline.mp4" type="video/mp4">
+        </video>
+
+    - 
+
+
+- RL: Train, Eval and Enjoy
+    - Train (Tensorboard， PPO _v.s._ SAC)
+    ```
+    tensorboard --logdir /home/chendawww/workspace/rl-navibot/A_tries
+    ```
+    ![README_imgs/RL/RL_train_tensorboard.png](README_imgs/RL/RL_train_tensorboard.png)
+    - Eval (eval SAC)
+    ![README_imgs/RL/RL_eval_SAC.png](README_imgs/RL/RL_eval_SAC.png)
+    - Enjoy (Waffle in arena world)
+    [Bilibili: RL_enjoy_SAC](https://www.bilibili.com/video/BV1LcLu6tEmH)
 
 
 - Brain Graph of Harness
@@ -250,13 +278,12 @@ INFO:     Application startup complete.
 
     系统已安全关机，主循环退出。
     ```
-- Yolo and GroundingDINO
+<!-- - Yolo and GroundingDINO -->
 
-- Topology Graph and Path Planning
+- DRG to Topology Graph
 
-- Turtlebot3 Burger Walking in the Arena
+<!-- - Turtlebot3 Burger Walking in the Arena -->
 
-- RL: Train, Eval and Play
 
 # -1. Real-world (Partially) Presentations
 - Web Monitor with Brain

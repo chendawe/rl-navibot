@@ -44,7 +44,7 @@ class DRGService:
         except Exception as e:
             return {"success": False, "msg": f"❌ 寻路失败: {str(e)}"}
 
-    def generate_move_frames(self, path: List[str], target_speed=10.0):
+    def generate_move_frames(self, path: List[str], target_speed=30.0):
         if not self.nodes or not self.canvas_coords: return
         for i in range(len(path) - 1):
             n1 = self.canvas_coords.get(path[i])
